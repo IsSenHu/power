@@ -1,0 +1,45 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: power
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.5.252:3306/power?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=GMT%2B8
+    username: hs2019
+    password: abC123456789!
+  jpa:
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+    show-sql: true
+    open-in-view: false
+    database-platform: org.hibernate.dialect.MySQL57Dialect
+  mail:
+    host: smtp.qq.com
+    username: 1178515826@qq.com
+    password: uysnzvlpvavdbabc
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+  redis:
+    database: 0
+    host: 118.24.38.46
+    port: 26379
+    password: 521428Slyt
+  data:
+    redis:
+      repositories:
+        enabled: false
+com:
+  cdsen:
+    expiration: 1200000
+    header: authorization
+    secret: 521428Slyt
+    max-session-in-cache: 10000
+
