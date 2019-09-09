@@ -3,8 +3,10 @@ package com.cdsen.power.server.user.controller;
 import com.cdsen.power.core.JsonResult;
 import com.cdsen.power.server.user.model.ao.RoleCreateAO;
 import com.cdsen.power.server.user.model.ao.RoleUpdateAO;
+import com.cdsen.power.server.user.model.cons.PreAuthorizes;
 import com.cdsen.power.server.user.model.vo.RoleVO;
 import com.cdsen.power.server.user.service.RoleService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -27,6 +29,7 @@ public class RoleController {
      * @param ao 创建角色数据模型
      * @return 创建结果
      */
+    @PreAuthorize(PreAuthorizes.Role.CREATE)
     @PutMapping("/create")
     public JsonResult<RoleVO> create(@RequestBody RoleCreateAO ao) {
         return roleService.create(ao);
@@ -38,6 +41,7 @@ public class RoleController {
      * @param id ID
      * @return 角色
      */
+    @PreAuthorize(PreAuthorizes.Role.QUERY)
     @GetMapping("/{id}")
     public JsonResult<RoleVO> findById(@PathVariable Integer id) {
         return roleService.findById(id);
@@ -49,6 +53,7 @@ public class RoleController {
      * @param ao 角色更新数据模型
      * @return 更新结果
      */
+    @PreAuthorize(PreAuthorizes.Role.UPDATE)
     @PostMapping
     public JsonResult<RoleVO> update(@RequestBody RoleUpdateAO ao) {
         return roleService.update(ao);
@@ -60,6 +65,7 @@ public class RoleController {
      * @param id ID
      * @return 删除结果
      */
+    @PreAuthorize(PreAuthorizes.Role.DELETE)
     @DeleteMapping("/{id}")
     public JsonResult<RoleVO> delete(@PathVariable Integer id) {
         return roleService.delete(id);
