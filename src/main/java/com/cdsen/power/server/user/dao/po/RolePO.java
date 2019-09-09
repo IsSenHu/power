@@ -3,8 +3,7 @@ package com.cdsen.power.server.user.dao.po;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * @author HuSen
@@ -16,5 +15,13 @@ import javax.persistence.Table;
 @Table(name = "tb_role")
 public class RolePO {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
+    @Column(name = "name", nullable = false, unique = true)
+    private String name;
+
+    @Column(name = "description")
+    private String description;
 }
