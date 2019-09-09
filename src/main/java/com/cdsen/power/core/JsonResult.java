@@ -31,6 +31,14 @@ public class JsonResult<T> {
         return jsonResult;
     }
 
+    public static <T> JsonResult<T> of(int code, String error, T d) {
+        JsonResult<T> jsonResult = new JsonResult<>();
+        jsonResult.setCode(code);
+        jsonResult.setError(error);
+        jsonResult.setTimestamp(System.currentTimeMillis());
+        return jsonResult;
+    }
+
     public static <T> JsonResult<T> success() {
         JsonResult<T> jsonResult = new JsonResult<>();
         jsonResult.setCode(SUCCESS);
