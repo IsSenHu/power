@@ -1,5 +1,7 @@
 package com.cdsen.power.core.security.annotation;
 
+import com.cdsen.power.core.cons.Route;
+
 import java.lang.annotation.*;
 
 /**
