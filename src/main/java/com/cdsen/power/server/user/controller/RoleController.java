@@ -1,6 +1,8 @@
 package com.cdsen.power.server.user.controller;
 
 import com.cdsen.power.core.JsonResult;
+import com.cdsen.power.core.security.annotation.Permission;
+import com.cdsen.power.core.security.annotation.SecurityModule;
 import com.cdsen.power.server.user.model.ao.RoleCreateAO;
 import com.cdsen.power.server.user.model.ao.RoleUpdateAO;
 import com.cdsen.power.server.user.model.cons.PreAuthorizes;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
  * create on 2019/9/9 10:05
  */
 @RestController
+@SecurityModule(name = "角色")
 @RequestMapping("/api/role")
 public class RoleController {
 
@@ -30,6 +33,7 @@ public class RoleController {
      * @return 创建结果
      */
     @PreAuthorize(PreAuthorizes.Role.CREATE)
+    @Permission("创建角色")
     @PutMapping("/create")
     public JsonResult<RoleVO> create(@RequestBody RoleCreateAO ao) {
         return roleService.create(ao);
@@ -41,7 +45,8 @@ public class RoleController {
      * @param id ID
      * @return 角色
      */
-    @PreAuthorize(PreAuthorizes.Role.QUERY)
+    @PreAuthorize(PreAuthorizes.Role.FIND_BY_ID)
+    @Permission("根据ID查询角色")
     @GetMapping("/{id}")
     public JsonResult<RoleVO> findById(@PathVariable Integer id) {
         return roleService.findById(id);
@@ -54,6 +59,7 @@ public class RoleController {
      * @return 更新结果
      */
     @PreAuthorize(PreAuthorizes.Role.UPDATE)
+    @Permission("更新角色")
     @PostMapping
     public JsonResult<RoleVO> update(@RequestBody RoleUpdateAO ao) {
         return roleService.update(ao);
@@ -66,6 +72,7 @@ public class RoleController {
      * @return 删除结果
      */
     @PreAuthorize(PreAuthorizes.Role.DELETE)
+    @Permission("删除角色")
     @DeleteMapping("/{id}")
     public JsonResult<RoleVO> delete(@PathVariable Integer id) {
         return roleService.delete(id);

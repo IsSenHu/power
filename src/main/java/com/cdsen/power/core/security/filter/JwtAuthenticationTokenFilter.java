@@ -39,7 +39,8 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest httpServletRequest, @NonNull HttpServletResponse httpServletResponse, @NonNull FilterChain filterChain) throws IOException, ServletException {
-        String token = httpServletRequest.getHeader(appProperties.getHeader());
+        AppProperties.Security security = appProperties.getSecurity();
+        String token = httpServletRequest.getHeader(security.getHeader());
         String username;
         Session session = null;
         boolean set = StringUtils.isNotBlank(token)

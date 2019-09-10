@@ -1,6 +1,8 @@
 package com.cdsen.power.core;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -13,11 +15,39 @@ import org.springframework.stereotype.Component;
 @Component
 public class AppProperties {
 
-    private String secret;
+    private Security security;
 
-    private Long expiration;
+    private Admin admin;
 
-    private Long maxSessionInCache;
+    private AdminRole adminRole;
 
-    private String header;
+    @Getter
+    @Setter
+    public static class Security {
+
+        private String secret;
+
+        private Long expiration;
+
+        private Long maxSessionInCache;
+
+        private String header;
+    }
+
+    @Getter
+    @Setter
+    public static class Admin {
+        private String defaultUsername;
+        private String defaultPassword;
+        private String defaultEmail;
+        private String introduction;
+        private String avatar;
+    }
+
+    @Getter
+    @Setter
+    public static class AdminRole {
+        private String name;
+        private String description;
+    }
 }

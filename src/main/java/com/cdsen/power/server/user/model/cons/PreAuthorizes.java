@@ -10,6 +10,12 @@ public class PreAuthorizes {
         public static final String CREATE = "hasAuthority('role:create')";
         public static final String UPDATE = "hasAuthority('role:update')";
         public static final String DELETE = "hasAuthority('role:delete')";
-        public static final String QUERY = "hasAuthority('role:query')";
+        public static final String FIND_BY_ID = "hasAuthority('role:findById')";
+    }
+
+    public static class User {
+        public static final String CREATE = "hasAuthority('user:create')";
+        public static final String UPDATE = "hasAuthority('user:update')";
+        public static final String DELETE = "hasAuthority('user:delete')";
     }
 }

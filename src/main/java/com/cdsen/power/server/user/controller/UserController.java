@@ -2,6 +2,7 @@ package com.cdsen.power.server.user.controller;
 
 import com.cdsen.power.core.JsonResult;
 import com.cdsen.power.core.redis.lock.DistributedLock;
+import com.cdsen.power.core.security.annotation.SecurityModule;
 import com.cdsen.power.server.user.model.ao.UserCreateAO;
 import com.cdsen.power.server.user.model.vo.UserVO;
 import com.cdsen.power.server.user.service.UserService;
@@ -17,6 +18,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @RestController
+@SecurityModule(name = "用户")
 @RequestMapping("/api/user")
 public class UserController {
 

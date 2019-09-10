@@ -21,10 +21,11 @@ public class GuavaSessionManage implements SessionManage {
     private final Cache<String, Session> cache;
 
     public GuavaSessionManage(AppProperties appProperties) {
+        AppProperties.Security security = appProperties.getSecurity();
         cache = CacheBuilder
                 .newBuilder()
                 .expireAfterWrite(1, TimeUnit.MINUTES)
-                .maximumSize(appProperties.getMaxSessionInCache())
+                .maximumSize(security.getMaxSessionInCache())
                 .build();
     }
 

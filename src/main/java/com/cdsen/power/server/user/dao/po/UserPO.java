@@ -49,4 +49,7 @@ public class UserPO {
 
     @Column(name = "create_time")
     private LocalDateTime createTime;
+
+    @Column(name = "role_id")
+    private Integer roleId;
 }

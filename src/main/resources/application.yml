@@ -39,8 +39,18 @@ spring:
         enabled: false
 com:
   cdsen:
-    expiration: 30
-    header: authorization
-    secret: 521428Slyt
-    max-session-in-cache: 10000
+    security:
+      expiration: 30
+      header: authorization
+      secret: 521428Slyt
+      max-session-in-cache: 10000
+    admin:
+      default-username: admin
+      default-password: 19970621Sly
+      default-email: 1178515826@qq.com
+      avatar: https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif
+      introduction: 我是超级管理员
+    admin-role:
+      name: admin
+      description: 超级管理员
 

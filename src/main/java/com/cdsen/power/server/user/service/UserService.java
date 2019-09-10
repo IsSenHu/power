@@ -1,5 +1,6 @@
 package com.cdsen.power.server.user.service;
 
+import com.cdsen.power.core.AppProperties;
 import com.cdsen.power.core.JsonResult;
 import com.cdsen.power.core.security.model.LoginVO;
 import com.cdsen.power.core.security.model.Token;
@@ -59,4 +60,12 @@ public interface UserService {
      * @return 是否可用
      */
     boolean checkUsername(String username);
+
+    /**
+     * 创建或刷新超级管理员
+     *
+     * @param role  超级角色名称
+     * @param admin 超级管理员
+     */
+    void createOrRefreshSuperAdmin(String role, AppProperties.Admin admin);
 }

@@ -1,5 +1,6 @@
 package com.cdsen.power.server.user.service.impl;
 
+import com.cdsen.power.core.AppProperties;
 import com.cdsen.power.core.JsonResult;
 import com.cdsen.power.core.security.model.LoginVO;
 import com.cdsen.power.core.security.model.Session;
@@ -11,7 +12,9 @@ import com.cdsen.power.core.security.util.SecurityUtils;
 import com.cdsen.power.core.util.VerifyCodeUtils;
 import com.cdsen.power.server.email.model.vo.SimpleMailAO;
 import com.cdsen.power.server.email.service.MailService;
+import com.cdsen.power.server.user.dao.po.RolePO;
 import com.cdsen.power.server.user.dao.po.UserPO;
+import com.cdsen.power.server.user.dao.repository.RoleRepository;
 import com.cdsen.power.server.user.dao.repository.UserRepository;
 import com.cdsen.power.server.user.model.ao.UserCreateAO;
 import com.cdsen.power.server.user.model.cons.RedisKey;
@@ -47,14 +50,16 @@ public class UserServiceImpl implements UserService {
     private final MailService mailService;
     private final UserRepository userRepository;
     private final StringRedisTemplate redisTemplate;
+    private final RoleRepository roleRepository;
 
-    public UserServiceImpl(PasswordEncoder passwordEncoder, JwtUtils jwtUtils, @Qualifier("redisSessionManage") SessionManage sessionManage, MailService mailService, UserRepository userRepository, StringRedisTemplate redisTemplate) {
+    public UserServiceImpl(PasswordEncoder passwordEncoder, JwtUtils jwtUtils, @Qualifier("redisSessionManage") SessionManage sessionManage, MailService mailService, UserRepository userRepository, StringRedisTemplate redisTemplate, RoleRepository roleRepository) {
         this.passwordEncoder = passwordEncoder;
         this.jwtUtils = jwtUtils;
         this.sessionManage = sessionManage;
         this.mailService = mailService;
         this.userRepository = userRepository;
         this.redisTemplate = redisTemplate;
+        this.roleRepository = roleRepository;
     }
 
     @Override
@@ -143,5 +148,27 @@ public class UserServiceImpl implements UserService {
         ValueOperations<String, String> value = redisTemplate.opsForValue();
         Boolean ifAbsent = value.setIfAbsent(RedisKey.READY_REGISTER_USERNAME.concat(username), username, Duration.ofMinutes(30));
         return Objects.isNull(ifAbsent) ? false : ifAbsent;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void createOrRefreshSuperAdmin(String role, AppProperties.Admin admin) {
+        RolePO rolePo = roleRepository.findByName(role);
+        UserPO po = userRepository.findByUsername(admin.getDefaultUsername());
+        if (po == null) {
+            po = new UserPO();
+            po.setUsername(admin.getDefaultUsername());
+            po.setCreateTime(LocalDateTime.now());
+        }
+        po.setPassword(passwordEncoder.encode(admin.getDefaultPassword()));
+        po.setEmail(admin.getDefaultEmail());
+        po.setIntroduction(admin.getIntroduction());
+        po.setAvatar(admin.getAvatar());
+        po.setIsEnabled(true);
+        po.setIsAccountNonExpired(true);
+        po.setIsAccountNonLocked(true);
+        po.setIsCredentialsNonExpired(true);
+        po.setRoleId(rolePo.getId());
+        userRepository.save(po);
     }
 }

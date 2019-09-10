@@ -1,5 +1,6 @@
 package com.cdsen.power.server.user.service;
 
+import com.cdsen.power.core.AppProperties;
 import com.cdsen.power.core.JsonResult;
 import com.cdsen.power.server.user.model.ao.RoleCreateAO;
 import com.cdsen.power.server.user.model.ao.RoleUpdateAO;
@@ -42,4 +43,11 @@ public interface RoleService {
      * @return 删除结果
      */
     JsonResult<RoleVO> delete(Integer id);
+
+    /**
+     * 创建或刷新超级角色
+     *
+     * @param adminRole 超级角色
+     */
+    void createOrRefreshSuperRole(AppProperties.AdminRole adminRole);
 }

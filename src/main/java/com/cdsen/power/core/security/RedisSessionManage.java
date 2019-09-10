@@ -56,11 +56,12 @@ public class RedisSessionManage implements SessionManage {
 
     @Override
     public void save(String username, Session session) {
+        AppProperties.Security security = appProperties.getSecurity();
         final String key = SESSION_PREFIX.concat(username);
         ValueOperations<String, String> value = redisTemplate.opsForValue();
         String jsonString = JsonUtils.toJsonString(session);
         if (StringUtils.isNotBlank(jsonString)) {
-            value.setIfAbsent(key, jsonString, Duration.ofMinutes(appProperties.getExpiration()));
+            value.setIfAbsent(key, jsonString, Duration.ofMinutes(security.getExpiration()));
         }
         guavaSessionManage.save(key, session);
     }

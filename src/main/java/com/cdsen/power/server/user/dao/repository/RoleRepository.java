@@ -10,4 +10,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface RoleRepository extends JpaRepository<RolePO, Integer> {
 
     long countByName(String name);
+
+    RolePO findByName(String name);
 }

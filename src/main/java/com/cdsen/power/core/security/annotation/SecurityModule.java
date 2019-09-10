@@ -1,7 +1,5 @@
 package com.cdsen.power.core.security.annotation;
 
-import com.cdsen.power.core.cons.Route;
-
 import java.lang.annotation.*;
 
 /**
@@ -13,7 +11,5 @@ import java.lang.annotation.*;
 @Documented
 public @interface SecurityModule {
 
-    String name() default "";
-
-    Route route();
+    String name();
 }

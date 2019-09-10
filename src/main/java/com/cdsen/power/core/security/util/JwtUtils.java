@@ -31,14 +31,16 @@ public class JwtUtils {
 
     private String generateToken(Map<String, Object> claims) {
         Date created = (Date) claims.get(CREATED);
-        Date expirationDate = new Date(created.getTime() + TimeUnit.SECONDS.toMillis(appProperties.getExpiration()));
-        return Jwts.builder().setClaims(claims).setExpiration(expirationDate).signWith(SignatureAlgorithm.HS512, appProperties.getSecret()).compact();
+        AppProperties.Security security = appProperties.getSecurity();
+        Date expirationDate = new Date(created.getTime() + TimeUnit.SECONDS.toMillis(security.getExpiration()));
+        return Jwts.builder().setClaims(claims).setExpiration(expirationDate).signWith(SignatureAlgorithm.HS512, security.getSecret()).compact();
     }
 
     private Claims getClaimsFromToken(String token) {
         Claims claims = null;
         try {
-            claims = Jwts.parser().setSigningKey(appProperties.getSecret()).parseClaimsJws(token).getBody();
+            AppProperties.Security security = appProperties.getSecurity();
+            claims = Jwts.parser().setSigningKey(security.getSecret()).parseClaimsJws(token).getBody();
         } catch (Exception ignored) {}
         return claims;
     }

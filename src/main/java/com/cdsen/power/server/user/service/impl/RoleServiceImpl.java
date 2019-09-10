@@ -1,7 +1,12 @@
 package com.cdsen.power.server.user.service.impl;
 
+import com.cdsen.power.core.AppProperties;
 import com.cdsen.power.core.JsonResult;
+import com.cdsen.power.server.user.dao.po.PermissionPO;
 import com.cdsen.power.server.user.dao.po.RolePO;
+import com.cdsen.power.server.user.dao.po.RolePermissionPO;
+import com.cdsen.power.server.user.dao.repository.PermissionRepository;
+import com.cdsen.power.server.user.dao.repository.RolePermissionRepository;
 import com.cdsen.power.server.user.dao.repository.RoleRepository;
 import com.cdsen.power.server.user.model.ao.RoleCreateAO;
 import com.cdsen.power.server.user.model.ao.RoleUpdateAO;
@@ -12,6 +17,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * @author HuSen
  * create on 2019/9/9 10:06
@@ -20,9 +28,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class RoleServiceImpl implements RoleService {
 
     private final RoleRepository roleRepository;
+    private final PermissionRepository permissionRepository;
+    private final RolePermissionRepository rolePermissionRepository;
 
-    public RoleServiceImpl(RoleRepository roleRepository) {
+    public RoleServiceImpl(RoleRepository roleRepository, PermissionRepository permissionRepository, RolePermissionRepository rolePermissionRepository) {
         this.roleRepository = roleRepository;
+        this.permissionRepository = permissionRepository;
+        this.rolePermissionRepository = rolePermissionRepository;
     }
 
     @Override
@@ -73,5 +85,30 @@ public class RoleServiceImpl implements RoleService {
                     return JsonResult.of(RoleTransfer.PO_TO_VO.apply(po));
                 })
                 .orElseGet(() -> JsonResult.of(20002, "角色不存在"));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void createOrRefreshSuperRole(AppProperties.AdminRole adminRole) {
+        RolePO po = roleRepository.findByName(adminRole.getName());
+        if (po == null) {
+            po = new RolePO();
+            po.setName(adminRole.getName());
+        }
+        po.setDescription(adminRole.getDescription());
+        roleRepository.save(po);
+
+        List<PermissionPO> permissions = permissionRepository.findAll();
+
+        Integer roleId = po.getId();
+        rolePermissionRepository.deleteAllByRoleId(roleId);
+
+        List<RolePermissionPO> rps = permissions.stream().map(p -> {
+            RolePermissionPO rolePermissionPO = new RolePermissionPO();
+            rolePermissionPO.setRoleId(roleId);
+            rolePermissionPO.setPermissionId(p.getId());
+            return rolePermissionPO;
+        }).collect(Collectors.toList());
+        rolePermissionRepository.saveAll(rps);
     }
 }
