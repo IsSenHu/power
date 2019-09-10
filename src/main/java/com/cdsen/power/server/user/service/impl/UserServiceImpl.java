@@ -146,6 +146,7 @@ public class UserServiceImpl implements UserService {
         }
 
         ValueOperations<String, String> value = redisTemplate.opsForValue();
+        // 由于redis是单线程的，这样做可以保证相同的用户名只能被set一次，也就是同一个用户名只注册一次
         Boolean ifAbsent = value.setIfAbsent(RedisKey.READY_REGISTER_USERNAME.concat(username), username, Duration.ofMinutes(30));
         return Objects.isNull(ifAbsent) ? false : ifAbsent;
     }
