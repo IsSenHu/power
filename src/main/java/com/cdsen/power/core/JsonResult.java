@@ -45,4 +45,12 @@ public class JsonResult<T> {
         jsonResult.setTimestamp(System.currentTimeMillis());
         return jsonResult;
     }
+
+    public static <T> JsonResult<T> of(Error error) {
+        JsonResult<T> jsonResult = new JsonResult<>();
+        jsonResult.setCode(error.getCode());
+        jsonResult.setError(error.getError());
+        jsonResult.setTimestamp(System.currentTimeMillis());
+        return jsonResult;
+    }
 }
