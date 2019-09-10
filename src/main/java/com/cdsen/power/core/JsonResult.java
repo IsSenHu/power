@@ -46,7 +46,7 @@ public class JsonResult<T> {
         return jsonResult;
     }
 
-    public static <T> JsonResult<T> of(Error error) {
+    public static <T> JsonResult<T> of(BaseError error) {
         JsonResult<T> jsonResult = new JsonResult<>();
         jsonResult.setCode(error.getCode());
         jsonResult.setError(error.getError());

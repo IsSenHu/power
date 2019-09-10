@@ -1,6 +1,7 @@
 package com.cdsen.power.core.web;
 
 import com.cdsen.power.core.JsonResult;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -12,17 +13,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Configuration
 public class WebAutoConfiguration {
 
+    @Slf4j
     @RestControllerAdvice
     public final static class AdviceConfiguration {
 
         @ExceptionHandler(Exception.class)
         public JsonResult<Object> exceptionHandler(Exception e) {
-            if (e instanceof BusinessException) {
-                BusinessException businessException = (BusinessException) e;
-                return JsonResult.of(businessException.getError());
-            } else {
-                return JsonResult.of(999999999, "未知异常");
-            }
+            log.error("请求发生异常:", e);
+            return JsonResult.of(999999999, "未知异常");
         }
     }
 }
