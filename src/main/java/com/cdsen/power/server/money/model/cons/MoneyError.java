@@ -1,12 +1,12 @@
 package com.cdsen.power.server.money.model.cons;
 
-import com.cdsen.power.core.BaseError;
+import com.cdsen.power.core.Error;
 
 /**
  * @author HuSen
  * create on 2019/9/10 17:23
  */
-public enum MoneyError implements BaseError {
+public enum MoneyError implements Error {
     ;
 
     private Integer code;

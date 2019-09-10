@@ -4,7 +4,7 @@ package com.cdsen.power.core;
  * @author HuSen
  * create on 2019/9/10 17:25
  */
-public enum CommonError implements BaseError {
+public enum CommonError implements Error {
     NOT_LOGIN(10001, "未登录不允许进行该操作");
 
     private Integer code;
