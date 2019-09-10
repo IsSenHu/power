@@ -13,6 +13,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -44,7 +45,7 @@ public class PermissionServiceImpl implements PermissionService {
         Route[] routes = Route.values();
         for (Route route : routes) {
             List<Route> children = route.getChildren();
-            if (null == children) {
+            if (null == children && !CollectionUtils.isEmpty(route.getMeta().getRoles())) {
                 String mark = route.getMeta().getRoles().get(0);
                 if (oldMap.containsKey(mark)) {
                     PermissionPO po = oldMap.remove(mark);
