@@ -12,11 +12,16 @@ import java.util.List;
  */
 @Getter
 public enum Route {
+    LAYOUT_CHILD("/redirect/:path*", "views/redirect/index", null, null, null, null, null, null),
+    LAYOUT("/redirect", "layout/Layout", null, null, true, null, null, Lists.newArrayList(Route.LAYOUT_CHILD)),
+
+    LOGIN("/login", "views/login/index", null, null, true, null, null, null),
+
     // 用户管理页面
     USER("user", "/views/user/page", "pageUser", null, null, null,
             Meta.of("用户列表", null, Lists.newArrayList(RouteCons.USER_PAGE), null, null),
             null),
-    // 角色管理页面
+    // 角色管理页面ss
     ROLE("role", "/views/role/page", "pageRole", null, null, null,
             Meta.of("角色列表", null, Lists.newArrayList(RouteCons.ROLE_PAGE), null, null),
             null),
