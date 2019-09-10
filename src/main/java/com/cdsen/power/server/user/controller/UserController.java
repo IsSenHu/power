@@ -48,7 +48,7 @@ public class UserController {
             boolean isLock = rLock.tryLock(5, TimeUnit.SECONDS);
             if (isLock) {
                 boolean enable = userService.checkUsername(ao.getUsername());
-                result = enable ? userService.register(ao) : JsonResult.of(10003, "用户不可用");
+                result = enable ? userService.register(ao) : JsonResult.of(10003, "用户名不可用");
             } else {
                 result = JsonResult.of(10005, "当前系统繁忙");
             }
