@@ -16,6 +16,9 @@ public enum Route {
     LAYOUT("/redirect", "layout/Layout", null, null, true, null, null, Lists.newArrayList(Route.LAYOUT_CHILD)),
 
     LOGIN("/login", "views/login/index", null, null, true, null, null, null),
+    AUTH_REDIRECT("/auth-redirect", "views/login/auth-redirect", null, null, true, null, null, null),
+    R404("/404", "views/error-page/404", null, null, true, null, null, null),
+    R401("/401", "views/error-page/401", null, null, true, null, null, null),
 
     // 用户管理页面
     USER("user", "/views/user/page", "pageUser", null, null, null,
