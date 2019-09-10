@@ -13,16 +13,16 @@ import java.util.List;
 @Getter
 public enum Route {
     // 用户管理页面
-    USER("user", "/views/user/page", "pageUser", null, false, false,
-            Meta.of("用户列表", null, Lists.newArrayList(RouteCons.USER_PAGE), false, false),
+    USER("user", "/views/user/page", "pageUser", null, null, null,
+            Meta.of("用户列表", null, Lists.newArrayList(RouteCons.USER_PAGE), null, null),
             null),
     // 角色管理页面
-    ROLE("role", "/views/role/page", "pageRole", null, false, false,
-            Meta.of("角色列表", null, Lists.newArrayList(RouteCons.ROLE_PAGE), false, false),
+    ROLE("role", "/views/role/page", "pageRole", null, null, null,
+            Meta.of("角色列表", null, Lists.newArrayList(RouteCons.ROLE_PAGE), null, null),
             null),
     // 用户管理模块
-    USER_MANAGE("UserManage", RouteCons.LAYOUT, "manageUser", "/user/page", false, true,
-            Meta.of("用户管理", "", Lists.newArrayList(RouteCons.USER_PAGE, RouteCons.ROLE_PAGE), false, false),
+    USER_MANAGE("/UserManage", RouteCons.LAYOUT, null, "/user/page", null, true,
+            Meta.of("用户管理", "", Lists.newArrayList(RouteCons.USER_PAGE, RouteCons.ROLE_PAGE), null, null),
             Lists.newArrayList(Route.USER, Route.ROLE));
 
     private String path;
