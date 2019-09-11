@@ -1,4 +1,5 @@
 package com.cdsen.power.core.cons;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.google.common.collect.Lists;
 
 import lombok.Data;
@@ -12,26 +13,38 @@ import java.util.List;
  */
 @Getter
 public enum Route {
-    LAYOUT_CHILD("/redirect/:path*", "views/redirect/index", null, null, null, null, null, null),
-    LAYOUT("/redirect", "layout/Layout", null, null, true, null, null, Lists.newArrayList(Route.LAYOUT_CHILD)),
+    LAYOUT_CHILD("/redirect/:path*", "views/redirect/index", null, null, null, null, null, null, false),
+    LAYOUT("/redirect", "layout/Layout", null, null, true, null, null, Lists.newArrayList(Route.LAYOUT_CHILD), true),
 
-    LOGIN("/login", "views/login/index", null, null, true, null, null, null),
-    AUTH_REDIRECT("/auth-redirect", "views/login/auth-redirect", null, null, true, null, null, null),
-    R404("/404", "views/error-page/404", null, null, true, null, null, null),
-    R401("/401", "views/error-page/401", null, null, true, null, null, null),
+    LOGIN("/login", "views/login/index", null, null, true, null, null, null, true),
+    AUTH_REDIRECT("/auth-redirect", "views/login/auth-redirect", null, null, true, null, null, null, true),
+    R404("/404", "views/error-page/404", null, null, true, null, null, null, true),
+    R401("/401", "views/error-page/401", null, null, true, null, null, null, true),
 
-    // 用户管理页面
+    DASHBOARD("dashboard", "views/dashboard/index", "Dashboard", null, null, null,
+            Meta.of("Dashboard", "dashboard", null, null, true), null, false),
+    EMPTY("", "layout/Layout", null, "dashboard", null, null, null, Lists.newArrayList(Route.DASHBOARD), true),
+
+    DOCUMENTATION_INDEX("index", "views/documentation/index", "Documentation", null, null, null,
+            Meta.of("Documentation", "documentation", null, null, true), null, false),
+    DOCUMENTATION("/documentation", "layout/Layout", null, null, null, null, null, Lists.newArrayList(Route.DOCUMENTATION_INDEX), true),
+
+    GUIDE_INDEX("index", "views/guide/index", "Guide", null, null, null,
+            Meta.of("Guide", "guide", null, true, null), null, false),
+    GUIDE("/guide", "layout/Layout", null, "/guide/index", null, null, null, Lists.newArrayList(Route.GUIDE_INDEX), true),
+
+    // 用户列表
     USER("user", "/views/user/page", "pageUser", null, null, null,
             Meta.of("用户列表", null, Lists.newArrayList(RouteCons.USER_PAGE), null, null),
-            null),
-    // 角色管理页面ss
+            null, false),
+    // 角色列表
     ROLE("role", "/views/role/page", "pageRole", null, null, null,
             Meta.of("角色列表", null, Lists.newArrayList(RouteCons.ROLE_PAGE), null, null),
-            null),
-    // 用户管理模块
+            null, false),
+    // 用户管理
     USER_MANAGE("/UserManage", RouteCons.LAYOUT, null, "/user/page", null, true,
             Meta.of("用户管理", "", Lists.newArrayList(RouteCons.USER_PAGE, RouteCons.ROLE_PAGE), null, null),
-            Lists.newArrayList(Route.USER, Route.ROLE));
+            Lists.newArrayList(Route.USER, Route.ROLE), true);
 
     private String path;
     private String component;
@@ -41,8 +54,9 @@ public enum Route {
     private Boolean alwaysShow;
     private Meta meta;
     private List<Route> children;
+    private Boolean isParent;
 
-    Route(String path, String component, String name, String redirect, Boolean hidden, Boolean alwaysShow, Meta meta, List<Route> children) {
+    Route(String path, String component, String name, String redirect, Boolean hidden, Boolean alwaysShow, Meta meta, List<Route> children, Boolean isParent) {
         this.path = path;
         this.component = component;
         this.name = name;
@@ -51,23 +65,27 @@ public enum Route {
         this.alwaysShow = alwaysShow;
         this.meta = meta;
         this.children = children;
+        this.isParent = isParent;
     }
 
     @Data
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class Meta {
         private String title;
         private String icon;
         private List<String> roles;
         private Boolean noCache;
         private Boolean breadcrumb;
+        private Boolean affix;
 
-        static Meta of(String title, String icon, List<String> roles, Boolean noCache, Boolean breadcrumb) {
+        static Meta of(String title, String icon, List<String> roles, Boolean noCache, Boolean affix) {
             Meta meta = new Meta();
             meta.setTitle(title);
             meta.setIcon(icon);
             meta.setRoles(roles);
             meta.setNoCache(noCache);
-            meta.setBreadcrumb(breadcrumb);
+            meta.setBreadcrumb(null);
+            meta.setAffix(affix);
             return meta;
         }
     }

@@ -45,7 +45,7 @@ public class PermissionServiceImpl implements PermissionService {
         Route[] routes = Route.values();
         for (Route route : routes) {
             List<Route> children = route.getChildren();
-            if (null == children && !CollectionUtils.isEmpty(route.getMeta().getRoles())) {
+            if (null == children && Objects.nonNull(route.getMeta()) && !CollectionUtils.isEmpty(route.getMeta().getRoles())) {
                 String mark = route.getMeta().getRoles().get(0);
                 if (oldMap.containsKey(mark)) {
                     PermissionPO po = oldMap.remove(mark);
