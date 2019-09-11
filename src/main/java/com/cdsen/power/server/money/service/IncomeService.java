@@ -1,6 +1,7 @@
 package com.cdsen.power.server.money.service;
 
 import com.cdsen.power.core.JsonResult;
+import com.cdsen.power.core.PageResult;
 import com.cdsen.power.server.money.model.ao.InComeCreateAO;
 import com.cdsen.power.server.money.model.vo.IncomeVO;
 
@@ -11,4 +12,6 @@ import com.cdsen.power.server.money.model.vo.IncomeVO;
 public interface IncomeService {
 
     JsonResult<IncomeVO> create(InComeCreateAO ao);
+
+    JsonResult<PageResult<IncomeVO>> page();
 }

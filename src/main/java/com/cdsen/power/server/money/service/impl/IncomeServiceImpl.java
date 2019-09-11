@@ -2,6 +2,7 @@ package com.cdsen.power.server.money.service.impl;
 
 import com.cdsen.power.core.CommonError;
 import com.cdsen.power.core.JsonResult;
+import com.cdsen.power.core.PageResult;
 import com.cdsen.power.core.security.model.Session;
 import com.cdsen.power.core.security.util.SecurityUtils;
 import com.cdsen.power.server.money.dao.po.IncomePO;
@@ -12,6 +13,9 @@ import com.cdsen.power.server.money.service.IncomeService;
 import com.cdsen.power.server.money.transfer.IncomeTransfer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author HuSen
@@ -39,5 +43,14 @@ public class IncomeServiceImpl implements IncomeService {
         incomeRepository.save(po);
 
         return JsonResult.of(IncomeTransfer.PO_TO_VO.apply(po));
+    }
+
+    @Override
+    public JsonResult<PageResult<IncomeVO>> page() {
+        List<IncomePO> all = incomeRepository.findAll();
+        PageResult<IncomeVO> pageResult = new PageResult<>();
+        pageResult.setTotal(all.size());
+        pageResult.setItems(all.stream().map(IncomeTransfer.PO_TO_VO).collect(Collectors.toList()));
+        return JsonResult.of(pageResult);
     }
 }
