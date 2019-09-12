@@ -66,10 +66,6 @@ public class ConsumptionServiceImpl implements ConsumptionService {
     @Override
     public JsonResult<PageResult<ConsumptionVO>> page(IPageRequest<ConsumptionQuery> iPageRequest) {
         Session session = SecurityUtils.currentSession();
-        if (session == null) {
-            return JsonResult.of(PageResult.empty());
-        }
-
         return null;
     }
 }

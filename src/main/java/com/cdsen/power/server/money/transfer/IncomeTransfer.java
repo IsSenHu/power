@@ -2,6 +2,7 @@ package com.cdsen.power.server.money.transfer;
 
 import com.cdsen.power.server.money.dao.po.IncomePO;
 import com.cdsen.power.server.money.model.ao.InComeCreateAO;
+import com.cdsen.power.server.money.model.ao.IncomeUpdateAO;
 import com.cdsen.power.server.money.model.ao.IncomeUpdateInfoAO;
 import com.cdsen.power.server.money.model.vo.IncomeVO;
 
@@ -41,5 +42,15 @@ public class IncomeTransfer {
         info.setTime(po.getTime());
         info.setDescription(po.getDescription());
         return info;
+    };
+
+    public static final Function<IncomeUpdateAO, IncomePO> UPDATE_TO_PO = ao -> {
+        IncomePO po = new IncomePO();
+        po.setId(ao.getId());
+        po.setInCome(ao.getInCome());
+        po.setCurrency(ao.getCurrency());
+        po.setTime(ao.getTime());
+        po.setDescription(ao.getDescription());
+        return po;
     };
 }

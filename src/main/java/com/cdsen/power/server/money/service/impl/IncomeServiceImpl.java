@@ -38,9 +38,6 @@ public class IncomeServiceImpl implements IncomeService {
     @Transactional(rollbackFor = Exception.class)
     public JsonResult<IncomeVO> create(InComeCreateAO ao) {
         Session session = SecurityUtils.currentSession();
-        if (session == null) {
-            return JsonResult.of(CommonError.NOT_LOGIN);
-        }
 
         IncomePO po = IncomeTransfer.CREATE_TO_PO.apply(ao);
         po.setUserId(session.getUserId());
@@ -51,11 +48,8 @@ public class IncomeServiceImpl implements IncomeService {
 
     @Override
     public JsonResult<PageResult<IncomeVO>> page(IPageRequest<InComeQuery> iPageRequest) {
+        // TODO 后期session 自动组装在参数里面 可以直接获取
         Session session = SecurityUtils.currentSession();
-        if (session == null) {
-            return JsonResult.of(PageResult.empty());
-        }
-
         Pageable pageable = iPageRequest.of();
         Page<IncomePO> page = incomeRepository.findAll(SpecificationFactory.produce((predicates, root, criteriaBuilder) -> {
             predicates.add(criteriaBuilder.equal(root.get("userId").as(Long.class), session.getUserId()));
@@ -100,15 +94,15 @@ public class IncomeServiceImpl implements IncomeService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public JsonResult<IncomeVO> update(IncomeUpdateAO ao) {
-        return incomeRepository.findById(ao.getId())
-                .map(po -> {
-                    po.setTime(ao.getTime());
-                    po.setInCome(ao.getInCome());
-                    po.setCurrency(ao.getCurrency());
-                    po.setDescription(ao.getDescription());
-                    incomeRepository.save(po);
-                    return JsonResult.of(IncomeTransfer.PO_TO_VO.apply(po));
-                })
-                .orElseGet(() -> JsonResult.of(MoneyError.NOT_FOUND));
+        Session session = SecurityUtils.currentSession();
+        boolean exists = incomeRepository.existsById(ao.getId());
+        if (exists) {
+            IncomePO po = IncomeTransfer.UPDATE_TO_PO.apply(ao);
+            po.setUserId(session.getUserId());
+            incomeRepository.save(po);
+            return JsonResult.of(IncomeTransfer.PO_TO_VO.apply(po));
+        } else {
+            return JsonResult.of(MoneyError.NOT_FOUND);
+        }
     }
 }
