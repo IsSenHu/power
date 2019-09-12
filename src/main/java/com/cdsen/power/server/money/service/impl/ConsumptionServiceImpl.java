@@ -1,0 +1,47 @@
+package com.cdsen.power.server.money.service.impl;
+
+import com.cdsen.power.core.JsonResult;
+import com.cdsen.power.server.money.dao.po.ConsumptionItemPO;
+import com.cdsen.power.server.money.dao.po.ConsumptionPO;
+import com.cdsen.power.server.money.dao.repository.ConsumptionItemRepository;
+import com.cdsen.power.server.money.dao.repository.ConsumptionRepository;
+import com.cdsen.power.server.money.model.ao.ConsumptionCreateAO;
+import com.cdsen.power.server.money.model.vo.ConsumptionVO;
+import com.cdsen.power.server.money.service.ConsumptionService;
+import com.cdsen.power.server.money.transfer.ConsumptionTransfer;
+import org.springframework.data.util.Pair;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+/**
+ * @author HuSen
+ * create on 2019/9/12 11:11
+ */
+@Service
+public class ConsumptionServiceImpl implements ConsumptionService {
+
+    private final ConsumptionRepository consumptionRepository;
+    private final ConsumptionItemRepository consumptionItemRepository;
+
+    public ConsumptionServiceImpl(ConsumptionRepository consumptionRepository, ConsumptionItemRepository consumptionItemRepository) {
+        this.consumptionRepository = consumptionRepository;
+        this.consumptionItemRepository = consumptionItemRepository;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public JsonResult<ConsumptionVO> create(ConsumptionCreateAO ao) {
+        Pair<ConsumptionPO, List<ConsumptionItemPO>> pair = ConsumptionTransfer.AO_TO_PO_PAIR.apply(ao);
+
+        ConsumptionPO po = pair.getFirst();
+        consumptionRepository.save(po);
+
+        List<ConsumptionItemPO> items = pair.getSecond();
+        items.forEach(item -> item.setConsumptionId(po.getId()));
+        consumptionItemRepository.saveAll(items);
+
+        return JsonResult.of(new ConsumptionVO());
+    }
+}

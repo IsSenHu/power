@@ -7,7 +7,7 @@ import com.cdsen.power.core.Error;
  * create on 2019/9/10 17:23
  */
 public enum MoneyError implements Error {
-    ;
+    NOT_FOUND(20001, "没有找到该条数据");
 
     private Integer code;
     private String error;
