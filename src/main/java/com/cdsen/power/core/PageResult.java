@@ -1,5 +1,6 @@
 package com.cdsen.power.core;
 
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,6 +23,13 @@ public class PageResult<T> {
         PageResult<T> result = new PageResult<>();
         result.setTotal(total);
         result.setItems(data.stream().map(function).collect(Collectors.toList()));
+        return result;
+    }
+
+    public static <T> PageResult<T> empty() {
+        PageResult<T> result = new PageResult<>();
+        result.setTotal(0);
+        result.setItems(Lists.newArrayList());
         return result;
     }
 }

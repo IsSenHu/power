@@ -1,5 +1,6 @@
 package com.cdsen.power.server.money.model.ao;
 
+import com.cdsen.power.server.money.model.cons.CurrencyType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,4 +21,7 @@ public class ConsumptionCreateAO {
 
     @NotNull
     private List<ConsumptionItemAO> items;
+
+    @NotNull
+    private CurrencyType currency;
 }

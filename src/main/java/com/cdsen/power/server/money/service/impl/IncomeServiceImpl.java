@@ -51,8 +51,15 @@ public class IncomeServiceImpl implements IncomeService {
 
     @Override
     public JsonResult<PageResult<IncomeVO>> page(IPageRequest<InComeQuery> iPageRequest) {
+        Session session = SecurityUtils.currentSession();
+        if (session == null) {
+            return JsonResult.of(PageResult.empty());
+        }
+
         Pageable pageable = iPageRequest.of();
         Page<IncomePO> page = incomeRepository.findAll(SpecificationFactory.produce((predicates, root, criteriaBuilder) -> {
+            predicates.add(criteriaBuilder.equal(root.get("userId").as(Long.class), session.getUserId()));
+
             InComeQuery customParams = iPageRequest.getCustomParams();
             if (customParams == null) {
                 return;

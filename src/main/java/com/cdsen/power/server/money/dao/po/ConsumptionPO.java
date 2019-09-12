@@ -1,5 +1,7 @@
 package com.cdsen.power.server.money.dao.po;
 
+import com.cdsen.power.server.money.model.cons.CurrencyType;
+import com.cdsen.power.server.money.model.converter.CurrencyTypeConverter;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -33,6 +35,13 @@ public class ConsumptionPO {
      */
     @Column(name = "time", nullable = false)
     private LocalDateTime time;
+
+    /**
+     * 货币单位
+     */
+    @Column(name = "currency", nullable = false)
+    @Convert(converter = CurrencyTypeConverter.class)
+    private CurrencyType currency;
 
     @Override
     public String toString() {

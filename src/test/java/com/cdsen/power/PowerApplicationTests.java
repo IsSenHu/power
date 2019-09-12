@@ -1,5 +1,6 @@
 package com.cdsen.power;
 
+import com.cdsen.power.core.util.JsonUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,10 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.util.Date;
+import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -20,6 +24,18 @@ public class PowerApplicationTests {
     @Test
     public void contextLoads() {
 
+    }
+
+    @Autowired
+    private EntityManager entityManager;
+
+    @Test
+    public void testQuery() {
+        // native sql 确实可以实现 既然要用native sql 为什么不选 mybatis ?
+
+        Query nativeQuery = entityManager.createNativeQuery("SELECT c.id, ct.money FROM tb_consumption c LEFT JOIN tb_consumption_item ct ON c.id = ct.consumption_id");
+        List resultList = nativeQuery.getResultList();
+        System.out.println(JsonUtils.toJsonString(resultList));
     }
 
     @Test
