@@ -1,7 +1,9 @@
 package com.cdsen.power.server.user.service.impl;
 
 import com.cdsen.power.core.AppProperties;
+import com.cdsen.power.core.IPageRequest;
 import com.cdsen.power.core.JsonResult;
+import com.cdsen.power.core.PageResult;
 import com.cdsen.power.core.security.model.LoginVO;
 import com.cdsen.power.core.security.model.Session;
 import com.cdsen.power.core.security.model.Token;
@@ -22,6 +24,7 @@ import com.cdsen.power.server.user.dao.repository.RoleRepository;
 import com.cdsen.power.server.user.dao.repository.UserRepository;
 import com.cdsen.power.server.user.model.ao.UserCreateAO;
 import com.cdsen.power.server.user.model.cons.RedisKey;
+import com.cdsen.power.server.user.model.query.UserQuery;
 import com.cdsen.power.server.user.model.vo.UserVO;
 import com.cdsen.power.server.user.service.UserService;
 import com.cdsen.power.server.user.transfer.UserTransfer;
@@ -187,5 +190,10 @@ public class UserServiceImpl implements UserService {
         po.setIsCredentialsNonExpired(true);
         po.setRoleId(rolePo.getId());
         userRepository.save(po);
+    }
+
+    @Override
+    public JsonResult<PageResult<UserVO>> page(IPageRequest<UserQuery> iPageRequest) {
+        return null;
     }
 }

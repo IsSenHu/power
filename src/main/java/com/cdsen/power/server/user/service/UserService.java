@@ -1,10 +1,13 @@
 package com.cdsen.power.server.user.service;
 
 import com.cdsen.power.core.AppProperties;
+import com.cdsen.power.core.IPageRequest;
 import com.cdsen.power.core.JsonResult;
+import com.cdsen.power.core.PageResult;
 import com.cdsen.power.core.security.model.LoginVO;
 import com.cdsen.power.core.security.model.Token;
 import com.cdsen.power.server.user.model.ao.UserCreateAO;
+import com.cdsen.power.server.user.model.query.UserQuery;
 import com.cdsen.power.server.user.model.vo.UserVO;
 
 /**
@@ -68,4 +71,12 @@ public interface UserService {
      * @param admin 超级管理员
      */
     void createOrRefreshSuperAdmin(String role, AppProperties.Admin admin);
+
+    /**
+     * 分页查询用户
+     *
+     * @param iPageRequest 分页参数
+     * @return 分页结果
+     */
+    JsonResult<PageResult<UserVO>> page(IPageRequest<UserQuery> iPageRequest);
 }
