@@ -2,8 +2,6 @@ package com.cdsen.power.server.money.dao.po;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -22,8 +20,12 @@ public class ConsumptionItemPO {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "consumption_id", nullable = false)
-    private Long consumptionId;
+    /**
+     * 消费主记录
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "consumption_id")
+    private ConsumptionPO consumption;
 
     /**
      * 消费金额
@@ -36,9 +38,4 @@ public class ConsumptionItemPO {
      */
     @Column(name = "description", nullable = false)
     private String description;
-
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
-    }
 }

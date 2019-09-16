@@ -1,6 +1,5 @@
 package com.cdsen.power.server.money.model.query;
 
-import com.cdsen.power.server.money.model.cons.CurrencyType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,5 +14,4 @@ import java.time.LocalDateTime;
 public class ConsumptionQuery {
     private LocalDateTime start;
     private LocalDateTime end;
-    private CurrencyType currency;
 }

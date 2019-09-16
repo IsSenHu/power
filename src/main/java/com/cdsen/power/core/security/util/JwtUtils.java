@@ -32,7 +32,7 @@ public class JwtUtils {
     private String generateToken(Map<String, Object> claims) {
         Date created = (Date) claims.get(CREATED);
         AppProperties.Security security = appProperties.getSecurity();
-        Date expirationDate = new Date(created.getTime() + TimeUnit.SECONDS.toMillis(security.getExpiration()));
+        Date expirationDate = new Date(created.getTime() + TimeUnit.MINUTES.toMillis(security.getExpiration()));
         return Jwts.builder().setClaims(claims).setExpiration(expirationDate).signWith(SignatureAlgorithm.HS512, security.getSecret()).compact();
     }
 

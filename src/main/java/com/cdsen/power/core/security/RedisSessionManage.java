@@ -1,7 +1,9 @@
 package com.cdsen.power.core.security;
 
 import com.cdsen.power.core.AppProperties;
+import com.cdsen.power.core.security.model.RedisSession;
 import com.cdsen.power.core.security.model.Session;
+import com.cdsen.power.core.security.model.UserInfo;
 import com.cdsen.power.core.security.session.SessionManage;
 import com.cdsen.power.core.util.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -38,10 +40,13 @@ public class RedisSessionManage implements SessionManage {
         }
         ValueOperations<String, String> value = redisTemplate.opsForValue();
         String sessionStr = value.get(key);
-        session = JsonUtils.parseObj(sessionStr, Session.class);
-        if (session == null) {
+        RedisSession redisSession = JsonUtils.parseObj(sessionStr, RedisSession.class);
+        if (redisSession == null) {
             return null;
         }
+        UserInfo info = new UserInfo(redisSession.getName(), redisSession.getIntroduction(), redisSession.getAvatar(), redisSession.getRoles());
+        session = new Session(info, null);
+        session.setUserId(redisSession.getUserId());
         // 再次缓存
         guavaSessionManage.save(key, session);
         return session;
@@ -59,7 +64,14 @@ public class RedisSessionManage implements SessionManage {
         AppProperties.Security security = appProperties.getSecurity();
         final String key = SESSION_PREFIX.concat(username);
         ValueOperations<String, String> value = redisTemplate.opsForValue();
-        String jsonString = JsonUtils.toJsonString(session);
+        RedisSession redisSession = new RedisSession();
+        redisSession.setUserId(session.getUserId());
+        redisSession.setAvatar(session.getInfo().getAvatar());
+        redisSession.setIntroduction(session.getInfo().getIntroduction());
+        redisSession.setName(username);
+        redisSession.setRoles(session.getInfo().getRoles());
+
+        String jsonString = JsonUtils.toJsonString(redisSession);
         if (StringUtils.isNotBlank(jsonString)) {
             value.setIfAbsent(key, jsonString, Duration.ofMinutes(security.getExpiration()));
         }

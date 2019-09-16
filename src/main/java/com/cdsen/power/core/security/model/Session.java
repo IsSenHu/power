@@ -22,6 +22,10 @@ public class Session implements UserDetails {
         this.password = password;
     }
 
+    public UserInfo getInfo() {
+        return info;
+    }
+
     public Long getUserId() {
         return userId;
     }

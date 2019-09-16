@@ -1,14 +1,11 @@
 package com.cdsen.power.server.money.dao.po;
 
 import com.cdsen.power.server.money.model.cons.CurrencyType;
-import com.cdsen.power.server.money.model.converter.CurrencyTypeConverter;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @author HuSen
@@ -18,6 +15,9 @@ import java.time.LocalDateTime;
 @Setter
 @Entity
 @Table(name = "tb_consumption")
+@NamedEntityGraph(name = "ConsumptionPO.items", attributeNodes = {
+        @NamedAttributeNode("items")
+})
 public class ConsumptionPO {
 
     @Id
@@ -40,11 +40,12 @@ public class ConsumptionPO {
      * 货币单位
      */
     @Column(name = "currency", nullable = false)
-    @Convert(converter = CurrencyTypeConverter.class)
+    @Enumerated(EnumType.STRING)
     private CurrencyType currency;
 
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
-    }
+    /**
+     * 消费条目
+     */
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER, mappedBy = "consumption")
+    private List<ConsumptionItemPO> items;
 }

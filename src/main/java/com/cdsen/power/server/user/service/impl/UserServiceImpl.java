@@ -12,8 +12,12 @@ import com.cdsen.power.core.security.util.SecurityUtils;
 import com.cdsen.power.core.util.VerifyCodeUtils;
 import com.cdsen.power.server.email.model.vo.SimpleMailAO;
 import com.cdsen.power.server.email.service.MailService;
+import com.cdsen.power.server.user.dao.po.PermissionPO;
 import com.cdsen.power.server.user.dao.po.RolePO;
+import com.cdsen.power.server.user.dao.po.RolePermissionPO;
 import com.cdsen.power.server.user.dao.po.UserPO;
+import com.cdsen.power.server.user.dao.repository.PermissionRepository;
+import com.cdsen.power.server.user.dao.repository.RolePermissionRepository;
 import com.cdsen.power.server.user.dao.repository.RoleRepository;
 import com.cdsen.power.server.user.dao.repository.UserRepository;
 import com.cdsen.power.server.user.model.ao.UserCreateAO;
@@ -34,7 +38,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author HuSen
@@ -51,8 +57,10 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final StringRedisTemplate redisTemplate;
     private final RoleRepository roleRepository;
+    private final RolePermissionRepository rolePermissionRepository;
+    private final PermissionRepository permissionRepository;
 
-    public UserServiceImpl(PasswordEncoder passwordEncoder, JwtUtils jwtUtils, @Qualifier("redisSessionManage") SessionManage sessionManage, MailService mailService, UserRepository userRepository, StringRedisTemplate redisTemplate, RoleRepository roleRepository) {
+    public UserServiceImpl(PasswordEncoder passwordEncoder, JwtUtils jwtUtils, @Qualifier("redisSessionManage") SessionManage sessionManage, MailService mailService, UserRepository userRepository, StringRedisTemplate redisTemplate, RoleRepository roleRepository, RolePermissionRepository rolePermissionRepository, PermissionRepository permissionRepository) {
         this.passwordEncoder = passwordEncoder;
         this.jwtUtils = jwtUtils;
         this.sessionManage = sessionManage;
@@ -60,6 +68,8 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
         this.redisTemplate = redisTemplate;
         this.roleRepository = roleRepository;
+        this.rolePermissionRepository = rolePermissionRepository;
+        this.permissionRepository = permissionRepository;
     }
 
     @Override
@@ -69,8 +79,14 @@ public class UserServiceImpl implements UserService {
             return JsonResult.of(10001, "用户名或密码错误");
         }
 
-        // TODO 角色和权限
-        UserInfo userInfo = new UserInfo(po.getUsername(), po.getIntroduction(), po.getAvatar(), Lists.newArrayList("admin"));
+        Integer roleId = po.getRoleId();
+        List<String> viewRoles = null != roleId ?
+                permissionRepository.findAllById(
+                        rolePermissionRepository.findAllByRoleId(roleId).stream().map(RolePermissionPO::getPermissionId
+                        ).collect(Collectors.toList())).stream().map(PermissionPO::getMark).collect(Collectors.toList())
+                : Lists.newArrayList();
+
+        UserInfo userInfo = new UserInfo(po.getUsername(), po.getIntroduction(), po.getAvatar(), viewRoles);
         Session session = new Session(userInfo, login.getPassword());
         session.setUserId(po.getId());
         String token = jwtUtils.generateToken(session);

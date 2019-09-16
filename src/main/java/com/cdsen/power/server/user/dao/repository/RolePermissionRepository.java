@@ -11,4 +11,6 @@ import java.util.List;
  */
 public interface RolePermissionRepository extends JpaRepository<RolePermissionPO, Integer> {
     void deleteAllByRoleId(Integer roleId);
+
+    List<RolePermissionPO> findAllByRoleId(Integer roleId);
 }

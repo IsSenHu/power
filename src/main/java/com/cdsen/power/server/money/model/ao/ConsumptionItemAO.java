@@ -1,6 +1,5 @@
 package com.cdsen.power.server.money.model.ao;
 
-import com.cdsen.power.server.money.model.cons.CurrencyType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,10 +28,4 @@ public class ConsumptionItemAO {
      */
     @NotBlank
     private String description;
-
-    /**
-     * 货币单位
-     */
-    @NotNull
-    private CurrencyType currency;
 }

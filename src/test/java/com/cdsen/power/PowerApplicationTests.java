@@ -1,16 +1,32 @@
 package com.cdsen.power;
 
+import com.cdsen.power.core.JsonResult;
+import com.cdsen.power.core.SpecificationFactory;
 import com.cdsen.power.core.util.JsonUtils;
+import com.cdsen.power.server.money.dao.po.ConsumptionPO;
+import com.cdsen.power.server.money.dao.repository.ConsumptionRepository;
+import com.cdsen.power.server.money.model.ao.ConsumptionCreateAO;
+import com.cdsen.power.server.money.model.ao.ConsumptionItemAO;
+import com.cdsen.power.server.money.model.cons.CurrencyType;
+import com.cdsen.power.server.money.model.vo.ConsumptionVO;
+import com.cdsen.power.server.money.service.ConsumptionService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -20,6 +36,12 @@ public class PowerApplicationTests {
 
     @Autowired
     private JavaMailSender javaMailSender;
+
+    @Autowired
+    private ConsumptionService consumptionService;
+
+    @Autowired
+    private ConsumptionRepository consumptionRepository;
 
     @Test
     public void contextLoads() {
@@ -54,5 +76,47 @@ public class PowerApplicationTests {
         // 这封邮件回复给谁
         message.setReplyTo("2662368115@qq.com");
         javaMailSender.send(message);
+    }
+
+    @Test
+    public void createConsumption() {
+        for (int i = 0; i < 100; i++) {
+            ConsumptionCreateAO ao = new ConsumptionCreateAO();
+            ao.setCurrency(CurrencyType.REN_MIN_BI);
+            ao.setTime(LocalDateTime.now());
+
+            List<ConsumptionItemAO> items = new ArrayList<>();
+            ao.setItems(items);
+
+            ConsumptionItemAO item1 = new ConsumptionItemAO();
+            item1.setMoney(BigDecimal.valueOf(10));
+            item1.setDescription("充值地铁卡");
+
+            ConsumptionItemAO item2 = new ConsumptionItemAO();
+            item2.setMoney(BigDecimal.valueOf(20));
+            item2.setDescription("晚饭");
+
+            items.add(item1);
+            items.add(item2);
+
+            consumptionService.create(ao);
+        }
+    }
+
+    @Test
+    @Transactional(rollbackFor = Exception.class)
+    public void findConsumption() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<ConsumptionPO> all = consumptionRepository.findAll(SpecificationFactory.produce((predicates, consumptionPORoot, criteriaBuilder) -> {
+
+        }), pageable);
+        System.out.println(all.getTotalElements());
+        System.out.println(all.getContent());
+    }
+
+    @Test
+    public void deleteConsumption() {
+        JsonResult<ConsumptionVO> delete = consumptionService.delete(4L);
+        System.out.println(delete);
     }
 }
