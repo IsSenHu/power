@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @author HuSen
@@ -95,9 +96,13 @@ public class IncomeServiceImpl implements IncomeService {
     @Transactional(rollbackFor = Exception.class)
     public JsonResult<IncomeVO> update(IncomeUpdateAO ao) {
         Session session = SecurityUtils.currentSession();
-        boolean exists = incomeRepository.existsById(ao.getId());
-        if (exists) {
-            IncomePO po = IncomeTransfer.UPDATE_TO_PO.apply(ao);
+        Optional<IncomePO> byId = incomeRepository.findById(ao.getId());
+        if (byId.isPresent()) {
+            IncomePO po = byId.get();
+            po.setTime(ao.getTime());
+            po.setDescription(ao.getDescription());
+            po.setCurrency(ao.getCurrency());
+            po.setInCome(ao.getInCome());
             po.setUserId(session.getUserId());
             incomeRepository.save(po);
             return JsonResult.of(IncomeTransfer.PO_TO_VO.apply(po));

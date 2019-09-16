@@ -1,5 +1,6 @@
 package com.cdsen.power.server.money.dao.po;
 
+import com.cdsen.power.core.jpa.BasePO;
 import com.cdsen.power.server.money.model.cons.CurrencyType;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,11 +19,7 @@ import java.time.LocalDate;
 @Setter
 @Entity
 @Table(name = "tb_in_come")
-public class IncomePO {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class IncomePO extends BasePO<Long> {
 
     /**
      * 收入

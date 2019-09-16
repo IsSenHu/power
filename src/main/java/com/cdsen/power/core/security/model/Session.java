@@ -68,4 +68,8 @@ public class Session implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    public static Session empty() {
+        return new Session(null, null);
+    }
 }

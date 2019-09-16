@@ -19,7 +19,11 @@ public class SecurityUtils {
 
 	@NonNull
 	public static Session currentSession() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		return (Session) authentication.getPrincipal();
+		try {
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			return (Session) authentication.getPrincipal();
+		} catch (Exception e) {
+			return Session.empty();
+		}
 	}
 }
