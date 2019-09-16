@@ -1,6 +1,5 @@
 package com.cdsen.power.core.jpa;
 
-import com.cdsen.power.core.listener.IAuditorAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
