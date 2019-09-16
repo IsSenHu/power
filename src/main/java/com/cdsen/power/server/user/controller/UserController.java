@@ -8,8 +8,6 @@ import com.cdsen.power.server.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * @author HuSen
  * create on 2019/9/5 16:13
