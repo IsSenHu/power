@@ -11,14 +11,14 @@ public class PreAuthorizes {
         public static final String UPDATE = "hasAuthority('role:update')";
         public static final String DELETE = "hasAuthority('role:delete')";
         public static final String FIND_BY_ID = "hasAuthority('role:findById')";
-        public static final String PAGE = "hasAuthority('role:page')";
+        public static final String QUERY = "hasAuthority('role:query')";
     }
 
     public static class User {
-        public static final String PAGE = "hasAuthority('user:page')";
+        public static final String QUERY = "hasAuthority('user:query')";
     }
 
     public static class Permission {
-        public static final String PAGE = "hasAuthority('permission:page')";
+        public static final String QUERY = "hasAuthority('permission:query')";
     }
 }

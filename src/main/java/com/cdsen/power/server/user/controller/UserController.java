@@ -65,7 +65,7 @@ public class UserController {
      * @param iPageRequest 分页参数
      * @return 分页结果
      */
-    @PreAuthorize(PreAuthorizes.User.PAGE)
+    @PreAuthorize(PreAuthorizes.User.QUERY)
     @Permission("分页查询用户")
     @PostMapping("/page")
     public JsonResult<PageResult<UserVO>> page(@RequestBody IPageRequest<UserQuery> iPageRequest) {

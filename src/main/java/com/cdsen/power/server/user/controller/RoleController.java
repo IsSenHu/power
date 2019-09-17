@@ -87,7 +87,7 @@ public class RoleController {
      * @param iPageRequest 分页参数
      * @return 分页结果
      */
-    @PreAuthorize(PreAuthorizes.Role.PAGE)
+    @PreAuthorize(PreAuthorizes.Role.QUERY)
     @Permission("分页查询角色")
     @PostMapping("/page")
     public JsonResult<PageResult<RoleVO>> page(@RequestBody IPageRequest<RoleQuery> iPageRequest) {

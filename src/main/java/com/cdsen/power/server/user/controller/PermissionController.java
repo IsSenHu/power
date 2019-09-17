@@ -36,7 +36,7 @@ public class PermissionController {
      * @param iPageRequest 分页参数
      * @return 分页结果
      */
-    @PreAuthorize(PreAuthorizes.Permission.PAGE)
+    @PreAuthorize(PreAuthorizes.Permission.QUERY)
     @Permission("分页查询权限")
     @PostMapping("/page")
     public JsonResult<PageResult<PermissionVO>> page(@RequestBody IPageRequest<PermissionQuery> iPageRequest) {
