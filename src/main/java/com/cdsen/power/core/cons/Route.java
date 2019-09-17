@@ -22,15 +22,11 @@ public enum Route {
     R401("/401", "views/error-page/401", null, null, true, null, null, null, true),
 
     DASHBOARD("dashboard", "views/dashboard/index", "Dashboard", null, null, null,
-            Meta.of("Dashboard", "dashboard", null, null, true), null, false),
+            Meta.of("仪表板", "dashboard", null, null, true), null, false),
     EMPTY("", "layout/Layout", null, "dashboard", null, null, null, Lists.newArrayList(Route.DASHBOARD), true),
 
-    DOCUMENTATION_INDEX("index", "views/documentation/index", "Documentation", null, null, null,
-            Meta.of("Documentation", "documentation", null, null, true), null, false),
-    DOCUMENTATION("/documentation", "layout/Layout", null, null, null, null, null, Lists.newArrayList(Route.DOCUMENTATION_INDEX), true),
-
     GUIDE_INDEX("index", "views/guide/index", "Guide", null, null, null,
-            Meta.of("Guide", "guide", null, true, null), null, false),
+            Meta.of("导航", "guide", null, true, null), null, false),
     GUIDE("/guide", "layout/Layout", null, "/guide/index", null, null, null, Lists.newArrayList(Route.GUIDE_INDEX), true),
 
     // 用户列表
@@ -41,10 +37,13 @@ public enum Route {
     ROLE("role", "/views/role/page", "pageRole", null, null, null,
             Meta.of("角色列表", null, Lists.newArrayList(RouteCons.ROLE_PAGE), null, null),
             null, false),
+    PERMISSION("permission", "/views/permission/page", "pagePermission", null, null, null,
+            Meta.of("权限列表", null, Lists.newArrayList(RouteCons.PERMISSION_PAGE), null, null),
+            null, false),
     // 用户管理
     USER_MANAGE("/UserManage", RouteCons.LAYOUT, null, "/user/page", null, true,
-            Meta.of("用户管理", "", Lists.newArrayList(RouteCons.USER_PAGE, RouteCons.ROLE_PAGE), null, null),
-            Lists.newArrayList(Route.USER, Route.ROLE), true);
+            Meta.of("用户管理", "peoples", Lists.newArrayList(RouteCons.USER_PAGE, RouteCons.ROLE_PAGE, RouteCons.PERMISSION_PAGE), null, null),
+            Lists.newArrayList(Route.USER, Route.ROLE, Route.PERMISSION), true);
 
     private String path;
     private String component;

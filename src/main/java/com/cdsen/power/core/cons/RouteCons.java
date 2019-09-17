@@ -10,4 +10,6 @@ class RouteCons {
     static final String USER_PAGE = "user:page";
 
     static final String ROLE_PAGE = "role:page";
+
+    static final String PERMISSION_PAGE = "permission:page";
 }
