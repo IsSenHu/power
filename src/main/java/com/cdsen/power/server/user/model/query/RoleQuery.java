@@ -5,13 +5,10 @@ import lombok.Setter;
 
 /**
  * @author HuSen
- * create on 2019/9/16 18:32
+ * create on 2019/9/17 10:07
  */
 @Getter
 @Setter
-public class UserQuery {
-
-    private Long userId;
-    private String username;
-    private String email;
+public class RoleQuery {
+    private String name;
 }

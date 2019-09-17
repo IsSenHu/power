@@ -1,11 +1,14 @@
 package com.cdsen.power.server.user.controller;
 
+import com.cdsen.power.core.IPageRequest;
 import com.cdsen.power.core.JsonResult;
+import com.cdsen.power.core.PageResult;
 import com.cdsen.power.core.security.annotation.Permission;
 import com.cdsen.power.core.security.annotation.SecurityModule;
 import com.cdsen.power.server.user.model.ao.RoleCreateAO;
 import com.cdsen.power.server.user.model.ao.RoleUpdateAO;
 import com.cdsen.power.server.user.model.cons.PreAuthorizes;
+import com.cdsen.power.server.user.model.query.RoleQuery;
 import com.cdsen.power.server.user.model.vo.RoleVO;
 import com.cdsen.power.server.user.service.RoleService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -76,5 +79,18 @@ public class RoleController {
     @DeleteMapping("/{id}")
     public JsonResult<RoleVO> delete(@PathVariable Integer id) {
         return roleService.delete(id);
+    }
+
+    /**
+     * 分页查询角色
+     *
+     * @param iPageRequest 分页参数
+     * @return 分页结果
+     */
+    @PreAuthorize(PreAuthorizes.Role.PAGE)
+    @Permission("分页查询角色")
+    @PostMapping("/page")
+    public JsonResult<PageResult<RoleVO>> page(@RequestBody IPageRequest<RoleQuery> iPageRequest) {
+        return roleService.page(iPageRequest);
     }
 }

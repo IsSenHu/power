@@ -3,12 +3,15 @@ package com.cdsen.power.server.user.controller;
 import com.cdsen.power.core.IPageRequest;
 import com.cdsen.power.core.JsonResult;
 import com.cdsen.power.core.PageResult;
+import com.cdsen.power.core.security.annotation.Permission;
 import com.cdsen.power.core.security.annotation.SecurityModule;
 import com.cdsen.power.server.user.model.ao.UserCreateAO;
+import com.cdsen.power.server.user.model.cons.PreAuthorizes;
 import com.cdsen.power.server.user.model.query.UserQuery;
 import com.cdsen.power.server.user.model.vo.UserVO;
 import com.cdsen.power.server.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -62,6 +65,8 @@ public class UserController {
      * @param iPageRequest 分页参数
      * @return 分页结果
      */
+    @PreAuthorize(PreAuthorizes.User.PAGE)
+    @Permission("分页查询用户")
     @PostMapping("/page")
     public JsonResult<PageResult<UserVO>> page(@RequestBody IPageRequest<UserQuery> iPageRequest) {
         return userService.page(iPageRequest);

@@ -1,9 +1,7 @@
 package com.cdsen.power.server.user.service.impl;
 
-import com.cdsen.power.core.AppProperties;
-import com.cdsen.power.core.IPageRequest;
-import com.cdsen.power.core.JsonResult;
-import com.cdsen.power.core.PageResult;
+import com.cdsen.power.core.*;
+import com.cdsen.power.core.jpa.FindUtils;
 import com.cdsen.power.core.security.model.LoginVO;
 import com.cdsen.power.core.security.model.Session;
 import com.cdsen.power.core.security.model.Token;
@@ -32,6 +30,8 @@ import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -194,6 +194,24 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public JsonResult<PageResult<UserVO>> page(IPageRequest<UserQuery> iPageRequest) {
-        return null;
+        Pageable pageable = iPageRequest.of();
+        Page<UserPO> page = userRepository.findAll(SpecificationFactory.produce((predicates, userPORoot, criteriaBuilder) -> {
+            UserQuery customParams = iPageRequest.getCustomParams();
+            if (null != customParams) {
+                Long userId = customParams.getUserId();
+                if (null != userId) {
+                    predicates.add(criteriaBuilder.equal(userPORoot.get("userId").as(Long.class), userId));
+                }
+                String username = customParams.getUsername();
+                if (StringUtils.isNotBlank(username)) {
+                    predicates.add(criteriaBuilder.like(userPORoot.get("username").as(String.class), FindUtils.allMatch(username)));
+                }
+                String email = customParams.getEmail();
+                if (StringUtils.isNotBlank(email)) {
+                    predicates.add(criteriaBuilder.like(userPORoot.get("email").as(String.class), FindUtils.allMatch(email)));
+                }
+            }
+        }), pageable);
+        return JsonResult.of(PageResult.of(page.getTotalElements(), UserTransfer.PO_TO_VO, page.getContent()));
     }
 }
