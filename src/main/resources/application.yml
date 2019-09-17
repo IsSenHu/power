@@ -53,4 +53,10 @@ com:
     admin-role:
       name: admin
       description: 超级管理员
+    redisson:
+      sentinel:
+        address: redis://118.24.38.46:26379
+        master-name: mymaster
+        password: 521428Slyt
+        database: 3
 

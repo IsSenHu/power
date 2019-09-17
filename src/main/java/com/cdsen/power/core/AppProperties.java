@@ -21,6 +21,8 @@ public class AppProperties {
 
     private AdminRole adminRole;
 
+    private Redisson redisson;
+
     @Getter
     @Setter
     public static class Security {
@@ -49,5 +51,21 @@ public class AppProperties {
     public static class AdminRole {
         private String name;
         private String description;
+    }
+
+    @Getter
+    @Setter
+    public static class Redisson {
+
+        private Sentinel sentinel;
+
+        @Getter
+        @Setter
+        public static class Sentinel {
+            private String address;
+            private String masterName;
+            private String password;
+            private Integer database;
+        }
     }
 }
