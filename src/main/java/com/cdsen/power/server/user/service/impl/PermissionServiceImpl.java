@@ -1,15 +1,25 @@
 package com.cdsen.power.server.user.service.impl;
 
+import com.cdsen.power.core.IPageRequest;
+import com.cdsen.power.core.JsonResult;
+import com.cdsen.power.core.PageResult;
+import com.cdsen.power.core.SpecificationFactory;
 import com.cdsen.power.core.cons.Route;
+import com.cdsen.power.core.jpa.FindUtils;
 import com.cdsen.power.core.security.annotation.Permission;
 import com.cdsen.power.core.security.annotation.SecurityModule;
 import com.cdsen.power.server.user.dao.po.PermissionPO;
 import com.cdsen.power.server.user.dao.repository.PermissionRepository;
+import com.cdsen.power.server.user.model.query.PermissionQuery;
+import com.cdsen.power.server.user.model.vo.PermissionVO;
 import com.cdsen.power.server.user.service.PermissionService;
+import com.cdsen.power.server.user.transfer.PermissionTransfer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -95,5 +105,20 @@ public class PermissionServiceImpl implements PermissionService {
         permissionRepository.deleteInBatch(oldMap.values());
         permissionRepository.saveAll(willUpdate);
         permissionRepository.saveAll(willAdd);
+    }
+
+    @Override
+    public JsonResult<PageResult<PermissionVO>> page(IPageRequest<PermissionQuery> iPageRequest) {
+        Pageable pageable = iPageRequest.of();
+        Page<PermissionPO> page = permissionRepository.findAll(SpecificationFactory.produce((predicates, permissionPORoot, criteriaBuilder) -> {
+            PermissionQuery customParams = iPageRequest.getCustomParams();
+            if (null != customParams) {
+                String mark = customParams.getMark();
+                if (StringUtils.isNotBlank(mark)) {
+                    criteriaBuilder.like(permissionPORoot.get("mark").as(String.class), FindUtils.allMatch(mark));
+                }
+            }
+        }), pageable);
+        return JsonResult.of(PageResult.of(page.getTotalElements(), PermissionTransfer.PO_TO_VO, page.getContent()));
     }
 }

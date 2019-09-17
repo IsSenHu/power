@@ -17,4 +17,8 @@ public class PreAuthorizes {
     public static class User {
         public static final String PAGE = "hasAuthority('user:page')";
     }
+
+    public static class Permission {
+        public static final String PAGE = "hasAuthority('permission:page')";
+    }
 }

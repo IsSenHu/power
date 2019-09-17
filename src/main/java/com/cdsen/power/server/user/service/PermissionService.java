@@ -1,5 +1,10 @@
 package com.cdsen.power.server.user.service;
 
+import com.cdsen.power.core.IPageRequest;
+import com.cdsen.power.core.JsonResult;
+import com.cdsen.power.core.PageResult;
+import com.cdsen.power.server.user.model.query.PermissionQuery;
+import com.cdsen.power.server.user.model.vo.PermissionVO;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
@@ -9,4 +14,12 @@ import org.springframework.context.ConfigurableApplicationContext;
 public interface PermissionService {
 
     void createOrRefresh(ConfigurableApplicationContext context);
+
+    /**
+     * 分页查询权限
+     *
+     * @param iPageRequest 分页参数
+     * @return 分页结果
+     */
+    JsonResult<PageResult<PermissionVO>> page(IPageRequest<PermissionQuery> iPageRequest);
 }
