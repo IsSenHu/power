@@ -52,6 +52,8 @@ com:
     admin-role:
       name: admin
       description: 超级管理员
+      exclusive-permission: adminExclusive
+      exclusive-permission-name: 超级管理员专属权限
     redisson:
       sentinel:
         address: redis://118.24.38.46:26379

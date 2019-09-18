@@ -51,6 +51,8 @@ public class AppProperties {
     public static class AdminRole {
         private String name;
         private String description;
+        private String exclusivePermission;
+        private String exclusivePermissionName;
     }
 
     @Getter

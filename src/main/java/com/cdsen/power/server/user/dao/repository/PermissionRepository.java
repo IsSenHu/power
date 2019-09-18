@@ -14,4 +14,6 @@ import java.util.List;
 public interface PermissionRepository extends JpaRepository<PermissionPO, Integer>, JpaSpecificationExecutor<PermissionPO> {
 
     List<PermissionPO> findAllByType(PermissionType type);
+
+    PermissionPO findByMark(String mark);
 }

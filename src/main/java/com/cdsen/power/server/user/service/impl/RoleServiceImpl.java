@@ -152,6 +152,18 @@ public class RoleServiceImpl implements RoleService {
         po.setDescription(adminRole.getDescription());
         roleRepository.save(po);
 
+        PermissionPO exclusive = permissionRepository.findByMark(adminRole.getExclusivePermission());
+        if (null != exclusive) {
+            exclusive.setDescription(adminRole.getExclusivePermissionName());
+            exclusive.setType(PermissionType.MENU);
+        } else {
+            exclusive = new PermissionPO();
+            exclusive.setMark(adminRole.getExclusivePermission());
+            exclusive.setType(PermissionType.MENU);
+            exclusive.setDescription(adminRole.getExclusivePermissionName());
+        }
+        permissionRepository.save(exclusive);
+
         List<PermissionPO> permissions = permissionRepository.findAll();
 
         Integer roleId = po.getId();
@@ -163,6 +175,8 @@ public class RoleServiceImpl implements RoleService {
             rolePermissionPO.setPermissionId(p.getId());
             return rolePermissionPO;
         }).collect(Collectors.toList());
+
+
         rolePermissionRepository.saveAll(rps);
     }
 
