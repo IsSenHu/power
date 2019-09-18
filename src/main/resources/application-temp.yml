@@ -28,10 +28,11 @@ spring:
             enable: true
             required: true
   redis:
-    host: 192.168.5.252
-    port: 6379
-    password: 1234567890
-    database: 15
+    database: 0
+    password: 521428Slyt
+    sentinel:
+      master: mymaster
+      nodes: 118.24.38.46:26379
   data:
     redis:
       repositories:
@@ -39,7 +40,7 @@ spring:
 com:
   cdsen:
     security:
-      expiration: 180
+      expiration: 30
       header: authorization
       secret: 521428Slyt
       max-session-in-cache: 10000

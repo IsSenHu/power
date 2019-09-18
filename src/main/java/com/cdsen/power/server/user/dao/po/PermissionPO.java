@@ -1,5 +1,6 @@
 package com.cdsen.power.server.user.dao.po;
 
+import com.cdsen.power.server.user.model.cons.PermissionType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,4 +25,8 @@ public class PermissionPO {
 
     @Column(name = "description")
     private String description;
+
+    @Column(name = "type")
+    @Enumerated(EnumType.STRING)
+    private PermissionType type;
 }

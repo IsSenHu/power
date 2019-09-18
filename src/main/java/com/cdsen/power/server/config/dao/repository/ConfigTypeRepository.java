@@ -8,4 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * create on 2019/9/17 17:10
  */
 public interface ConfigTypeRepository extends JpaRepository<ConfigTypePO, Integer> {
+
 }

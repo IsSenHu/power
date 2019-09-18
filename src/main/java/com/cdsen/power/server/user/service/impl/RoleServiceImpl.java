@@ -1,7 +1,6 @@
 package com.cdsen.power.server.user.service.impl;
 
 import com.cdsen.power.core.*;
-import com.cdsen.power.core.fuction.ThreeConsumer;
 import com.cdsen.power.core.jpa.FindUtils;
 import com.cdsen.power.server.user.dao.po.PermissionPO;
 import com.cdsen.power.server.user.dao.po.RolePO;
@@ -9,8 +8,10 @@ import com.cdsen.power.server.user.dao.po.RolePermissionPO;
 import com.cdsen.power.server.user.dao.repository.PermissionRepository;
 import com.cdsen.power.server.user.dao.repository.RolePermissionRepository;
 import com.cdsen.power.server.user.dao.repository.RoleRepository;
+import com.cdsen.power.server.user.model.ao.MenuPermissionAO;
 import com.cdsen.power.server.user.model.ao.RoleCreateAO;
 import com.cdsen.power.server.user.model.ao.RoleUpdateAO;
+import com.cdsen.power.server.user.model.cons.PermissionType;
 import com.cdsen.power.server.user.model.query.RoleQuery;
 import com.cdsen.power.server.user.model.vo.RoleVO;
 import com.cdsen.power.server.user.service.RoleService;
@@ -20,11 +21,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -54,6 +54,53 @@ public class RoleServiceImpl implements RoleService {
 
         RolePO po = RoleTransfer.CREATE_TO_PO.apply(ao);
         roleRepository.save(po);
+
+        // API权限
+        List<Integer> apiPermission = ao.getApiPermission();
+        if (!CollectionUtils.isEmpty(apiPermission)) {
+            List<RolePermissionPO> collect = apiPermission.stream().map(p -> {
+                RolePermissionPO rp = new RolePermissionPO();
+                rp.setRoleId(po.getId());
+                rp.setPermissionId(p);
+                return rp;
+            }).collect(Collectors.toList());
+            rolePermissionRepository.saveAll(collect);
+        }
+
+        // 菜单权限
+        List<MenuPermissionAO> menuPermission = ao.getMenuPermission();
+        if (!CollectionUtils.isEmpty(menuPermission)) {
+            Map<String, PermissionPO> existedMap = permissionRepository.findAllByType(PermissionType.MENU).stream().collect(Collectors.toMap(PermissionPO::getMark, p -> p));
+            List<MenuPermissionAO> mayAdd = menuPermission.stream().filter(x -> !existedMap.containsKey(x.getMark())).collect(Collectors.toList());
+            if (!CollectionUtils.isEmpty(mayAdd)) {
+                List<PermissionPO> willAdd = mayAdd.stream().map(x -> {
+                    PermissionPO p = new PermissionPO();
+                    p.setMark(x.getMark());
+                    p.setDescription(x.getName());
+                    p.setType(PermissionType.MENU);
+                    return p;
+                }).collect(Collectors.toList());
+                permissionRepository.saveAll(willAdd);
+
+                rolePermissionRepository.saveAll(willAdd.stream().map(y -> {
+                    RolePermissionPO rp = new RolePermissionPO();
+                    rp.setRoleId(po.getId());
+                    rp.setPermissionId(y.getId());
+                    return rp;
+                }).collect(Collectors.toList()));
+            }
+
+            rolePermissionRepository.saveAll(menuPermission.stream().filter(x -> existedMap.containsKey(x.getMark()))
+                    .map(x -> existedMap.get(x.getMark()))
+                    .map(PermissionPO::getId).
+                            map(y -> {
+                                RolePermissionPO rp = new RolePermissionPO();
+                                rp.setRoleId(po.getId());
+                                rp.setPermissionId(y);
+                                return rp;
+                            }).collect(Collectors.toList()));
+        }
+
         return JsonResult.of(RoleTransfer.PO_TO_VO.apply(po));
     }
 

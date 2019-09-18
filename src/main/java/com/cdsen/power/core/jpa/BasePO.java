@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 @Setter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public class BasePO<ID> {
+public class BasePO<ID, UID> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,11 +32,11 @@ public class BasePO<ID> {
 
     @CreatedBy
     @Column(name = "create_user_id")
-    private ID createUserId;
+    private UID createUserId;
 
     @LastModifiedBy
     @Column(name = "last_modified_user_id")
-    private ID lastModifiedUserId;
+    private UID lastModifiedUserId;
 
     @LastModifiedDate
     @Column(name = "last_modified_time")

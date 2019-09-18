@@ -3,6 +3,7 @@ package com.cdsen.power.server.user.model.ao;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 /**
  * @author HuSen
@@ -15,4 +16,8 @@ public class RoleCreateAO {
     private String name;
 
     private String description;
+
+    private List<MenuPermissionAO> menuPermission;
+
+    private List<Integer> apiPermission;
 }

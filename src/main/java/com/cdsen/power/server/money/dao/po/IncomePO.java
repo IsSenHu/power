@@ -19,7 +19,7 @@ import java.time.LocalDate;
 @Setter
 @Entity
 @Table(name = "tb_in_come")
-public class IncomePO extends BasePO<Long> {
+public class IncomePO extends BasePO<Long, Long> {
 
     /**
      * 收入

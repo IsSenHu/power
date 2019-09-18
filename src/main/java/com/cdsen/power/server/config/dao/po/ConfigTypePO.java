@@ -18,7 +18,7 @@ import java.util.List;
 @NamedEntityGraph(name = "ConfigTypePO.configs", attributeNodes = {
         @NamedAttributeNode("configs")
 })
-public class ConfigTypePO extends BasePO<Integer> {
+public class ConfigTypePO extends BasePO<Integer, Long> {
 
     /**
      * 配置名称

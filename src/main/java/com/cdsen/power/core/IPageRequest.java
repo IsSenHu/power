@@ -16,7 +16,7 @@ public class IPageRequest<T> {
 
     private Integer page = 1;
     private Integer number = 10;
-    private String[] sort = new String[]{};
+    private String sort;
     private Boolean asc = false;
 
     private T customParams;

@@ -14,13 +14,13 @@ import javax.persistence.*;
 @Setter
 @Entity
 @Table(name = "tb_config")
-public class ConfigPO extends BasePO<Integer> {
+public class ConfigPO extends BasePO<Integer, Long> {
 
     /**
      * 配置键
      */
     @Column(nullable = false, unique = true)
-    private String key;
+    private String prop;
 
     /**
      * 配置值

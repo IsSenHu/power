@@ -4,12 +4,12 @@ import com.cdsen.power.core.IPageRequest;
 import com.cdsen.power.core.JsonResult;
 import com.cdsen.power.core.PageResult;
 import com.cdsen.power.core.SpecificationFactory;
-import com.cdsen.power.core.cons.Route;
 import com.cdsen.power.core.jpa.FindUtils;
 import com.cdsen.power.core.security.annotation.Permission;
 import com.cdsen.power.core.security.annotation.SecurityModule;
 import com.cdsen.power.server.user.dao.po.PermissionPO;
 import com.cdsen.power.server.user.dao.repository.PermissionRepository;
+import com.cdsen.power.server.user.model.cons.PermissionType;
 import com.cdsen.power.server.user.model.query.PermissionQuery;
 import com.cdsen.power.server.user.model.vo.PermissionVO;
 import com.cdsen.power.server.user.service.PermissionService;
@@ -23,7 +23,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -48,27 +47,8 @@ public class PermissionServiceImpl implements PermissionService {
     public void createOrRefresh(ConfigurableApplicationContext context) {
         List<PermissionPO> willUpdate = new ArrayList<>();
         List<PermissionPO> willAdd = new ArrayList<>();
-        List<PermissionPO> old = permissionRepository.findAll();
+        List<PermissionPO> old = permissionRepository.findAllByType(PermissionType.API);
         Map<String, PermissionPO> oldMap = old.stream().collect(Collectors.toMap(PermissionPO::getMark, po -> po));
-
-        // route权限
-        Route[] routes = Route.values();
-        for (Route route : routes) {
-            List<Route> children = route.getChildren();
-            if (null == children && Objects.nonNull(route.getMeta()) && !CollectionUtils.isEmpty(route.getMeta().getRoles())) {
-                String mark = route.getMeta().getRoles().get(0);
-                if (oldMap.containsKey(mark)) {
-                    PermissionPO po = oldMap.remove(mark);
-                    po.setDescription(route.getMeta().getTitle());
-                    willUpdate.add(po);
-                } else {
-                    PermissionPO po = new PermissionPO();
-                    po.setMark(mark);
-                    po.setDescription(route.getMeta().getTitle());
-                    willAdd.add(po);
-                }
-            }
-        }
 
         // 接口权限
         Map<String, Permission> helper = new HashMap<>();
@@ -93,11 +73,13 @@ public class PermissionServiceImpl implements PermissionService {
             if (oldMap.containsKey(mark)) {
                 PermissionPO po = oldMap.remove(mark);
                 po.setDescription(permission.value());
+                po.setType(PermissionType.API);
                 willUpdate.add(po);
             } else {
                 PermissionPO po = new PermissionPO();
                 po.setMark(mark);
                 po.setDescription(permission.value());
+                po.setType(PermissionType.API);
                 willAdd.add(po);
             }
         });
@@ -115,7 +97,7 @@ public class PermissionServiceImpl implements PermissionService {
             if (null != customParams) {
                 String mark = customParams.getMark();
                 if (StringUtils.isNotBlank(mark)) {
-                    criteriaBuilder.like(permissionPORoot.get("mark").as(String.class), FindUtils.allMatch(mark));
+                    predicates.add(criteriaBuilder.like(permissionPORoot.get("mark").as(String.class), FindUtils.allMatch(mark)));
                 }
             }
         }), pageable);
