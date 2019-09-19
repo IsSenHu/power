@@ -37,7 +37,7 @@ public class RoleController {
      */
     @PreAuthorize(PreAuthorizes.Role.CREATE)
     @Permission("创建角色")
-    @PutMapping("/create")
+    @PutMapping
     public JsonResult<RoleVO> create(@RequestBody RoleCreateAO ao) {
         return roleService.create(ao);
     }

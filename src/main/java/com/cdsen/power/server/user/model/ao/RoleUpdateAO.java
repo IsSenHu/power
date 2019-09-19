@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * @author HuSen
@@ -19,4 +20,8 @@ public class RoleUpdateAO {
     private String name;
 
     private String description;
+
+    private List<MenuPermissionAO> menuPermission;
+
+    private List<Integer> apiPermission;
 }

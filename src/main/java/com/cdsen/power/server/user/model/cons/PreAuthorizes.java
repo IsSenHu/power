@@ -20,5 +20,6 @@ public class PreAuthorizes {
 
     public static class Permission {
         public static final String QUERY = "hasAuthority('permission:query')";
+        public static final String PERMISSION_TREE_VIEW = "hasAuthority('permission:permissionTreeView')";
     }
 }

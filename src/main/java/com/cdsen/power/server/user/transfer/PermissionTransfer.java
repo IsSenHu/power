@@ -16,6 +16,8 @@ public class PermissionTransfer {
         vo.setId(po.getId());
         vo.setMark(po.getMark());
         vo.setDescription(po.getDescription());
+        vo.setType(po.getType());
+        vo.setClassification(po.getClassification());
         return vo;
     };
 }

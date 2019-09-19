@@ -11,9 +11,11 @@ import com.cdsen.power.server.user.dao.po.PermissionPO;
 import com.cdsen.power.server.user.dao.repository.PermissionRepository;
 import com.cdsen.power.server.user.model.cons.PermissionType;
 import com.cdsen.power.server.user.model.query.PermissionQuery;
+import com.cdsen.power.server.user.model.vo.PermissionTreeVO;
 import com.cdsen.power.server.user.model.vo.PermissionVO;
 import com.cdsen.power.server.user.service.PermissionService;
 import com.cdsen.power.server.user.transfer.PermissionTransfer;
+import com.cdsen.power.server.user.util.TreeUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -51,7 +53,8 @@ public class PermissionServiceImpl implements PermissionService {
         Map<String, PermissionPO> oldMap = old.stream().collect(Collectors.toMap(PermissionPO::getMark, po -> po));
 
         // 接口权限
-        Map<String, Permission> helper = new HashMap<>();
+        Map<String, Permission> helperPermission = new HashMap<>();
+        Map<String, SecurityModule> helperSecurityModule = new HashMap<>();
         Map<String, Object> securityModuleMap = context.getBeansWithAnnotation(SecurityModule.class);
         securityModuleMap.forEach((name, bean) -> {
             SecurityModule securityModule = AnnotationUtils.findAnnotation(bean.getClass(), SecurityModule.class);
@@ -65,21 +68,25 @@ public class PermissionServiceImpl implements PermissionService {
                     continue;
                 }
                 String value = preAuthorize.value();
-                helper.putIfAbsent(value, permission);
+                helperPermission.putIfAbsent(value, permission);
+                helperSecurityModule.putIfAbsent(value, securityModule);
             }
         });
-        helper.forEach((authorize, permission) -> {
+        helperPermission.forEach((authorize, permission) -> {
             String mark = StringUtils.substringBetween(authorize, "hasAuthority('", "')");
+            SecurityModule securityModule = helperSecurityModule.get(authorize);
             if (oldMap.containsKey(mark)) {
                 PermissionPO po = oldMap.remove(mark);
                 po.setDescription(permission.value());
                 po.setType(PermissionType.API);
+                po.setClassification(securityModule.name());
                 willUpdate.add(po);
             } else {
                 PermissionPO po = new PermissionPO();
                 po.setMark(mark);
                 po.setDescription(permission.value());
                 po.setType(PermissionType.API);
+                po.setClassification(securityModule.name());
                 willAdd.add(po);
             }
         });
@@ -102,5 +109,10 @@ public class PermissionServiceImpl implements PermissionService {
             }
         }), pageable);
         return JsonResult.of(PageResult.of(page.getTotalElements(), PermissionTransfer.PO_TO_VO, page.getContent()));
+    }
+
+    @Override
+    public JsonResult<List<PermissionTreeVO>> permissionTreeView() {
+        return JsonResult.of(TreeUtils.build(permissionRepository.findAllByType(PermissionType.API)));
     }
 }

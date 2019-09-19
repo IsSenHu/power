@@ -1,0 +1,244 @@
+[
+  {
+    "path": "/permission",
+    "title": "Permission",
+    "children": [
+      {
+        "path": "/permission/permissionList",
+        "title": "权限列表"
+      },
+      {
+        "path": "/permission/role",
+        "title": "角色列表"
+      }
+    ]
+  },
+  {
+    "path": "/icon/index",
+    "title": "Icons"
+  },
+  {
+    "path": "/components",
+    "title": "Components",
+    "children": [
+      {
+        "path": "/components/tinymce",
+        "title": "Tinymce"
+      },
+      {
+        "path": "/components/markdown",
+        "title": "Markdown"
+      },
+      {
+        "path": "/components/json-editor",
+        "title": "JSON Editor"
+      },
+      {
+        "path": "/components/split-pane",
+        "title": "SplitPane"
+      },
+      {
+        "path": "/components/avatar-upload",
+        "title": "Upload"
+      },
+      {
+        "path": "/components/dropzone",
+        "title": "Dropzone"
+      },
+      {
+        "path": "/components/sticky",
+        "title": "Sticky"
+      },
+      {
+        "path": "/components/count-to",
+        "title": "Count To"
+      },
+      {
+        "path": "/components/mixin",
+        "title": "Component Mixin"
+      },
+      {
+        "path": "/components/back-to-top",
+        "title": "Back To Top"
+      },
+      {
+        "path": "/components/drag-dialog",
+        "title": "Drag Dialog"
+      },
+      {
+        "path": "/components/drag-select",
+        "title": "Drag Select"
+      },
+      {
+        "path": "/components/dnd-list",
+        "title": "Dnd List"
+      },
+      {
+        "path": "/components/drag-kanban",
+        "title": "Drag Kanban"
+      }
+    ]
+  },
+  {
+    "path": "/charts",
+    "title": "Charts",
+    "children": [
+      {
+        "path": "/charts/keyboard",
+        "title": "Keyboard Chart"
+      },
+      {
+        "path": "/charts/line",
+        "title": "Line Chart"
+      },
+      {
+        "path": "/charts/mix-chart",
+        "title": "Mix Chart"
+      }
+    ]
+  },
+  {
+    "path": "/nested",
+    "title": "Nested Routes",
+    "children": [
+      {
+        "path": "/nested/menu1",
+        "title": "Menu 1",
+        "children": [
+          {
+            "path": "/nested/menu1/menu1-1",
+            "title": "Menu 1-1"
+          },
+          {
+            "path": "/nested/menu1/menu1-2",
+            "title": "Menu 1-2",
+            "children": [
+              {
+                "path": "/nested/menu1/menu1-2/menu1-2-1",
+                "title": "Menu 1-2-1"
+              },
+              {
+                "path": "/nested/menu1/menu1-2/menu1-2-2",
+                "title": "Menu 1-2-2"
+              }
+            ]
+          },
+          {
+            "path": "/nested/menu1/menu1-3",
+            "title": "Menu 1-3"
+          }
+        ]
+      },
+      {
+        "path": "/nested/menu2",
+        "title": "Menu 2"
+      }
+    ]
+  },
+  {
+    "path": "/table",
+    "title": "Table",
+    "children": [
+      {
+        "path": "/table/dynamic-table",
+        "title": "Dynamic Table"
+      },
+      {
+        "path": "/table/drag-table",
+        "title": "Drag Table"
+      },
+      {
+        "path": "/table/inline-edit-table",
+        "title": "Inline Edit"
+      },
+      {
+        "path": "/table/complex-table",
+        "title": "Complex Table"
+      }
+    ]
+  },
+  {
+    "path": "/example",
+    "title": "Example",
+    "children": [
+      {
+        "path": "/example/create",
+        "title": "Create Article"
+      },
+      {
+        "path": "/example/list",
+        "title": "Article List"
+      }
+    ]
+  },
+  {
+    "path": "/tab/index",
+    "title": "Tab"
+  },
+  {
+    "path": "/error",
+    "title": "Error Pages",
+    "children": [
+      {
+        "path": "/error/401",
+        "title": "401"
+      },
+      {
+        "path": "/error/404",
+        "title": "404"
+      }
+    ]
+  },
+  {
+    "path": "/error-log/log",
+    "title": "Error Log"
+  },
+  {
+    "path": "/excel",
+    "title": "Excel",
+    "children": [
+      {
+        "path": "/excel/export-excel",
+        "title": "Export Excel"
+      },
+      {
+        "path": "/excel/export-selected-excel",
+        "title": "Export Selected"
+      },
+      {
+        "path": "/excel/export-merge-header",
+        "title": "Merge Header"
+      },
+      {
+        "path": "/excel/upload-excel",
+        "title": "Upload Excel"
+      }
+    ]
+  },
+  {
+    "path": "/zip",
+    "title": "Zip",
+    "children": [
+      {
+        "path": "/zip/download",
+        "title": "Export Zip"
+      }
+    ]
+  },
+  {
+    "path": "/pdf/index",
+    "title": "PDF"
+  },
+  {
+    "path": "/theme/index",
+    "title": "Theme"
+  },
+  {
+    "path": "/clipboard/index",
+    "title": "Clipboard"
+  },
+  {
+    "path": "/external-link/https:/github.com/PanJiaChen/vue-element-admin",
+    "title": "External Link"
+  }
+]

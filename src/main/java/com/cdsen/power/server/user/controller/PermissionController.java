@@ -7,13 +7,13 @@ import com.cdsen.power.core.security.annotation.Permission;
 import com.cdsen.power.core.security.annotation.SecurityModule;
 import com.cdsen.power.server.user.model.cons.PreAuthorizes;
 import com.cdsen.power.server.user.model.query.PermissionQuery;
+import com.cdsen.power.server.user.model.vo.PermissionTreeVO;
 import com.cdsen.power.server.user.model.vo.PermissionVO;
 import com.cdsen.power.server.user.service.PermissionService;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author HuSen
@@ -41,5 +41,17 @@ public class PermissionController {
     @PostMapping("/page")
     public JsonResult<PageResult<PermissionVO>> page(@RequestBody IPageRequest<PermissionQuery> iPageRequest) {
         return permissionService.page(iPageRequest);
+    }
+
+    /**
+     * 获取树形结构的权限
+     *
+     * @return 树形结果的权限
+     */
+    @PreAuthorize(PreAuthorizes.Permission.PERMISSION_TREE_VIEW)
+    @Permission("获取树形结构的权限")
+    @GetMapping("/permissionTreeView")
+    public JsonResult<List<PermissionTreeVO>> permissionTreeView() {
+        return permissionService.permissionTreeView();
     }
 }

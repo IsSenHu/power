@@ -16,13 +16,16 @@ import com.cdsen.power.server.user.model.query.RoleQuery;
 import com.cdsen.power.server.user.model.vo.RoleVO;
 import com.cdsen.power.server.user.service.RoleService;
 import com.cdsen.power.server.user.transfer.RoleTransfer;
+import com.cdsen.power.server.user.util.TreeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -37,6 +40,7 @@ public class RoleServiceImpl implements RoleService {
     private final RoleRepository roleRepository;
     private final PermissionRepository permissionRepository;
     private final RolePermissionRepository rolePermissionRepository;
+    private String adminRoleName;
 
     public RoleServiceImpl(RoleRepository roleRepository, PermissionRepository permissionRepository, RolePermissionRepository rolePermissionRepository) {
         this.roleRepository = roleRepository;
@@ -107,15 +111,30 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public JsonResult<RoleVO> findById(Integer id) {
         return roleRepository.findById(id)
-                .map(po -> JsonResult.of(RoleTransfer.PO_TO_VO.apply(po)))
+                .map(po -> {
+                    RoleVO vo = RoleTransfer.PO_TO_VO.apply(po);
+                    List<Integer> pidList = rolePermissionRepository.findAllByRoleId(po.getId()).stream().map(RolePermissionPO::getPermissionId).collect(Collectors.toList());
+                    Map<PermissionType, List<PermissionPO>> typeMap = permissionRepository.findAllById(pidList).stream().collect(Collectors.groupingBy(PermissionPO::getType));
+                    List<PermissionPO> menuPermission = typeMap.get(PermissionType.MENU);
+                    if (!CollectionUtils.isEmpty(menuPermission)) {
+                        vo.setMenuPermission(menuPermission.stream().map(PermissionPO::getDescription).collect(Collectors.toList()));
+                    }
+                    List<PermissionPO> apiPermission = typeMap.get(PermissionType.API);
+                    if (!CollectionUtils.isEmpty(apiPermission)) {
+                        vo.setApiPermission(TreeUtils.buildList(apiPermission));
+                    }
+                    return JsonResult.of(vo);
+                })
                 .orElseGet(() -> JsonResult.of(20002, "角色不存在"));
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public JsonResult<RoleVO> update(RoleUpdateAO ao) {
+        Assert.isTrue(!StringUtils.equals(ao.getName(), adminRoleName), "不允许的操作");
         return roleRepository.findById(ao.getId())
                 .map(po -> {
+                    Assert.isTrue(!StringUtils.equals(po.getName(), adminRoleName), "不允许的操作");
                     if (!StringUtils.equals(ao.getName(), po.getName())) {
                         long count = roleRepository.countByName(ao.getName());
                         if (count > 0) {
@@ -125,9 +144,29 @@ public class RoleServiceImpl implements RoleService {
                     po.setName(ao.getName());
                     po.setDescription(ao.getDescription());
                     roleRepository.save(po);
+
+                    // TODO 待优化
+                    List<Integer> apiPermission = ao.getApiPermission();
+                    List<RolePermissionPO> willAdd = new ArrayList<>();
+                    rolePermissionRepository.deleteAllByRoleId(po.getId());
+                    willAdd(po, apiPermission, willAdd);
+                    List<String> marks = ao.getMenuPermission().stream().map(MenuPermissionAO::getMark).collect(Collectors.toList());
+                    List<Integer> menuPermission = permissionRepository.findAllByType(PermissionType.MENU)
+                            .stream().filter(p -> marks.contains(p.getMark())).map(PermissionPO::getId).collect(Collectors.toList());
+                    willAdd(po, menuPermission, willAdd);
+                    rolePermissionRepository.saveAll(willAdd);
                     return JsonResult.of(RoleTransfer.PO_TO_VO.apply(po));
                 })
                 .orElseGet(() -> JsonResult.of(20002, "角色不存在"));
+    }
+
+    private void willAdd(RolePO po, List<Integer> apiPermission, List<RolePermissionPO> willAdd) {
+        apiPermission.forEach(pid -> {
+            RolePermissionPO rp = new RolePermissionPO();
+            rp.setRoleId(po.getId());
+            rp.setPermissionId(pid);
+            willAdd.add(rp);
+        });
     }
 
     @Override
@@ -135,8 +174,13 @@ public class RoleServiceImpl implements RoleService {
     public JsonResult<RoleVO> delete(Integer id) {
         return roleRepository.findById(id)
                 .map(po -> {
-                    roleRepository.deleteById(id);
-                    return JsonResult.of(RoleTransfer.PO_TO_VO.apply(po));
+                    if (!StringUtils.equals(adminRoleName, po.getName())) {
+                        roleRepository.deleteById(id);
+                        rolePermissionRepository.deleteAllByRoleId(id);
+                        return JsonResult.of(RoleTransfer.PO_TO_VO.apply(po));
+                    } else {
+                        return JsonResult.of(new RoleVO());
+                    }
                 })
                 .orElseGet(() -> JsonResult.of(20002, "角色不存在"));
     }
@@ -144,6 +188,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void createOrRefreshSuperRole(AppProperties.AdminRole adminRole) {
+        adminRoleName = adminRole.getName();
         RolePO po = roleRepository.findByName(adminRole.getName());
         if (po == null) {
             po = new RolePO();
@@ -176,7 +221,6 @@ public class RoleServiceImpl implements RoleService {
             return rolePermissionPO;
         }).collect(Collectors.toList());
 
-
         rolePermissionRepository.saveAll(rps);
     }
 
@@ -184,6 +228,7 @@ public class RoleServiceImpl implements RoleService {
     public JsonResult<PageResult<RoleVO>> page(IPageRequest<RoleQuery> iPageRequest) {
         Pageable pageable = iPageRequest.of();
         Page<RolePO> page = roleRepository.findAll(SpecificationFactory.produce((predicates, rolePORoot, criteriaBuilder) -> {
+            predicates.add(criteriaBuilder.notEqual(rolePORoot.get("name").as(String.class), adminRoleName));
             RoleQuery customParams = iPageRequest.getCustomParams();
             if (null != customParams) {
                 String name = customParams.getName();

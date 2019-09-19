@@ -29,4 +29,7 @@ public class PermissionPO {
     @Column(name = "type")
     @Enumerated(EnumType.STRING)
     private PermissionType type;
+
+    @Column(name = "classification")
+    private String classification;
 }

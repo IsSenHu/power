@@ -1,5 +1,6 @@
 package com.cdsen.power.server.user.model.vo;
 
+import com.cdsen.power.server.user.model.cons.PermissionType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,4 +17,8 @@ public class PermissionVO {
     private String mark;
 
     private String description;
+
+    private PermissionType type;
+
+    private String classification;
 }
