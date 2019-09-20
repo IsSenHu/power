@@ -1,8 +1,10 @@
 package com.cdsen.power.server.user.transfer;
 
 import com.cdsen.power.server.user.dao.po.UserPO;
+import com.cdsen.power.server.user.model.ao.UserCreateAO;
 import com.cdsen.power.server.user.model.vo.UserVO;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.function.Function;
@@ -29,5 +31,17 @@ public class UserTransfer {
             vo.setCreateTime(po.getCreateTime().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)));
         }
         return vo;
+    };
+
+    public static final Function<UserCreateAO, UserPO> AO_TO_PO = ao -> {
+        UserPO po = new UserPO();
+        po.setUsername(ao.getUsername());
+        po.setIsAccountNonLocked(true);
+        po.setIsAccountNonExpired(true);
+        po.setIsEnabled(ao.getIsEnabled());
+        po.setIsCredentialsNonExpired(true);
+        po.setEmail(ao.getEmail());
+        po.setIntroduction(ao.getIntroduction());
+        return po;
     };
 }

@@ -7,6 +7,8 @@ import com.cdsen.power.core.PageResult;
 import com.cdsen.power.core.security.model.LoginVO;
 import com.cdsen.power.core.security.model.Token;
 import com.cdsen.power.server.user.model.ao.UserCreateAO;
+import com.cdsen.power.server.user.model.ao.UserUpdateAO;
+import com.cdsen.power.server.user.model.cons.UserStatusType;
 import com.cdsen.power.server.user.model.query.UserQuery;
 import com.cdsen.power.server.user.model.vo.UserVO;
 
@@ -60,9 +62,10 @@ public interface UserService {
      * 检查用户名是否可用
      *
      * @param username 用户名
+     * @param inner    是否为内部调用
      * @return 是否可用
      */
-    boolean checkUsername(String username);
+    boolean checkUsername(String username, boolean inner);
 
     /**
      * 创建或刷新超级管理员
@@ -79,4 +82,46 @@ public interface UserService {
      * @return 分页结果
      */
     JsonResult<PageResult<UserVO>> page(IPageRequest<UserQuery> iPageRequest);
+
+    /**
+     * 修改用户状态
+     *
+     * @param id     ID
+     * @param type   状态类型
+     * @param status 状态
+     * @return 修改结果
+     */
+    JsonResult<Boolean> changeUserStatus(Long id, UserStatusType type, Boolean status);
+
+    /**
+     * 创建新用户
+     *
+     * @param ao 创建新用户用户模型
+     * @return 创建结果
+     */
+    JsonResult<UserVO> create(UserCreateAO ao);
+
+    /**
+     * 删除用户
+     *
+     * @param id ID
+     * @return 删除结果
+     */
+    JsonResult<UserVO> delete(Long id);
+
+    /**
+     * 根据ID查询用户
+     *
+     * @param id ID
+     * @return 用户
+     */
+    JsonResult<UserVO> findById(Long id);
+
+    /**
+     * 根据ID更新用户
+     *
+     * @param ao 根据ID更新用户数据模型
+     * @return 更新结果
+     */
+    JsonResult<UserVO> updateById(UserUpdateAO ao);
 }

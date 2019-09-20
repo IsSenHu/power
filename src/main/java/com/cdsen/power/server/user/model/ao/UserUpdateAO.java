@@ -3,24 +3,21 @@ package com.cdsen.power.server.user.model.ao;
 import lombok.Data;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author HuSen
  * create on 2019/9/5 11:28
  */
 @Data
-public class UserCreateAO {
+public class UserUpdateAO {
 
-    @NotBlank
-    private String username;
-
-    @NotBlank
-    private String password;
+    private Long id;
 
     @Email
     private String email;
 
+    @NotNull
     private Boolean isEnabled;
 
     private String introduction;

@@ -15,7 +15,12 @@ public class PreAuthorizes {
     }
 
     public static class User {
+        public static final String CREATE = "hasAuthority('user:create')";
         public static final String QUERY = "hasAuthority('user:query')";
+        public static final String CHANGE_USER_STATUS = "hasAuthority('user:changeUserStatus')";
+        public static final String DELETE = "hasAuthority('user:delete')";
+        public static final String FIND_BY_ID = "hasAuthority('user:findById')";
+        public static final String UPDATE_BY_ID = "hasAuthority('user:updateById')";
     }
 
     public static class Permission {

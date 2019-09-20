@@ -55,9 +55,8 @@ com:
       exclusive-permission: adminExclusive
       exclusive-permission-name: 超级管理员专属权限
     redisson:
-      sentinel:
-        address: redis://118.24.38.46:26379
-        master-name: mymaster
-        password: 521428Slyt
-        database: 3
+      single:
+        address: redis://192.168.5.252:6379
+        password: 1234567890
+        database: 14
 

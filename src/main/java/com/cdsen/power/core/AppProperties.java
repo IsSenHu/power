@@ -60,12 +60,21 @@ public class AppProperties {
     public static class Redisson {
 
         private Sentinel sentinel;
+        private Single single;
 
         @Getter
         @Setter
         public static class Sentinel {
             private String address;
             private String masterName;
+            private String password;
+            private Integer database;
+        }
+
+        @Getter
+        @Setter
+        public static class Single {
+            private String address;
             private String password;
             private Integer database;
         }

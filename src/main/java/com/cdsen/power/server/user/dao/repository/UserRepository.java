@@ -19,5 +19,5 @@ public interface UserRepository extends JpaRepository<UserPO, Long>, JpaSpecific
 
     UserPO findByUsername(String username);
 
-    long countByUsername(String username);
+    long countByUsernameAndIsDelete(String username, Boolean isDelete);
 }

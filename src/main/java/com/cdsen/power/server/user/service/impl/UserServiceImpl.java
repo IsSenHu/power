@@ -21,7 +21,9 @@ import com.cdsen.power.server.user.dao.repository.RolePermissionRepository;
 import com.cdsen.power.server.user.dao.repository.RoleRepository;
 import com.cdsen.power.server.user.dao.repository.UserRepository;
 import com.cdsen.power.server.user.model.ao.UserCreateAO;
+import com.cdsen.power.server.user.model.ao.UserUpdateAO;
 import com.cdsen.power.server.user.model.cons.RedisKey;
+import com.cdsen.power.server.user.model.cons.UserStatusType;
 import com.cdsen.power.server.user.model.query.UserQuery;
 import com.cdsen.power.server.user.model.vo.UserVO;
 import com.cdsen.power.server.user.service.UserService;
@@ -132,7 +134,67 @@ public class UserServiceImpl implements UserService {
         // 邮箱发激活连接 用户点击连接跳转激活
         mail.setText("激活连接:" + code);
         mailService.send(mail);
-        return JsonResult.success();
+        return JsonResult.of(UserTransfer.PO_TO_VO.apply(po));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public JsonResult<UserVO> create(UserCreateAO ao) {
+        UserPO byUsername = userRepository.findByUsername(ao.getUsername());
+        String encodePassword = passwordEncoder.encode(ao.getPassword());
+        UserPO po;
+        if (byUsername == null) {
+            po = UserTransfer.AO_TO_PO.apply(ao);
+            po.setPassword(encodePassword);
+            po.setCreateTime(LocalDateTime.now());
+        } else {
+            byUsername.setEmail(ao.getEmail());
+            byUsername.setIntroduction(ao.getIntroduction());
+            byUsername.setPassword(encodePassword);
+            byUsername.setIsEnabled(ao.getIsEnabled());
+            byUsername.setUsername(ao.getUsername());
+            byUsername.setIsDelete(false);
+            byUsername.setCreateTime(LocalDateTime.now());
+            byUsername.setIsAccountNonLocked(true);
+            byUsername.setRoleId(null);
+            byUsername.setIsCredentialsNonExpired(true);
+            byUsername.setIsAccountNonExpired(true);
+            po = byUsername;
+        }
+        userRepository.save(po);
+        return JsonResult.of(UserTransfer.PO_TO_VO.apply(po));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public JsonResult<UserVO> delete(Long id) {
+        return userRepository.findById(id)
+                .map(po -> {
+                    po.setIsDelete(true);
+                    userRepository.save(po);
+                    return JsonResult.of(UserTransfer.PO_TO_VO.apply(po));
+                }).orElseGet(() -> JsonResult.of(10005, "该用户不存在"));
+    }
+
+    @Override
+    public JsonResult<UserVO> findById(Long id) {
+        return userRepository.findById(id)
+                .map(po -> JsonResult.of(UserTransfer.PO_TO_VO.apply(po)))
+                .orElseGet(() -> JsonResult.of(10005, "该用户不存在"));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public JsonResult<UserVO> updateById(UserUpdateAO ao) {
+        return userRepository.findById(ao.getId())
+                .map(po -> {
+                    po.setIntroduction(ao.getIntroduction());
+                    po.setIsEnabled(ao.getIsEnabled());
+                    po.setEmail(ao.getEmail());
+                    userRepository.save(po);
+                    return JsonResult.of(UserTransfer.PO_TO_VO.apply(po));
+                })
+                .orElseGet(() -> JsonResult.of(10005, "该用户不存在"));
     }
 
     @Override
@@ -158,16 +220,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean checkUsername(String username) {
-        long count = userRepository.countByUsername(username);
+    public boolean checkUsername(String username, boolean inner) {
+        long count = userRepository.countByUsernameAndIsDelete(username, false);
         if (count > 0) {
             return false;
         }
 
         ValueOperations<String, String> value = redisTemplate.opsForValue();
         // 由于redis是单线程的，这样做可以保证相同的用户名只能被set一次，也就是同一个用户名只注册一次
-        Boolean ifAbsent = value.setIfAbsent(RedisKey.READY_REGISTER_USERNAME.concat(username), username, Duration.ofMinutes(30));
-        return Objects.isNull(ifAbsent) ? false : ifAbsent;
+        if (inner) {
+            String judge = value.get(username);
+            return !StringUtils.isNotBlank(judge);
+        } else {
+            Boolean ifAbsent = value.setIfAbsent(RedisKey.READY_REGISTER_USERNAME.concat(username), username, Duration.ofMinutes(10));
+            return Objects.isNull(ifAbsent) ? false : ifAbsent;
+        }
     }
 
     @Override
@@ -196,11 +263,12 @@ public class UserServiceImpl implements UserService {
     public JsonResult<PageResult<UserVO>> page(IPageRequest<UserQuery> iPageRequest) {
         Pageable pageable = iPageRequest.of();
         Page<UserPO> page = userRepository.findAll(SpecificationFactory.produce((predicates, userPORoot, criteriaBuilder) -> {
+            predicates.add(criteriaBuilder.equal(userPORoot.get("isDelete").as(Boolean.class), false));
             UserQuery customParams = iPageRequest.getCustomParams();
             if (null != customParams) {
                 Long userId = customParams.getUserId();
                 if (null != userId) {
-                    predicates.add(criteriaBuilder.equal(userPORoot.get("userId").as(Long.class), userId));
+                    predicates.add(criteriaBuilder.equal(userPORoot.get("id").as(Long.class), userId));
                 }
                 String username = customParams.getUsername();
                 if (StringUtils.isNotBlank(username)) {
@@ -213,5 +281,20 @@ public class UserServiceImpl implements UserService {
             }
         }), pageable);
         return JsonResult.of(PageResult.of(page.getTotalElements(), UserTransfer.PO_TO_VO, page.getContent()));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public JsonResult<Boolean> changeUserStatus(Long id, UserStatusType type, Boolean status) {
+        return userRepository.findById(id)
+                .map(po -> {
+                    switch (type){
+                        case ENABLED: po.setIsEnabled(status);break;
+                        case LOCKED: po.setIsAccountNonLocked(status);
+                        default:
+                    }
+                    userRepository.save(po);
+                    return JsonResult.of(status);
+                }).orElseGet(() -> JsonResult.of(10002, "该用户不存在"));
     }
 }

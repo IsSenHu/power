@@ -52,4 +52,7 @@ public class UserPO {
 
     @Column(name = "role_id")
     private Integer roleId;
+
+    @Column(name = "is_delete")
+    private Boolean isDelete;
 }
