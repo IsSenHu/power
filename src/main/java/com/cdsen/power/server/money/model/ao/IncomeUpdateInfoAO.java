@@ -20,7 +20,7 @@ public class IncomeUpdateInfoAO {
     /**
      * 收入
      */
-    private BigDecimal inCome;
+    private BigDecimal income;
 
     /**
      * 货币单位

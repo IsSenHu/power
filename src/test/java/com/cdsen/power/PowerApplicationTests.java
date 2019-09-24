@@ -6,7 +6,7 @@ import com.cdsen.power.core.util.JsonUtils;
 import com.cdsen.power.server.money.dao.po.ConsumptionPO;
 import com.cdsen.power.server.money.dao.repository.ConsumptionRepository;
 import com.cdsen.power.server.money.model.ao.ConsumptionCreateAO;
-import com.cdsen.power.server.money.model.ao.ConsumptionItemAO;
+import com.cdsen.power.server.money.model.ao.ConsumptionItemCreateAO;
 import com.cdsen.power.server.money.model.cons.CurrencyType;
 import com.cdsen.power.server.money.model.vo.ConsumptionVO;
 import com.cdsen.power.server.money.service.ConsumptionService;
@@ -85,14 +85,14 @@ public class PowerApplicationTests {
             ao.setCurrency(CurrencyType.REN_MIN_BI);
             ao.setTime(LocalDateTime.now());
 
-            List<ConsumptionItemAO> items = new ArrayList<>();
+            List<ConsumptionItemCreateAO> items = new ArrayList<>();
             ao.setItems(items);
 
-            ConsumptionItemAO item1 = new ConsumptionItemAO();
+            ConsumptionItemCreateAO item1 = new ConsumptionItemCreateAO();
             item1.setMoney(BigDecimal.valueOf(10));
             item1.setDescription("充值地铁卡");
 
-            ConsumptionItemAO item2 = new ConsumptionItemAO();
+            ConsumptionItemCreateAO item2 = new ConsumptionItemCreateAO();
             item2.setMoney(BigDecimal.valueOf(20));
             item2.setDescription("晚饭");
 

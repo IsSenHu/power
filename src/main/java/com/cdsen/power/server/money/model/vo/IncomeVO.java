@@ -18,7 +18,7 @@ public class IncomeVO {
     /**
      * 收入
      */
-    private String inCome;
+    private String income;
 
     /**
      * 收入时间

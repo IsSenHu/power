@@ -28,7 +28,7 @@ public class IncomeUpdateAO {
      */
     @NotNull
     @DecimalMin("0.00")
-    private BigDecimal inCome;
+    private BigDecimal income;
 
     /**
      * 收入时间

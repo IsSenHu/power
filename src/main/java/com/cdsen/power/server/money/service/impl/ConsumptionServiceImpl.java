@@ -10,10 +10,13 @@ import com.cdsen.power.server.money.dao.po.ConsumptionItemPO;
 import com.cdsen.power.server.money.dao.po.ConsumptionPO;
 import com.cdsen.power.server.money.dao.repository.ConsumptionItemRepository;
 import com.cdsen.power.server.money.dao.repository.ConsumptionRepository;
-import com.cdsen.power.server.money.model.ao.ConsumptionCreateAO;
+import com.cdsen.power.server.money.model.ao.*;
+import com.cdsen.power.server.money.model.cons.MoneyError;
 import com.cdsen.power.server.money.model.query.ConsumptionQuery;
+import com.cdsen.power.server.money.model.vo.ConsumptionItemVO;
 import com.cdsen.power.server.money.model.vo.ConsumptionVO;
 import com.cdsen.power.server.money.service.ConsumptionService;
+import com.cdsen.power.server.money.transfer.ConsumptionItemTransfer;
 import com.cdsen.power.server.money.transfer.ConsumptionTransfer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -90,5 +93,66 @@ public class ConsumptionServiceImpl implements ConsumptionService {
         }), pageable);
 
         return JsonResult.of(PageResult.of(page.getTotalElements(), ConsumptionTransfer.PO_TO_VO, page.getContent()));
+    }
+
+    @Override
+    public JsonResult<ConsumptionUpdateInfoAO> findById(Long id) {
+        return consumptionRepository.findById(id)
+                .map(po -> JsonResult.of(ConsumptionTransfer.PO_TO_UPDATE_INFO.apply(po)))
+                .orElseGet(() -> JsonResult.of(MoneyError.NOT_FOUND));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public JsonResult<ConsumptionItemVO> deleteItem(Long id) {
+        return consumptionItemRepository.findById(id)
+                .map(po -> {
+                    consumptionItemRepository.delete(po);
+                    return JsonResult.of(ConsumptionItemTransfer.PO_TO_VO.apply(po));
+                })
+                .orElseGet(() -> JsonResult.of(MoneyError.NOT_FOUND));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public JsonResult<ConsumptionVO> update(ConsumptionUpdateAO ao) {
+        return consumptionRepository.findById(ao.getId())
+                .map(po -> {
+                    po.setTime(ao.getTime());
+                    po.setCurrency(ao.getCurrency());
+                    consumptionRepository.save(po);
+                    return JsonResult.of(ConsumptionTransfer.PO_TO_VO.apply(po));
+                })
+                .orElseGet(() -> JsonResult.of(MoneyError.NOT_FOUND));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public JsonResult<ConsumptionItemVO> createItem(ConsumptionItemCreateAO ao) {
+        ConsumptionItemPO po = ConsumptionItemTransfer.CREATE_TO_PO.apply(ao);
+        consumptionRepository.findById(ao.getConsumptionId())
+                .ifPresent(po::setConsumption);
+        consumptionItemRepository.save(po);
+        return JsonResult.of(ConsumptionItemTransfer.PO_TO_VO.apply(po));
+    }
+
+    @Override
+    public JsonResult<ConsumptionItemUpdateInfoAO> findItemById(Long id) {
+        return consumptionItemRepository.findById(id)
+                .map(po -> JsonResult.of(ConsumptionItemTransfer.PO_TO_UPDATE_INFO.apply(po)))
+                .orElseGet(() -> JsonResult.of(MoneyError.NOT_FOUND));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public JsonResult<ConsumptionItemVO> updateItem(ConsumptionItemUpdateAO ao) {
+        return consumptionItemRepository.findById(ao.getId())
+                .map(po -> {
+                    po.setMoney(ao.getMoney());
+                    po.setDescription(ao.getDescription());
+                    consumptionItemRepository.save(po);
+                    return JsonResult.of(ConsumptionItemTransfer.PO_TO_VO.apply(po));
+                })
+                .orElseGet(() -> JsonResult.of(MoneyError.NOT_FOUND));
     }
 }

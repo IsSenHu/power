@@ -3,7 +3,8 @@ package com.cdsen.power.server.money.transfer;
 import com.cdsen.power.server.money.dao.po.ConsumptionItemPO;
 import com.cdsen.power.server.money.dao.po.ConsumptionPO;
 import com.cdsen.power.server.money.model.ao.ConsumptionCreateAO;
-import com.cdsen.power.server.money.model.ao.ConsumptionItemAO;
+import com.cdsen.power.server.money.model.ao.ConsumptionItemCreateAO;
+import com.cdsen.power.server.money.model.ao.ConsumptionUpdateInfoAO;
 import com.cdsen.power.server.money.model.vo.ConsumptionItemVO;
 import com.cdsen.power.server.money.model.vo.ConsumptionVO;
 import com.google.common.collect.Lists;
@@ -28,7 +29,7 @@ public class ConsumptionTransfer {
         ConsumptionPO po = new ConsumptionPO();
         po.setTime(ao.getTime());
         po.setCurrency(ao.getCurrency());
-        List<ConsumptionItemAO> itemAos = ao.getItems();
+        List<ConsumptionItemCreateAO> itemAos = ao.getItems();
         List<ConsumptionItemPO> items = Lists.newArrayList();
         if (!CollectionUtils.isEmpty(itemAos)) {
             items = itemAos.stream().map(item -> {
@@ -39,6 +40,14 @@ public class ConsumptionTransfer {
             }).collect(Collectors.toList());
         }
         return Pair.of(po, items);
+    };
+
+    public static final Function<ConsumptionPO, ConsumptionUpdateInfoAO> PO_TO_UPDATE_INFO = po -> {
+        ConsumptionUpdateInfoAO ao = new ConsumptionUpdateInfoAO();
+        ao.setId(po.getId());
+        ao.setCurrency(po.getCurrency());
+        ao.setTime(po.getTime());
+        return ao;
     };
 
     public static final Function<ConsumptionPO, ConsumptionVO> PO_TO_VO = po -> {
@@ -55,6 +64,7 @@ public class ConsumptionTransfer {
         if (!CollectionUtils.isEmpty(items)) {
             for (ConsumptionItemPO item : items) {
                 ConsumptionItemVO itemVo = new ConsumptionItemVO();
+                itemVo.setConsumptionId(po.getId());
                 itemVo.setId(item.getId());
                 itemVo.setMoney(formatCurrency.format(item.getMoney()));
                 itemVo.setCurrency(displayNameCurrency);

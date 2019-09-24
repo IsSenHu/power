@@ -16,7 +16,7 @@ public class IncomeTransfer {
 
     public static final Function<InComeCreateAO, IncomePO> CREATE_TO_PO = ao -> {
         IncomePO po = new IncomePO();
-        po.setInCome(ao.getInCome());
+        po.setIncome(ao.getIncome());
         po.setTime(ao.getTime());
         po.setDescription(ao.getDescription());
         po.setCurrency(ao.getCurrency());
@@ -28,7 +28,7 @@ public class IncomeTransfer {
         vo.setId(po.getId());
         vo.setDescription(po.getDescription());
         vo.setTime(po.getTime());
-        vo.setInCome(po.getCurrency().getFormat().format(po.getInCome()));
+        vo.setIncome(po.getCurrency().getFormat().format(po.getIncome()));
         vo.setCurrency(po.getCurrency().getCurrency().getDisplayName());
         return vo;
     };
@@ -36,7 +36,7 @@ public class IncomeTransfer {
     public static final Function<IncomePO, IncomeUpdateInfoAO> PO_TO_UPDATE_INFO = po -> {
         IncomeUpdateInfoAO info = new IncomeUpdateInfoAO();
         info.setId(po.getId());
-        info.setInCome(po.getInCome());
+        info.setIncome(po.getIncome());
         info.setCurrency(po.getCurrency());
         info.setUserId(po.getUserId());
         info.setTime(po.getTime());
@@ -47,7 +47,7 @@ public class IncomeTransfer {
     public static final Function<IncomeUpdateAO, IncomePO> UPDATE_TO_PO = ao -> {
         IncomePO po = new IncomePO();
         po.setId(ao.getId());
-        po.setInCome(ao.getInCome());
+        po.setIncome(ao.getIncome());
         po.setCurrency(ao.getCurrency());
         po.setTime(ao.getTime());
         po.setDescription(ao.getDescription());
