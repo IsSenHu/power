@@ -45,6 +45,14 @@ public class JwtUtils {
         return claims;
     }
 
+    public boolean isExpired(String token) {
+        Claims claims = getClaimsFromToken(token);
+        if (claims == null) {
+            return true;
+        }
+        return claims.getExpiration().getTime() < System.currentTimeMillis();
+    }
+
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>(2);
         claims.put(SUB, userDetails.getUsername());
