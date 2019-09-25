@@ -54,6 +54,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/api/route**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/user/activate/*/**").permitAll()
                 .antMatchers("/auth/login**").permitAll()
+                .antMatchers("/auth/check**").permitAll()
                 .anyRequest().authenticated();
         http.headers().cacheControl();
 
