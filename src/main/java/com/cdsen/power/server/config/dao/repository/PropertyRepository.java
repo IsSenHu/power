@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author HuSen
  * create on 2019/9/17 17:10
  */
-public interface ConfigRepository extends JpaRepository<ConfigPO, Integer> {
+public interface PropertyRepository extends JpaRepository<PropertyPO, Integer> {
 
-    boolean existsByName(String name);
 }

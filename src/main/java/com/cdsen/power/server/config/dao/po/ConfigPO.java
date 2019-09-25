@@ -5,30 +5,27 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * @author HuSen
- * create on 2019/9/17 16:55
+ * create on 2019/9/17 17:05
  */
 @Getter
 @Setter
 @Entity
 @Table(name = "tb_config")
+@NamedEntityGraph(name = "ConfigTypePO.configs", attributeNodes = {
+        @NamedAttributeNode("configs")
+})
 public class ConfigPO extends BasePO<Integer, Long> {
 
     /**
-     * 配置键
+     * 配置名称
      */
     @Column(nullable = false, unique = true)
-    private String prop;
+    private String name;
 
-    /**
-     * 配置值
-     */
-    @Column(nullable = false)
-    private String value;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "config_type_id")
-    private ConfigTypePO configType;
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER, mappedBy = "config")
+    private List<PropertyPO> properties;
 }
