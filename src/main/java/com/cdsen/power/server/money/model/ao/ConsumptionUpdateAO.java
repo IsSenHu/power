@@ -8,7 +8,6 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * @author HuSen
@@ -16,14 +15,14 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class ConsumptionCreateAO {
+public class ConsumptionUpdateAO {
+
+    @NotNull
+    private Long id;
 
     @NotNull
     @JsonFormat(pattern = TimeCons.F1, timezone = TimeCons.GMT8)
     private LocalDateTime time;
-
-    @NotNull
-    private List<ConsumptionItemCreateAO> items;
 
     @NotNull
     private CurrencyType currency;

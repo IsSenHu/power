@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
  * create on 2019/9/3 10:44
  */
 @RestController
-@RequestMapping("/api/inCome")
+@RequestMapping("/api/income")
 public class IncomeController {
 
     private final IncomeService incomeService;

@@ -1,0 +1,62 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: power
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/power?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=GMT%2B8
+    username: root
+    password: 521428Slyt!
+  jpa:
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+    show-sql: true
+    open-in-view: false
+    database-platform: org.hibernate.dialect.MySQL57Dialect
+  mail:
+    host: smtp.qq.com
+    username: 1178515826@qq.com
+    password: uysnzvlpvavdbabc
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    password: 521428Slyt
+    database: 15
+  data:
+    redis:
+      repositories:
+        enabled: false
+com:
+  cdsen:
+    security:
+      expiration: 180
+      header: authorization
+      secret: 521428Slyt
+      max-session-in-cache: 10000
+    admin:
+      default-username: admin
+      default-password: 19970621Sly
+      default-email: 1178515826@qq.com
+      avatar: https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif
+      introduction: 我是超级管理员
+    admin-role:
+      name: admin
+      description: 超级管理员
+      exclusive-permission: adminExclusive
+      exclusive-permission-name: 超级管理员专属权限
+    redisson:
+      single:
+        address: redis://127.0.0.1:6379
+        password: 521428Slyt
+        database: 14
+

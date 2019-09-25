@@ -24,8 +24,8 @@ public class IncomePO extends BasePO<Long, Long> {
     /**
      * 收入
      */
-    @Column(name = "inCome", nullable = false)
-    private BigDecimal inCome;
+    @Column(name = "income", nullable = false)
+    private BigDecimal income;
 
     /**
      * 货币单位

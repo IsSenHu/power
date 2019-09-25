@@ -14,7 +14,10 @@ import java.math.BigDecimal;
  */
 @Getter
 @Setter
-public class ConsumptionItemAO {
+public class ConsumptionItemUpdateAO {
+
+    @NotNull
+    private Long id;
 
     /**
      * 消费金额

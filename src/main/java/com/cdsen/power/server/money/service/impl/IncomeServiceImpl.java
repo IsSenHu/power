@@ -102,7 +102,7 @@ public class IncomeServiceImpl implements IncomeService {
             po.setTime(ao.getTime());
             po.setDescription(ao.getDescription());
             po.setCurrency(ao.getCurrency());
-            po.setInCome(ao.getInCome());
+            po.setIncome(ao.getIncome());
             po.setUserId(session.getUserId());
             incomeRepository.save(po);
             return JsonResult.of(IncomeTransfer.PO_TO_VO.apply(po));

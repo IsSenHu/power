@@ -1,5 +1,7 @@
 package com.cdsen.power.server.money.model.vo;
 
+import com.cdsen.power.core.cons.TimeCons;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,6 +21,7 @@ public class ConsumptionVO {
     /**
      * 消费时间
      */
+    @JsonFormat(pattern = TimeCons.F1, timezone = TimeCons.GMT8)
     private LocalDateTime time;
 
     /**
