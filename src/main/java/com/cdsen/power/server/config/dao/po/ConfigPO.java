@@ -20,6 +20,9 @@ public class ConfigPO extends BasePO<Long, Long> {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
+
     @Column(name = "is_parent", nullable = false, length = 1)
     private Boolean isParent;
 
