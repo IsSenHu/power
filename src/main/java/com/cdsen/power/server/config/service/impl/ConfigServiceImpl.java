@@ -47,4 +47,9 @@ public class ConfigServiceImpl implements ConfigService {
     public JsonResult<PageResult<ConfigVO>> page(IPageRequest<ConfigType> iPageRequest) {
         return null;
     }
+
+    @Override
+    public JsonResult<ConfigVO> findById(Long id) {
+        return null;
+    }
 }

@@ -45,4 +45,12 @@ public interface ConfigService {
      * @return 分页结果
      */
     JsonResult<PageResult<ConfigVO>> page(IPageRequest<ConfigType> iPageRequest);
+
+    /**
+     * 根据ID查询配置
+     *
+     * @param id ID
+     * @return 配置
+     */
+    JsonResult<ConfigVO> findById(Long id);
 }

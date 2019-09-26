@@ -67,4 +67,15 @@ public class ConfigController {
     public JsonResult<PageResult<ConfigVO>> page(@RequestBody IPageRequest<ConfigType> iPageRequest) {
         return configService.page(iPageRequest);
     }
+
+    /**
+     * 根据ID查询配置
+     *
+     * @param id ID
+     * @return 配置
+     */
+    @GetMapping("/{id}")
+    public JsonResult<ConfigVO> findById(@PathVariable Long id) {
+        return configService.findById(id);
+    }
 }
