@@ -1,6 +1,7 @@
 package com.cdsen.power.server.config.dao.po;
 
 import com.cdsen.power.core.jpa.BasePO;
+import com.cdsen.power.server.config.model.cons.ConfigType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,27 +9,24 @@ import javax.persistence.*;
 
 /**
  * @author HuSen
- * create on 2019/9/17 16:55
+ * create on 2019/9/26 16:58
  */
 @Getter
 @Setter
 @Entity
 @Table(name = "tb_config")
-public class ConfigPO extends BasePO<Integer, Long> {
+public class ConfigPO extends BasePO<Long, Long> {
 
-    /**
-     * 配置键
-     */
-    @Column(nullable = false, unique = true)
-    private String prop;
+    @Column(name = "name", nullable = false)
+    private String name;
 
-    /**
-     * 配置值
-     */
-    @Column(nullable = false)
-    private String value;
+    @Column(name = "is_parent", nullable = false, length = 1)
+    private Boolean isParent;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "config_type_id")
-    private ConfigTypePO configType;
+    @Column(name = "parent_id")
+    private Long parentId;
+
+    @Column(name = "type")
+    @Enumerated(EnumType.STRING)
+    private ConfigType type;
 }

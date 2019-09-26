@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  * @author HuSen
- * create on 2019/9/17 17:10
+ * create on 2019/9/26 17:06
  */
-public interface ConfigRepository extends JpaRepository<ConfigPO, Integer> {
+public interface ConfigRepository extends JpaRepository<ConfigPO, Long> {
 }
