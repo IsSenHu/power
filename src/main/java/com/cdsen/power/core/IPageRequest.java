@@ -2,6 +2,7 @@ package com.cdsen.power.core;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -22,6 +23,10 @@ public class IPageRequest<T> {
     private T customParams;
 
     public Pageable of() {
-        return PageRequest.of(this.page - 1, this.number, asc == null || !asc ? Sort.by(sort).descending() : Sort.by(sort).ascending());
+        if (StringUtils.isNotBlank(sort)) {
+            return PageRequest.of(this.page - 1, this.number, this.asc == null || !this.asc ? Sort.by(this.sort).descending() : Sort.by(this.sort).ascending());
+        } else {
+            return PageRequest.of(this.page - 1, this.number);
+        }
     }
 }

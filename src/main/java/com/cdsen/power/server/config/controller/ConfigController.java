@@ -1,16 +1,18 @@
 package com.cdsen.power.server.config.controller;
 
 import com.cdsen.power.core.JsonResult;
-import com.cdsen.power.core.security.annotation.Permission;
 import com.cdsen.power.server.config.model.ao.ConfigCreateAO;
-import com.cdsen.power.server.config.model.cons.PreAuthorizes;
 import com.cdsen.power.server.config.model.vo.ConfigVO;
 import com.cdsen.power.server.config.service.ConfigService;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.cdsen.power.core.IPageRequest;
+import com.cdsen.power.core.PageResult;
+import com.cdsen.power.server.config.model.ao.ConfigUpdateAO;
+import com.cdsen.power.server.config.model.cons.ConfigType;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author HuSen
@@ -32,10 +34,52 @@ public class ConfigController {
      * @param ao 创建新配置数据模型
      * @return 创建结果
      */
-    @PreAuthorize(PreAuthorizes.Config.CREATE)
-    @Permission("创建新配置")
     @PutMapping
-    public JsonResult<ConfigVO> create(@RequestBody ConfigCreateAO ao) {
+    public JsonResult create(@RequestBody ConfigCreateAO ao) {
         return configService.create(ao);
+    }
+
+    /**
+     * 根据ID删除配置
+     *
+     * @param id ID
+     * @return 删除结果
+     */
+    @DeleteMapping("/{id}")
+    public JsonResult<ConfigVO> delete(@PathVariable Long id) {
+        return configService.delete(id);
+    }
+
+    /**
+     * 修改配置
+     *
+     * @param ao 修改配置数据模型
+     * @return 修改结果
+     */
+    @PostMapping
+    public JsonResult update(@RequestBody ConfigUpdateAO ao) {
+        return configService.update(ao);
+    }
+
+    /**
+     * 分页查询配置
+     *
+     * @param iPageRequest 分页参数
+     * @return 分页结果
+     */
+    @PostMapping("/page")
+    public JsonResult<PageResult<ConfigVO>> page(@RequestBody IPageRequest<ConfigType> iPageRequest) {
+        return configService.page(iPageRequest);
+    }
+
+    /**
+     * 根据ID查询配置
+     *
+     * @param id ID
+     * @return 配置
+     */
+    @GetMapping("/{id}")
+    public JsonResult<ConfigVO> findById(@PathVariable Long id) {
+        return configService.findById(id);
     }
 }

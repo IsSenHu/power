@@ -14,7 +14,10 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class ConfigCreateAO {
+public class ConfigUpdateAO {
+
+    @NotNull
+    private Long id;
 
     @NotBlank
     private String name;
@@ -22,5 +25,5 @@ public class ConfigCreateAO {
     @NotNull
     private ConfigType type;
 
-    private List<ConfigCreateAO> child;
+    private List<ConfigUpdateAO> child;
 }

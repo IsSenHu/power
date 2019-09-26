@@ -1,31 +1,35 @@
 package com.cdsen.power.server.config.dao.po;
 
 import com.cdsen.power.core.jpa.BasePO;
+import com.cdsen.power.server.config.model.cons.ConfigType;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.List;
 
 /**
  * @author HuSen
- * create on 2019/9/17 17:05
+ * create on 2019/9/26 16:58
  */
 @Getter
 @Setter
 @Entity
 @Table(name = "tb_config")
-@NamedEntityGraph(name = "ConfigTypePO.configs", attributeNodes = {
-        @NamedAttributeNode("configs")
-})
-public class ConfigPO extends BasePO<Integer, Long> {
+public class ConfigPO extends BasePO<Long, Long> {
 
-    /**
-     * 配置名称
-     */
-    @Column(nullable = false, unique = true)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER, mappedBy = "config")
-    private List<PropertyPO> properties;
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
+
+    @Column(name = "is_parent", nullable = false, length = 1)
+    private Boolean isParent;
+
+    @Column(name = "parent_id")
+    private Long parentId;
+
+    @Column(name = "type")
+    @Enumerated(EnumType.STRING)
+    private ConfigType type;
 }
