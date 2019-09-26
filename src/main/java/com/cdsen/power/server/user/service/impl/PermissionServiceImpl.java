@@ -25,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -91,9 +92,15 @@ public class PermissionServiceImpl implements PermissionService {
             }
         });
 
-        permissionRepository.deleteInBatch(oldMap.values());
-        permissionRepository.saveAll(willUpdate);
-        permissionRepository.saveAll(willAdd);
+        if (!CollectionUtils.isEmpty(oldMap.values())) {
+            permissionRepository.deleteInBatch(oldMap.values());
+        }
+        if (!CollectionUtils.isEmpty(willUpdate)) {
+            permissionRepository.saveAll(willUpdate);
+        }
+        if (!CollectionUtils.isEmpty(willAdd)) {
+            permissionRepository.saveAll(willAdd);
+        }
     }
 
     @Override
