@@ -8,7 +8,7 @@ import lombok.Getter;
  */
 @Getter
 public enum ConfigType {
-    ;
+    ARTICLE("文章类型");
 
     private String name;
 

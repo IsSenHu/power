@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 /**
  * @author HuSen
@@ -27,9 +28,17 @@ public class ArticlePO {
 
     @Lob
     @Column(name = "content")
-    private char[] content;
+    @Basic(fetch = FetchType.LAZY)
+    private String content;
 
     @Lob
     @Column(name = "html")
-    private char[] html;
+    @Basic(fetch = FetchType.LAZY)
+    private String html;
+
+    @Column(name = "time")
+    private LocalDateTime time;
+
+    @Column(name = "type", nullable = false)
+    private Long type;
 }

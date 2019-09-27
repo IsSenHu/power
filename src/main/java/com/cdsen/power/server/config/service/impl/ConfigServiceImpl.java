@@ -18,6 +18,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import static com.cdsen.power.server.config.transfer.ConfigTransfer.PO_TO_VO;
 
 
@@ -82,10 +86,10 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
-    public JsonResult<PageResult<ConfigVO>> page(IPageRequest<ConfigType> iPageRequest) {
+    public JsonResult<PageResult<ConfigVO>> page(IPageRequest<String> iPageRequest) {
         Pageable pageable = iPageRequest.of();
-        Page<ConfigPO> pageInfo = iPageRequest.getCustomParams() == null ?
-                configRepository.findAll(pageable) : configRepository.findAllByType(pageable, iPageRequest.getCustomParams());
+        Page<ConfigPO> pageInfo = StringUtils.isBlank(iPageRequest.getCustomParams()) ?
+                configRepository.findAll(pageable) : configRepository.findAllByType(pageable, ConfigType.valueOf(iPageRequest.getCustomParams()));
         return JsonResult.of(PageResult.of(pageInfo.getTotalElements(), PO_TO_VO, pageInfo.getContent()));
     }
 
@@ -94,5 +98,10 @@ public class ConfigServiceImpl implements ConfigService {
         return configRepository.findById(id)
                 .map(po -> JsonResult.of(PO_TO_VO.apply(po)))
                 .orElseGet(() -> JsonResult.of(ConfigError.NOT_FOUND));
+    }
+
+    @Override
+    public JsonResult<Map<String, List<ConfigVO>>> findAll() {
+        return JsonResult.of(configRepository.findAll().stream().map(PO_TO_VO).collect(Collectors.groupingBy(vo -> vo.getConfigType().name())));
     }
 }

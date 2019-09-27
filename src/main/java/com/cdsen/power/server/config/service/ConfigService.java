@@ -5,8 +5,10 @@ import com.cdsen.power.server.config.model.ao.ConfigCreateAO;
 import com.cdsen.power.core.IPageRequest;
 import com.cdsen.power.core.PageResult;
 import com.cdsen.power.server.config.model.ao.ConfigUpdateAO;
-import com.cdsen.power.server.config.model.cons.ConfigType;
 import com.cdsen.power.server.config.model.vo.ConfigVO;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author HuSen
@@ -44,7 +46,7 @@ public interface ConfigService {
      * @param iPageRequest 分页参数
      * @return 分页结果
      */
-    JsonResult<PageResult<ConfigVO>> page(IPageRequest<ConfigType> iPageRequest);
+    JsonResult<PageResult<ConfigVO>> page(IPageRequest<String> iPageRequest);
 
     /**
      * 根据ID查询配置
@@ -53,4 +55,11 @@ public interface ConfigService {
      * @return 配置
      */
     JsonResult<ConfigVO> findById(Long id);
+
+    /**
+     * 查询所有的配置
+     *
+     * @return 所有的配置
+     */
+    JsonResult<Map<String, List<ConfigVO>>> findAll();
 }

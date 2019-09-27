@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cdsen.power.core.IPageRequest;
 import com.cdsen.power.core.PageResult;
 import com.cdsen.power.server.config.model.ao.ConfigUpdateAO;
-import com.cdsen.power.server.config.model.cons.ConfigType;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author HuSen
@@ -68,7 +70,7 @@ public class ConfigController {
      * @return 分页结果
      */
     @PostMapping("/page")
-    public JsonResult<PageResult<ConfigVO>> page(@RequestBody IPageRequest<ConfigType> iPageRequest) {
+    public JsonResult<PageResult<ConfigVO>> page(@RequestBody IPageRequest<String> iPageRequest) {
         return configService.page(iPageRequest);
     }
 
@@ -81,5 +83,15 @@ public class ConfigController {
     @GetMapping("/{id}")
     public JsonResult<ConfigVO> findById(@PathVariable Long id) {
         return configService.findById(id);
+    }
+
+    /**
+     * 查询所有的配置
+     *
+     * @return 所有的配置
+     */
+    @GetMapping("/findAll")
+    public JsonResult<Map<String, List<ConfigVO>>> findAll() {
+        return configService.findAll();
     }
 }
