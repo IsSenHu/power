@@ -6,7 +6,6 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 /**
  * @author HuSen
@@ -21,6 +20,4 @@ public class ConfigCreateAO {
 
     @NotNull
     private ConfigType type;
-
-    private List<ConfigCreateAO> child;
 }
