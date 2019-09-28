@@ -5,7 +5,7 @@ spring:
     name: power
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/power?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=GMT%2B8
+    url: jdbc:mysql://118.24.38.46:3306/power?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=GMT%2B8
     username: root
     password: 521428Slyt!
   jpa:
@@ -13,7 +13,7 @@ spring:
       ddl-auto: update
       naming:
         physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
-    show-sql: false
+    show-sql: true
     open-in-view: false
     database-platform: org.hibernate.dialect.MySQL57Dialect
   mail:
@@ -28,7 +28,7 @@ spring:
             enable: true
             required: true
   redis:
-    host: 127.0.0.1
+    host: 118.24.38.46
     port: 6379
     password: 521428Slyt
     database: 15
@@ -56,7 +56,7 @@ com:
       exclusive-permission-name: 超级管理员专属权限
     redisson:
       single:
-        address: redis://127.0.0.1:6379
+        address: redis://118.24.38.46:6379
         password: 521428Slyt
         database: 14
 
