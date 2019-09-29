@@ -8,7 +8,9 @@ import lombok.Getter;
  */
 @Getter
 public enum ConfigType {
-    ARTICLE("文章类型");
+    ARTICLE("文章类型"),
+    BEDTIME_STATE("睡前状态"),
+    DREAM_STATE("梦境状态");
 
     private String name;
 

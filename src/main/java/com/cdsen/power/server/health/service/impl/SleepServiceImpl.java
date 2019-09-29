@@ -21,6 +21,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+
 /**
  * @author HuSen
  * create on 2019/9/25 10:26
@@ -85,7 +87,20 @@ public class SleepServiceImpl implements SleepService {
     public JsonResult<PageResult<SleepVO>> page(IPageRequest<SleepQuery> iPageRequest) {
         Session session = SecurityUtils.currentSession();
         Pageable pageable = iPageRequest.of();
-        Page<SleepPO> pageInfo = sleepRepository.findAll(SpecificationFactory.produce((predicates, sleepPORoot, criteriaBuilder) -> predicates.add(criteriaBuilder.equal(sleepPORoot.get("userId").as(Long.class), session.getUserId()))), pageable);
+        Page<SleepPO> pageInfo = sleepRepository.findAll(SpecificationFactory.produce((predicates, sleepPORoot, criteriaBuilder) -> {
+            predicates.add(criteriaBuilder.equal(sleepPORoot.get("userId").as(Long.class), session.getUserId()));
+            SleepQuery customParams = iPageRequest.getCustomParams();
+            if (null != customParams) {
+                LocalDate start = customParams.getStart();
+                if (null != start) {
+                    predicates.add(criteriaBuilder.greaterThanOrEqualTo(sleepPORoot.get("sleepTime").as(LocalDate.class), start));
+                }
+                LocalDate end = customParams.getEnd();
+                if (null != end) {
+                    predicates.add(criteriaBuilder.lessThanOrEqualTo(sleepPORoot.get("sleepTime").as(LocalDate.class), end));
+                }
+            }
+        }), pageable);
         return JsonResult.of(PageResult.of(pageInfo.getTotalElements(), SleepTransfer.PO_TO_VO, pageInfo.getContent()));
     }
 }

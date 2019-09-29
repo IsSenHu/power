@@ -1,7 +1,5 @@
 package com.cdsen.power.server.health.dao.po;
 
-import com.cdsen.power.server.health.model.cons.BedtimeState;
-import com.cdsen.power.server.health.model.cons.DreamState;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -71,13 +69,11 @@ public class SleepPO {
      * 睡前状态
      * */
     @Column(name = "bedtime_state", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private BedtimeState bedtimeState;
+    private Long bedtimeState;
 
     /**
      * 梦境状态
      * */
     @Column(name = "dream_state", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private DreamState dreamState;
+    private Long dreamState;
 }

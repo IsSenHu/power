@@ -1,8 +1,6 @@
 package com.cdsen.power.server.health.model.ao;
 
 import com.cdsen.power.core.cons.TimeCons;
-import com.cdsen.power.server.health.model.cons.BedtimeState;
-import com.cdsen.power.server.health.model.cons.DreamState;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
@@ -62,11 +60,11 @@ public class SleepUpdateAO {
      * 睡前状态
      * */
     @NotNull
-    private BedtimeState bedtimeState;
+    private Long bedtimeState;
 
     /**
      * 梦境状态
      * */
     @NotNull
-    private DreamState dreamState;
+    private Long dreamState;
 }

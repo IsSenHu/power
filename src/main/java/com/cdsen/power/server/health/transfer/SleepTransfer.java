@@ -31,13 +31,15 @@ public class SleepTransfer {
         vo.setId(po.getId());
         vo.setUserId(po.getUserId());
         vo.setSleepTime(po.getSleepTime());
-        vo.setSleepingTime(po.getSleepingTime());
-        vo.setSleepingTotalTime(po.getSleepingTotalTime());
+        Integer sleepingTime = po.getSleepingTime();
+        vo.setSleepingTime(sleepingTime / 3600 + "小时 " + sleepingTime % 3600 / 60 + "分");
+        Integer sleepingTotalTime = po.getSleepingTotalTime();
+        vo.setSleepingTotalTime(sleepingTotalTime / 3600 + "小时 " + sleepingTotalTime % 3600 / 60 + "分");
         vo.setAmbientNoise(po.getAmbientNoise());
         vo.setSleepAge(po.getSleepAge());
         vo.setSleepScore(po.getSleepScore());
-        vo.setBedtimeState(po.getBedtimeState().getValue());
-        vo.setDreamState(po.getDreamState().getValue());
+        vo.setBedtimeState(po.getBedtimeState());
+        vo.setDreamState(po.getDreamState());
         return vo;
     };
 
@@ -45,8 +47,10 @@ public class SleepTransfer {
         SleepUpdateInfoAO ao = new SleepUpdateInfoAO();
         ao.setId(po.getId());
         ao.setSleepTime(po.getSleepTime());
-        ao.setSleepingTime(po.getSleepingTime());
-        ao.setSleepingTotalTime(po.getSleepingTotalTime());
+        Integer sleepingTime = po.getSleepingTime();
+        ao.setSleepingTime(sleepingTime / 3600 + ":" + sleepingTime % 3600 / 60);
+        Integer sleepingTotalTime = po.getSleepingTotalTime();
+        ao.setSleepingTotalTime(sleepingTotalTime / 3600 + ":" + sleepingTotalTime % 3600 / 60);
         ao.setAmbientNoise(po.getAmbientNoise());
         ao.setSleepAge(po.getSleepAge());
         ao.setSleepScore(po.getSleepScore());

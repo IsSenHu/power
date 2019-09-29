@@ -1,9 +1,11 @@
 package com.cdsen.power.server.health.model.query;
 
-import com.cdsen.power.server.health.model.cons.BedtimeState;
-import com.cdsen.power.server.health.model.cons.DreamState;
+import com.cdsen.power.core.cons.TimeCons;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.time.LocalDate;
 
 /**
  * @author HuSen
@@ -13,33 +15,9 @@ import lombok.Setter;
 @Setter
 public class SleepQuery {
 
-    /**
-     * 入睡时长 单位秒
-     */
-    private Integer sleepingTime;
+    @JsonFormat(pattern = TimeCons.F2, timezone = TimeCons.GMT8)
+    private LocalDate start;
 
-    /**
-     * 睡眠时长 单位秒
-     */
-    private Integer sleepingTotalTime;
-
-    /**
-     * 睡眠年龄
-     */
-    private Integer sleepAge;
-
-    /**
-     * 睡眠评分
-     */
-    private Integer sleepScore;
-
-    /**
-     * 睡前状态
-     * */
-    private BedtimeState bedtimeState;
-
-    /**
-     * 梦境状态
-     * */
-    private DreamState dreamState;
+    @JsonFormat(pattern = TimeCons.F2, timezone = TimeCons.GMT8)
+    private LocalDate end;
 }

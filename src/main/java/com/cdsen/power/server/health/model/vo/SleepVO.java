@@ -34,12 +34,12 @@ public class SleepVO {
     /**
      * 入睡时长 单位秒
      */
-    private Integer sleepingTime;
+    private String sleepingTime;
 
     /**
      * 睡眠时长 单位秒
      */
-    private Integer sleepingTotalTime;
+    private String sleepingTotalTime;
 
     /**
      * 环境噪音 分贝
@@ -59,10 +59,10 @@ public class SleepVO {
     /**
      * 睡前状态
      * */
-    private String bedtimeState;
+    private Long bedtimeState;
 
     /**
      * 梦境状态
      * */
-    private String dreamState;
+    private Long dreamState;
 }
