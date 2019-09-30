@@ -151,6 +151,7 @@ public class UserServiceImpl implements UserService {
             po = UserTransfer.AO_TO_PO.apply(ao);
             po.setPassword(encodePassword);
             po.setCreateTime(LocalDateTime.now());
+            po.setIsDelete(false);
         } else {
             byUsername.setEmail(ao.getEmail());
             byUsername.setIntroduction(ao.getIntroduction());
@@ -260,6 +261,7 @@ public class UserServiceImpl implements UserService {
         po.setIsAccountNonLocked(true);
         po.setIsCredentialsNonExpired(true);
         po.setRoleId(rolePo.getId());
+        po.setIsDelete(false);
         userRepository.save(po);
     }
 
