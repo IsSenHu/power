@@ -84,6 +84,9 @@ public class UserServiceImpl implements UserService {
             return JsonResult.of(10001, "用户名或密码错误");
         }
 
+        po.setIsAccountNonLocked(true);
+        userRepository.save(po);
+
         Integer roleId = po.getRoleId();
         List<String> viewRoles = null != roleId ?
                 permissionRepository.findAllById(
@@ -92,8 +95,9 @@ public class UserServiceImpl implements UserService {
                 : Lists.newArrayList();
 
         UserInfo userInfo = new UserInfo(po.getUsername(), po.getIntroduction(), po.getAvatar(), viewRoles);
-        Session session = new Session(userInfo, login.getPassword());
+        Session session = new Session(userInfo, po.getPassword());
         session.setUserId(po.getId());
+        session.setAccountNonLocked(true);
         String token = jwtUtils.generateToken(session);
         sessionManage.save(login.getUsername(), session);
         return JsonResult.of(new Token(token, userInfo));
@@ -290,7 +294,10 @@ public class UserServiceImpl implements UserService {
                 .map(po -> {
                     switch (type){
                         case ENABLED: po.setIsEnabled(status);break;
-                        case LOCKED: po.setIsAccountNonLocked(status);
+                        case ACCOUNT_NON_LOCKED: {
+                            po.setIsAccountNonLocked(status);
+                            sessionManage.changeLockState(po.getUsername(), status);
+                        }
                         default:
                     }
                     userRepository.save(po);

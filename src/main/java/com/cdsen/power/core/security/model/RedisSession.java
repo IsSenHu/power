@@ -38,4 +38,14 @@ public class RedisSession {
      * 在 本系统中对应权限
      */
     private List<String> roles;
+
+    /**
+     * 用户是否锁定了
+     */
+    private Boolean isAccountNonLocked;
+
+    /**
+     * 密码
+     * */
+    private String password;
 }

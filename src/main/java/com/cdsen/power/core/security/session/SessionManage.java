@@ -13,4 +13,6 @@ public interface SessionManage {
     void invalidate(String username);
 
     void save(String username, Session session);
+
+    void changeLockState(String username, boolean isAccountNonLocked);
 }

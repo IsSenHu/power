@@ -16,10 +16,15 @@ public class Session implements UserDetails {
     private Long userId;
     private UserInfo info;
     private String password;
+    private boolean isAccountNonLocked;
 
     public Session(UserInfo info, String password) {
         this.info = info;
         this.password = password;
+    }
+
+    public void setAccountNonLocked(boolean accountNonLocked) {
+        isAccountNonLocked = accountNonLocked;
     }
 
     public UserInfo getInfo() {
@@ -56,7 +61,7 @@ public class Session implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return isAccountNonLocked;
     }
 
     @Override

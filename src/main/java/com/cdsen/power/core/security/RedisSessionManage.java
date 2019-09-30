@@ -45,8 +45,9 @@ public class RedisSessionManage implements SessionManage {
             return null;
         }
         UserInfo info = new UserInfo(redisSession.getName(), redisSession.getIntroduction(), redisSession.getAvatar(), redisSession.getRoles());
-        session = new Session(info, null);
+        session = new Session(info, redisSession.getPassword());
         session.setUserId(redisSession.getUserId());
+        session.setAccountNonLocked(redisSession.getIsAccountNonLocked());
         // 再次缓存
         guavaSessionManage.save(key, session);
         return session;
@@ -70,11 +71,30 @@ public class RedisSessionManage implements SessionManage {
         redisSession.setIntroduction(session.getInfo().getIntroduction());
         redisSession.setName(username);
         redisSession.setRoles(session.getInfo().getRoles());
+        redisSession.setPassword(session.getPassword());
+        redisSession.setIsAccountNonLocked(session.isAccountNonLocked());
 
         String jsonString = JsonUtils.toJsonString(redisSession);
         if (StringUtils.isNotBlank(jsonString)) {
             value.setIfAbsent(key, jsonString, Duration.ofMinutes(security.getExpiration()));
         }
         guavaSessionManage.save(key, session);
+    }
+
+    @Override
+    public void changeLockState(String username, boolean isAccountNonLocked) {
+        AppProperties.Security security = appProperties.getSecurity();
+        final String key = SESSION_PREFIX.concat(username);
+        ValueOperations<String, String> value = redisTemplate.opsForValue();
+        String sessionStr = value.get(key);
+        RedisSession redisSession = JsonUtils.parseObj(sessionStr, RedisSession.class);
+        if (redisSession != null) {
+            redisSession.setIsAccountNonLocked(isAccountNonLocked);
+            String jsonString = JsonUtils.toJsonString(redisSession);
+            if (StringUtils.isNotBlank(jsonString)) {
+                value.set(key, jsonString, Duration.ofMinutes(security.getExpiration()));
+            }
+        }
+        guavaSessionManage.changeLockState(key, isAccountNonLocked);
     }
 }

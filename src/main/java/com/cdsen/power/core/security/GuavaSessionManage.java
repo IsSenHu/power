@@ -43,4 +43,13 @@ public class GuavaSessionManage implements SessionManage {
     public void save(String username, Session session) {
         cache.put(username, session);
     }
+
+    @Override
+    public void changeLockState(String username, boolean isAccountNonLocked) {
+        Session ifPresent = cache.getIfPresent(username);
+        if (null != ifPresent) {
+            ifPresent.setAccountNonLocked(isAccountNonLocked);
+            cache.put(username, ifPresent);
+        }
+    }
 }

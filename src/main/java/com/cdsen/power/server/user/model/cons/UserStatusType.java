@@ -6,5 +6,5 @@ package com.cdsen.power.server.user.model.cons;
  */
 public enum UserStatusType {
     ENABLED,
-    LOCKED
+    ACCOUNT_NON_LOCKED
 }
