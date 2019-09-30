@@ -4,8 +4,10 @@ import com.cdsen.power.core.IPageRequest;
 import com.cdsen.power.core.JsonResult;
 import com.cdsen.power.core.PageResult;
 import com.cdsen.power.server.money.model.ao.*;
+import com.cdsen.power.server.money.model.cons.CurrencyType;
 import com.cdsen.power.server.money.model.query.ConsumptionQuery;
 import com.cdsen.power.server.money.model.vo.ConsumptionItemVO;
+import com.cdsen.power.server.money.model.vo.ConsumptionStatisticsVO;
 import com.cdsen.power.server.money.model.vo.ConsumptionVO;
 import com.cdsen.power.server.money.service.ConsumptionService;
 import org.springframework.web.bind.annotation.*;
@@ -121,5 +123,17 @@ public class ConsumptionController {
     @PostMapping("/item")
     public JsonResult<ConsumptionItemVO> updateItem(@RequestBody ConsumptionItemUpdateAO ao) {
         return consumptionService.updateItem(ao);
+    }
+
+    /**
+     * 简单统计
+     *
+     * @param currency 货币类型
+     * @param query    简单统计查询参数
+     * @return 简单统计
+     */
+    @PostMapping("/statistics/{currency}")
+    public JsonResult<ConsumptionStatisticsVO> statistics(@PathVariable CurrencyType currency, @RequestBody ConsumptionQuery query) {
+        return consumptionService.statistics(currency, query);
     }
 }

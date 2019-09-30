@@ -11,21 +11,27 @@ import com.cdsen.power.server.money.dao.po.ConsumptionPO;
 import com.cdsen.power.server.money.dao.repository.ConsumptionItemRepository;
 import com.cdsen.power.server.money.dao.repository.ConsumptionRepository;
 import com.cdsen.power.server.money.model.ao.*;
+import com.cdsen.power.server.money.model.cons.CurrencyType;
 import com.cdsen.power.server.money.model.cons.MoneyError;
 import com.cdsen.power.server.money.model.query.ConsumptionQuery;
 import com.cdsen.power.server.money.model.vo.ConsumptionItemVO;
+import com.cdsen.power.server.money.model.vo.ConsumptionStatisticsVO;
 import com.cdsen.power.server.money.model.vo.ConsumptionVO;
 import com.cdsen.power.server.money.service.ConsumptionService;
 import com.cdsen.power.server.money.transfer.ConsumptionItemTransfer;
 import com.cdsen.power.server.money.transfer.ConsumptionTransfer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author HuSen
@@ -77,9 +83,15 @@ public class ConsumptionServiceImpl implements ConsumptionService {
         Long userId = session.getUserId();
 
         Pageable pageable = iPageRequest.of();
-        Page<ConsumptionPO> page = consumptionRepository.findAll(SpecificationFactory.produce((predicates, root, criteriaBuilder) -> {
+        ConsumptionQuery customParams = iPageRequest.getCustomParams();
+        Page<ConsumptionPO> page = consumptionRepository.findAll(spec(userId, customParams), pageable);
+
+        return JsonResult.of(PageResult.of(page.getTotalElements(), ConsumptionTransfer.PO_TO_VO, page.getContent()));
+    }
+
+    private Specification<ConsumptionPO> spec(Long userId, ConsumptionQuery customParams) {
+        return SpecificationFactory.produce((predicates, root, criteriaBuilder) -> {
             predicates.add(criteriaBuilder.equal(root.get("userId").as(Long.class), userId));
-            ConsumptionQuery customParams = iPageRequest.getCustomParams();
             if (null != customParams) {
                 LocalDateTime start = customParams.getStart();
                 if (null != start) {
@@ -90,9 +102,7 @@ public class ConsumptionServiceImpl implements ConsumptionService {
                     predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("time").as(LocalDateTime.class), end));
                 }
             }
-        }), pageable);
-
-        return JsonResult.of(PageResult.of(page.getTotalElements(), ConsumptionTransfer.PO_TO_VO, page.getContent()));
+        });
     }
 
     @Override
@@ -154,5 +164,28 @@ public class ConsumptionServiceImpl implements ConsumptionService {
                     return JsonResult.of(ConsumptionItemTransfer.PO_TO_VO.apply(po));
                 })
                 .orElseGet(() -> JsonResult.of(MoneyError.NOT_FOUND));
+    }
+
+    @Override
+    public JsonResult<ConsumptionStatisticsVO> statistics(CurrencyType currency, ConsumptionQuery query) {
+        Session session = SecurityUtils.currentSession();
+        Long userId = session.getUserId();
+        List<ConsumptionPO> all = consumptionRepository.findAll(spec(userId, query));
+
+        BigDecimal total = BigDecimal.ZERO;
+        for (ConsumptionPO po : all) {
+            List<ConsumptionItemPO> items = po.getItems();
+            for (ConsumptionItemPO item : items) {
+                total = total.add(item.getMoney());
+            }
+        }
+
+        int days = all.stream().collect(Collectors.groupingBy(po -> po.getTime().toLocalDate())).size();
+
+        ConsumptionStatisticsVO statistics = new ConsumptionStatisticsVO();
+        statistics.setTotal(currency.getFormat().format(total));
+        statistics.setAvgPerDay(currency.getFormat().format(total.divide(BigDecimal.valueOf(days), 2, RoundingMode.HALF_UP)));
+        statistics.setTotalDay(days);
+        return JsonResult.of(statistics);
     }
 }

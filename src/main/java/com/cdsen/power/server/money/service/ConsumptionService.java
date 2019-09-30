@@ -4,8 +4,10 @@ import com.cdsen.power.core.IPageRequest;
 import com.cdsen.power.core.JsonResult;
 import com.cdsen.power.core.PageResult;
 import com.cdsen.power.server.money.model.ao.*;
+import com.cdsen.power.server.money.model.cons.CurrencyType;
 import com.cdsen.power.server.money.model.query.ConsumptionQuery;
 import com.cdsen.power.server.money.model.vo.ConsumptionItemVO;
+import com.cdsen.power.server.money.model.vo.ConsumptionStatisticsVO;
 import com.cdsen.power.server.money.model.vo.ConsumptionVO;
 
 /**
@@ -85,4 +87,13 @@ public interface ConsumptionService {
      * @return 修改结果
      */
     JsonResult<ConsumptionItemVO> updateItem(ConsumptionItemUpdateAO ao);
+
+    /**
+     * 简单统计
+     *
+     * @param currency 货币类型
+     * @param query    简单统计查询参数
+     * @return 简单统计
+     */
+    JsonResult<ConsumptionStatisticsVO> statistics(CurrencyType currency, ConsumptionQuery query);
 }
