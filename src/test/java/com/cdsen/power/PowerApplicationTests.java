@@ -2,6 +2,7 @@ package com.cdsen.power;
 
 import com.cdsen.power.core.JsonResult;
 import com.cdsen.power.core.SpecificationFactory;
+import com.cdsen.power.core.oss.OssClient;
 import com.cdsen.power.core.util.JsonUtils;
 import com.cdsen.power.server.money.dao.po.ConsumptionPO;
 import com.cdsen.power.server.money.dao.repository.ConsumptionRepository;
@@ -24,6 +25,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -42,6 +46,9 @@ public class PowerApplicationTests {
 
     @Autowired
     private ConsumptionRepository consumptionRepository;
+
+    @Autowired
+    private OssClient ossClient;
 
     @Test
     public void contextLoads() {
@@ -118,5 +125,10 @@ public class PowerApplicationTests {
     public void deleteConsumption() {
         JsonResult<ConsumptionVO> delete = consumptionService.delete(4L);
         System.out.println(delete);
+    }
+
+    @Test
+    public void testOss() throws FileNotFoundException {
+        ossClient.upload("测试", new FileInputStream(new File("D:\\TSBrowserDownloads\\timg.jpg")));
     }
 }
