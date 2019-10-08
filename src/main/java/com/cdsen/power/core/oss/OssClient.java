@@ -13,6 +13,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -52,11 +53,12 @@ public class OssClient {
         PutObjectResult putObjectResult = oss.putObject(appProperties.getOss().getBucketName(), objectName, new ByteArrayInputStream(bytes));
     }
 
-    public void upload(String objectName, FileInputStream fileInputStream) {
+    public void upload(String objectName, InputStream fileInputStream) {
         PutObjectResult putObjectResult = oss.putObject(appProperties.getOss().getBucketName(), objectName, fileInputStream);
+        System.out.println(1);
     }
 
-    public String generatePresignedUrl(long timeout, TimeUnit timeUnit, String objectName) {
+    public String generatePreSignedUrl(long timeout, TimeUnit timeUnit, String objectName) {
         URL url = oss.generatePresignedUrl(appProperties.getOss().getBucketName(), objectName, new Date(System.currentTimeMillis() + timeUnit.toMillis(timeout)));
         return url.toString();
     }

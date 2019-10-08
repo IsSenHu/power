@@ -5,7 +5,9 @@ package com.cdsen.power.core;
  * create on 2019/9/10 17:25
  */
 public enum CommonError implements Error {
-    NOT_LOGIN(10001, "未登录不允许进行该操作");
+    NOT_LOGIN(10001, "未登录不允许进行该操作"),
+    REDIS_ERROR(10002, "服务器内部异常"),
+    INNER_ERROR(10003, "服务器内部异常");
 
     private Integer code;
     private String error;
