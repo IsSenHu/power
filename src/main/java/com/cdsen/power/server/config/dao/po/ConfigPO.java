@@ -29,4 +29,9 @@ public class ConfigPO {
     @Column(name = "type")
     @Enumerated(EnumType.STRING)
     private ConfigType type;
+
+    @Lob
+    @Column(name = "custom_info")
+    @Basic(fetch = FetchType.LAZY)
+    private String customInfo;
 }

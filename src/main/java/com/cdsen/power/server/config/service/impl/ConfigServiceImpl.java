@@ -4,6 +4,7 @@ import com.cdsen.power.core.IPageRequest;
 import com.cdsen.power.core.JsonResult;
 import com.cdsen.power.core.PageResult;
 import com.cdsen.power.core.security.util.SecurityUtils;
+import com.cdsen.power.core.util.JsonUtils;
 import com.cdsen.power.server.config.dao.po.ConfigPO;
 import com.cdsen.power.server.config.dao.repository.ConfigRepository;
 import com.cdsen.power.server.config.model.ao.ConfigCreateAO;
@@ -52,6 +53,10 @@ public class ConfigServiceImpl implements ConfigService {
         po.setName(name);
         po.setType(type);
         po.setUserId(userId);
+        Map customInfo = ao.getCustomInfo();
+        if (null != customInfo) {
+            po.setCustomInfo(JsonUtils.toJsonString(customInfo));
+        }
         configRepository.save(po);
         return JsonResult.success();
     }
@@ -79,6 +84,10 @@ public class ConfigServiceImpl implements ConfigService {
                         }
                     }
                     po.setName(ao.getName());
+                    Map customInfo = ao.getCustomInfo();
+                    if (null != customInfo) {
+                        po.setCustomInfo(JsonUtils.toJsonString(customInfo));
+                    }
                     configRepository.save(po);
                     return JsonResult.success();
                 })

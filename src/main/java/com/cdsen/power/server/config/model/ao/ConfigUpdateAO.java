@@ -6,7 +6,7 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.List;
+import java.util.Map;
 
 /**
  * @author HuSen
@@ -25,5 +25,5 @@ public class ConfigUpdateAO {
     @NotNull
     private ConfigType type;
 
-    private List<ConfigUpdateAO> child;
+    private Map customInfo;
 }

@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.Map;
 
 /**
  * @author HuSen
@@ -20,4 +21,6 @@ public class ConfigCreateAO {
 
     @NotNull
     private ConfigType type;
+
+    private Map customInfo;
 }
