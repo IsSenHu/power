@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 public class ConsumptionStatisticsVO {
 
-    private Integer totalDay;
+    private Long totalDay;
     private String total;
     private String avgPerDay;
 }

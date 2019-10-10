@@ -26,9 +26,11 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -179,13 +181,16 @@ public class ConsumptionServiceImpl implements ConsumptionService {
                 total = total.add(item.getMoney());
             }
         }
-
-        int days = all.stream().collect(Collectors.groupingBy(po -> po.getTime().toLocalDate())).size();
-
         ConsumptionStatisticsVO statistics = new ConsumptionStatisticsVO();
-        statistics.setTotal(currency.getFormat().format(total));
-        statistics.setAvgPerDay(currency.getFormat().format(total.divide(BigDecimal.valueOf(days), 2, RoundingMode.HALF_UP)));
-        statistics.setTotalDay(days);
+        List<LocalDate> collect = all.stream().map(c -> c.getTime().toLocalDate()).sorted().collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(collect)) {
+            LocalDate start = collect.get(0);
+            LocalDate end = collect.get(collect.size() - 1);
+            long days = end.toEpochDay() - start.toEpochDay() + 1;
+            statistics.setTotal(currency.getFormat().format(total));
+            statistics.setAvgPerDay(currency.getFormat().format(total.divide(BigDecimal.valueOf(days), 2, RoundingMode.HALF_UP)));
+            statistics.setTotalDay(days);
+        }
         return JsonResult.of(statistics);
     }
 }
