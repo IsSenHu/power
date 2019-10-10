@@ -36,6 +36,7 @@ public class JsonResult<T> {
         jsonResult.setCode(code);
         jsonResult.setError(error);
         jsonResult.setTimestamp(System.currentTimeMillis());
+        jsonResult.setData(d);
         return jsonResult;
     }
 
