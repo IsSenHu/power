@@ -55,7 +55,6 @@ public class OssClient {
 
     public void upload(String objectName, InputStream fileInputStream) {
         PutObjectResult putObjectResult = oss.putObject(appProperties.getOss().getBucketName(), objectName, fileInputStream);
-        System.out.println(1);
     }
 
     public String generatePreSignedUrl(long timeout, TimeUnit timeUnit, String objectName) {
