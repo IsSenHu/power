@@ -69,3 +69,7 @@ dubbo:
     name: power-admin
   registry:
     address: zookeeper://118.24.38.46:2181
+app:
+  id: SampleApp
+apollo:
+  meta: http://192.168.247.135:8080
