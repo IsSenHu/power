@@ -1,5 +1,6 @@
 package com.cdsen.power;
 
+import com.alibaba.dubbo.config.spring.context.annotation.EnableDubbo;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
@@ -9,6 +10,7 @@ import org.springframework.cache.annotation.EnableCaching;
  *
  * @author HuSen
  */
+@EnableDubbo
 @EnableCaching
 @SpringBootApplication
 public class PowerApplication {

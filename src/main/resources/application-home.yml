@@ -64,4 +64,8 @@ com:
       bucket-name: our-stories
       access-key-id: LTAI4FooCvxWUJj6s7MCNLui
       access-key-secret: o6Fg9AqRR7DzXNXUj186BvmhkNTWkT
-
+dubbo:
+  application:
+    name: power-admin
+  registry:
+    address: zookeeper://118.24.38.46:2181
