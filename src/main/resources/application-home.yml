@@ -67,4 +67,4 @@ dubbo:
 app:
   id: Power
 apollo:
-  meta: http://192.168.247.135:8080
+  meta: http://apollo.free.idcfengye.com

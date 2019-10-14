@@ -6,7 +6,6 @@ import com.cdsen.power.core.oss.OssClient;
 import com.cdsen.power.core.oss.OssClientManager;
 import com.cdsen.power.server.oss.model.cons.OssError;
 import com.cdsen.power.server.oss.model.cons.RedisKey;
-import com.cdsen.power.server.oss.service.OssService;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -15,9 +14,6 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -33,20 +29,15 @@ public class OssController {
 
     private static final Set<String> ALLOW_IMAGE_TYPE = Sets.newHashSet("jpg", "png", "bmp", "gif", "webp", "tiff");
 
-
     private final StringRedisTemplate redisTemplate;
 
-    private final OssService ossService;
-
-    public OssController(StringRedisTemplate redisTemplate, OssService ossService) {
+    public OssController(StringRedisTemplate redisTemplate) {
         this.redisTemplate = redisTemplate;
-        this.ossService = ossService;
     }
 
-    @GetMapping("/{objectName}")
-    public String test(@PathVariable String objectName) throws FileNotFoundException {
-        OssClient client = OssClientManager.getClient("", "");
-        client.upload("timg.jpg", new FileInputStream(new File("D:\\TSBrowserDownloads\\20130311231714.jpg")));
+    @GetMapping("/{endpoint}/{bucketName}/{objectName}")
+    public String test(@PathVariable String endpoint, @PathVariable String bucketName, @PathVariable String objectName) {
+        OssClient client = OssClientManager.getClient(endpoint, bucketName);
         String url = client.generatePreSignedUrl(60, TimeUnit.SECONDS, objectName);
         client.shutdown();
         return url;

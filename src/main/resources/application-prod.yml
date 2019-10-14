@@ -59,9 +59,13 @@ com:
         address: redis://127.0.0.1:6379
         password: 521428Slyt
         database: 14
-    oss:
-      endpoint: oss-cn-chengdu.aliyuncs.com
-      bucket-name: our-stories
-      access-key-id: LTAI4FooCvxWUJj6s7MCNLui
-      access-key-secret: o6Fg9AqRR7DzXNXUj186BvmhkNTWkT
+dubbo:
+  application:
+    name: power-admin
+  registry:
+    address: zookeeper://118.24.38.46:2181
+app:
+  id: Power
+apollo:
+  meta: http://apollo.free.idcfengye.com
 
