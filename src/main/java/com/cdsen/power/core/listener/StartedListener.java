@@ -55,7 +55,7 @@ public class StartedListener {
     }
 
     private void loadOssProperties() {
-        String ossEndpoints = ConfigUtils.getProperty("ossEndpoints", "[]");
+        String ossEndpoints = ConfigUtils.getProperty("ossEndpoints", "[{\"endpoint\":\"oss-cn-chengdu.aliyuncs.com\",\"bucketName\":\"our-stories\",\"accessKeyId\":\"LTAI4FooCvxWUJj6s7MCNLui\",\"accessKeySecret\":\"o6Fg9AqRR7DzXNXUj186BvmhkNTWkT\"}]");
         log.info("加载到OSS配置:{}", ossEndpoints);
         List<OssProperties> ossProperties = JsonUtils.parseArr(ossEndpoints, OssProperties.class);
         Assert.notNull(ossProperties, "load oss properties fail!");

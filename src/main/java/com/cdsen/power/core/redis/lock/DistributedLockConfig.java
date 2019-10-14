@@ -27,6 +27,7 @@ public class DistributedLockConfig {
         config.useSingleServer()
                 .setAddress(single.getAddress())
                 .setPassword(single.getPassword())
+                .setTimeout(10000)
                 .setDatabase(single.getDatabase());
         return Redisson.create(config);
     }
