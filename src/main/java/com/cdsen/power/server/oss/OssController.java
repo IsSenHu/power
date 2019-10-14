@@ -35,10 +35,10 @@ public class OssController {
         this.redisTemplate = redisTemplate;
     }
 
-    @GetMapping("/{endpoint}/{bucketName}/{objectName}")
-    public String test(@PathVariable String endpoint, @PathVariable String bucketName, @PathVariable String objectName) {
+    @GetMapping("/{endpoint}/{bucketName}/{timeout}/{objectName}")
+    public String test(@PathVariable String endpoint, @PathVariable String bucketName, @PathVariable Long timeout, @PathVariable String objectName) {
         OssClient client = OssClientManager.getClient(endpoint, bucketName);
-        String url = client.generatePreSignedUrl(60, TimeUnit.SECONDS, objectName);
+        String url = client.generatePreSignedUrl(timeout, TimeUnit.SECONDS, objectName);
         client.shutdown();
         return url;
     }
