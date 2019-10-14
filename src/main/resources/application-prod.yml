@@ -67,5 +67,5 @@ dubbo:
 app:
   id: Power
 apollo:
-  meta: http://118.24.38.46:8080
+  meta: http://127.0.0.1:8080
 
