@@ -3,6 +3,7 @@ package com.cdsen.power.server.oss;
 import com.cdsen.power.core.CommonError;
 import com.cdsen.power.core.JsonResult;
 import com.cdsen.power.core.oss.OssClient;
+import com.cdsen.power.core.oss.OssClientManager;
 import com.cdsen.power.server.oss.model.cons.OssError;
 import com.cdsen.power.server.oss.model.cons.RedisKey;
 import com.cdsen.power.server.oss.service.OssService;
@@ -32,22 +33,23 @@ public class OssController {
 
     private static final Set<String> ALLOW_IMAGE_TYPE = Sets.newHashSet("jpg", "png", "bmp", "gif", "webp", "tiff");
 
-    private final OssClient ossClient;
 
     private final StringRedisTemplate redisTemplate;
 
     private final OssService ossService;
 
-    public OssController(OssClient ossClient, StringRedisTemplate redisTemplate, OssService ossService) {
-        this.ossClient = ossClient;
+    public OssController(StringRedisTemplate redisTemplate, OssService ossService) {
         this.redisTemplate = redisTemplate;
         this.ossService = ossService;
     }
 
     @GetMapping("/{objectName}")
     public String test(@PathVariable String objectName) throws FileNotFoundException {
-        ossClient.upload("timg.jpg", new FileInputStream(new File("D:\\TSBrowserDownloads\\20130311231714.jpg")));
-        return ossClient.generatePreSignedUrl(60, TimeUnit.SECONDS, objectName);
+        OssClient client = OssClientManager.getClient("", "");
+        client.upload("timg.jpg", new FileInputStream(new File("D:\\TSBrowserDownloads\\20130311231714.jpg")));
+        String url = client.generatePreSignedUrl(60, TimeUnit.SECONDS, objectName);
+        client.shutdown();
+        return url;
     }
 
     @PostMapping("/image")
@@ -72,7 +74,9 @@ public class OssController {
             if (increment > 1) {
                 originalFilename = originalFilename.concat("(").concat(String.valueOf(increment - 1)).concat(")");
             }
-            ossClient.upload(originalFilename, image.getInputStream());
+            OssClient client = OssClientManager.getClient("", "");
+            client.upload(originalFilename, image.getInputStream());
+            client.shutdown();
             return JsonResult.success();
         } catch (IOException e) {
             log.error("图片上传失败:", e);

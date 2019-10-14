@@ -23,8 +23,6 @@ public class AppProperties {
 
     private Redisson redisson;
 
-    private Oss oss;
-
     @Getter
     @Setter
     public static class Security {
@@ -80,14 +78,5 @@ public class AppProperties {
             private String password;
             private Integer database;
         }
-    }
-
-    @Getter
-    @Setter
-    public static class Oss {
-        private String endpoint;
-        private String accessKeyId;
-        private String accessKeySecret;
-        private String bucketName;
     }
 }
