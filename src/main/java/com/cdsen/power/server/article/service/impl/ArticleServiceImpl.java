@@ -40,7 +40,7 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public JsonResult<ArticleVO> create(ArticleCreateAO ao) {
-        Long userId = SecurityUtils.currentSession().getUserId();
+        Long userId = SecurityUtils.currentUserDetails().getUserId();
         if (articleRepository.existsByTitleAndUserId(ao.getTitle(), userId)) {
             return JsonResult.of(ArticleError.EXISTED);
         }
@@ -60,7 +60,7 @@ public class ArticleServiceImpl implements ArticleService {
     public JsonResult<ArticleVO> update(ArticleUpdateAO ao) {
         Optional<ArticlePO> byId = articleRepository.findById(ao.getId());
         if (byId.isPresent()) {
-            Long userId = SecurityUtils.currentSession().getUserId();
+            Long userId = SecurityUtils.currentUserDetails().getUserId();
             ArticlePO po = byId.get();
             if (!StringUtils.equals(po.getTitle(), ao.getTitle())) {
                 if (articleRepository.existsByTitleAndUserId(ao.getTitle(), userId)) {
@@ -92,9 +92,9 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public JsonResult<PageResult<ArticleVO>> page(IPageRequest<ArticleQuery> iPageRequest) {
         Pageable pageable = iPageRequest.of();
-        Page<ArticlePO> pageInfo = articleRepository.findAll(SpecificationFactory.produce((predicates, articlePORoot, criteriaBuilder) -> {
-            Long userId = SecurityUtils.currentSession().getUserId();
-            predicates.add(criteriaBuilder.equal(articlePORoot.get("userId").as(Long.class), userId));
+        Page<ArticlePO> pageInfo = articleRepository.findAll(SpecificationFactory.produce((predicates, root, criteriaBuilder) -> {
+            Long userId = SecurityUtils.currentUserDetails().getUserId();
+            predicates.add(criteriaBuilder.equal(root.get("userId").as(Long.class), userId));
         }), pageable);
         return JsonResult.of(PageResult.of(pageInfo.getTotalElements(), PO_TO_SIMPLE_VO, pageInfo.getContent()));
     }

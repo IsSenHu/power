@@ -1,6 +1,6 @@
 package com.cdsen.power.core.jpa;
 
-import com.cdsen.power.core.security.model.Session;
+import com.cdsen.power.core.security.model.UserDetailsImpl;
 import com.cdsen.power.core.security.util.SecurityUtils;
 import org.springframework.data.domain.AuditorAware;
 
@@ -14,7 +14,7 @@ public class IAuditorAware implements AuditorAware<Long> {
 
     @Override
     public Optional<Long> getCurrentAuditor() {
-        Session session = SecurityUtils.currentSession();
-        return Optional.ofNullable(session.getUserId());
+        UserDetailsImpl userDetails = SecurityUtils.currentUserDetails();
+        return Optional.ofNullable(userDetails.getUserId());
     }
 }

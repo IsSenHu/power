@@ -1,47 +1,39 @@
 package com.cdsen.power.core.security.model;
 
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 /**
  * @author HuSen
- * create on 2019/8/27 16:15
+ * create on 2019/10/17 11:34
  */
-public class Session implements UserDetails {
+public class UserDetailsImpl implements UserDetails {
 
     private Long userId;
-    private UserInfo info;
+    private String username;
     private String password;
     private boolean isAccountNonLocked;
+    private boolean isEnabled;
+    private Collection<? extends GrantedAuthority> authorities;
 
-    public Session(UserInfo info, String password) {
-        this.info = info;
+    public UserDetailsImpl(Long userId, String username, String password, boolean isAccountNonLocked, boolean isEnabled, Collection<? extends GrantedAuthority> authorities) {
+        this.userId = userId;
+        this.username = username;
         this.password = password;
-    }
-
-    public void setAccountNonLocked(boolean accountNonLocked) {
-        isAccountNonLocked = accountNonLocked;
-    }
-
-    public UserInfo getInfo() {
-        return info;
+        this.isAccountNonLocked = isAccountNonLocked;
+        this.isEnabled = isEnabled;
+        this.authorities = authorities;
     }
 
     public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return info.getRoles().stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+        return authorities;
     }
 
     @Override
@@ -51,7 +43,7 @@ public class Session implements UserDetails {
 
     @Override
     public String getUsername() {
-        return info.getName();
+        return username;
     }
 
     @Override
@@ -71,10 +63,10 @@ public class Session implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return isEnabled;
     }
 
-    public static Session empty() {
-        return new Session(null, null);
+    public static UserDetailsImpl empty() {
+        return new UserDetailsImpl(null, null, null, false, false, null);
     }
 }

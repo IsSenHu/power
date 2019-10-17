@@ -49,7 +49,7 @@ public class ConfigServiceImpl implements ConfigService {
             return JsonResult.of(ConfigError.EXISTED);
         }
         ConfigPO po = new ConfigPO();
-        Long userId = SecurityUtils.currentSession().getUserId();
+        Long userId = SecurityUtils.currentUserDetails().getUserId();
         po.setName(name);
         po.setType(type);
         po.setUserId(userId);

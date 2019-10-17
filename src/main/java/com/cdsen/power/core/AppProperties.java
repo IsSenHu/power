@@ -15,26 +15,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class AppProperties {
 
-    private Security security;
-
     private Admin admin;
 
     private AdminRole adminRole;
 
     private Redisson redisson;
 
-    @Getter
-    @Setter
-    public static class Security {
-
-        private String secret;
-
-        private Long expiration;
-
-        private Long maxSessionInCache;
-
-        private String header;
-    }
 
     @Getter
     @Setter

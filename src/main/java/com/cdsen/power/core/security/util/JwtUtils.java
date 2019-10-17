@@ -1,11 +1,11 @@
 package com.cdsen.power.core.security.util;
 
-import com.cdsen.power.core.AppProperties;
+import com.cdsen.apollo.AppProperties;
+import com.cdsen.apollo.ConfigUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -23,24 +23,19 @@ public class JwtUtils {
     private static final String SUB = "sub";
     private static final String CREATED = "created";
 
-    private final AppProperties appProperties;
-
-    public JwtUtils(AppProperties appProperties) {
-        this.appProperties = appProperties;
-    }
-
     private String generateToken(Map<String, Object> claims) {
         Date created = (Date) claims.get(CREATED);
-        AppProperties.Security security = appProperties.getSecurity();
-        Date expirationDate = new Date(created.getTime() + TimeUnit.MINUTES.toMillis(security.getExpiration()));
-        return Jwts.builder().setClaims(claims).setExpiration(expirationDate).signWith(SignatureAlgorithm.HS512, security.getSecret()).compact();
+        String secret = ConfigUtils.getProperty(AppProperties.Security.SECRET, "521428Slyt");
+        String expiration = ConfigUtils.getProperty(AppProperties.Security.EXPIRATION, "60");
+        Date expirationDate = new Date(created.getTime() + TimeUnit.MINUTES.toMillis(Long.parseLong(expiration)));
+        return Jwts.builder().setClaims(claims).setExpiration(expirationDate).signWith(SignatureAlgorithm.HS512, secret).compact();
     }
 
     private Claims getClaimsFromToken(String token) {
         Claims claims = null;
         try {
-            AppProperties.Security security = appProperties.getSecurity();
-            claims = Jwts.parser().setSigningKey(security.getSecret()).parseClaimsJws(token).getBody();
+            String secret = ConfigUtils.getProperty(AppProperties.Security.SECRET, "521428Slyt");
+            claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
         } catch (Exception ignored) {}
         return claims;
     }
@@ -53,9 +48,9 @@ public class JwtUtils {
         return claims.getExpiration().getTime() < System.currentTimeMillis();
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(String username) {
         Map<String, Object> claims = new HashMap<>(2);
-        claims.put(SUB, userDetails.getUsername());
+        claims.put(SUB, username);
         claims.put(CREATED, new Date());
         return generateToken(claims);
     }
@@ -70,9 +65,9 @@ public class JwtUtils {
         return username;
     }
 
-    public boolean validateToken(String token, UserDetails userDetails) {
-        String username = getUsernameFromToken(token);
-        return StringUtils.endsWith(username, userDetails.getUsername());
+    public boolean validateToken(String token, String username) {
+        String gUsername = getUsernameFromToken(token);
+        return StringUtils.endsWith(gUsername, username);
     }
 
     // TODO 支持Token刷新

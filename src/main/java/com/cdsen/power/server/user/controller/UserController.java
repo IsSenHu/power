@@ -1,5 +1,7 @@
 package com.cdsen.power.server.user.controller;
 
+import com.cdsen.apollo.AppProperties;
+import com.cdsen.apollo.ConfigUtils;
 import com.cdsen.power.core.IPageRequest;
 import com.cdsen.power.core.JsonResult;
 import com.cdsen.power.core.PageResult;
@@ -18,6 +20,7 @@ import org.redisson.api.RLock;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -121,16 +124,19 @@ public class UserController {
     /**
      * 修改用户状态
      *
-     * @param id     ID
-     * @param type   状态类型
-     * @param status 状态
+     * @param id      ID
+     * @param type    状态类型
+     * @param status  状态
+     * @param request HttpServletRequest
      * @return 修改结果
      */
     @PreAuthorize(PreAuthorizes.User.CHANGE_USER_STATUS)
     @Permission("修改用户状态")
     @PostMapping("/changeUserStatus/{id}/{type}/{status}")
-    public JsonResult<Boolean> changeUserStatus(@PathVariable Long id, @PathVariable UserStatusType type, @PathVariable Boolean status) {
-        return userService.changeUserStatus(id, type, status);
+    public JsonResult<Boolean> changeUserStatus(@PathVariable Long id, @PathVariable UserStatusType type, @PathVariable Boolean status, HttpServletRequest request) {
+        String header = ConfigUtils.getProperty(AppProperties.Security.HEADER, "authorization");
+        String token = request.getHeader(header);
+        return userService.changeUserStatus(id, token, type, status);
     }
 
     /**

@@ -4,7 +4,7 @@ import com.cdsen.power.core.IPageRequest;
 import com.cdsen.power.core.JsonResult;
 import com.cdsen.power.core.PageResult;
 import com.cdsen.power.core.SpecificationFactory;
-import com.cdsen.power.core.security.model.Session;
+import com.cdsen.power.core.security.model.UserDetailsImpl;
 import com.cdsen.power.core.security.util.SecurityUtils;
 import com.cdsen.power.server.money.dao.po.ConsumptionItemPO;
 import com.cdsen.power.server.money.dao.po.ConsumptionPO;
@@ -54,10 +54,10 @@ public class ConsumptionServiceImpl implements ConsumptionService {
     @Transactional(rollbackFor = Exception.class)
     public JsonResult<ConsumptionVO> create(ConsumptionCreateAO ao) {
         Pair<ConsumptionPO, List<ConsumptionItemPO>> pair = ConsumptionTransfer.AO_TO_PO_PAIR.apply(ao);
-        Session session = SecurityUtils.currentSession();
+        UserDetailsImpl userDetails = SecurityUtils.currentUserDetails();
 
         ConsumptionPO po = pair.getFirst();
-        po.setUserId(session.getUserId());
+        po.setUserId(userDetails.getUserId());
         consumptionRepository.save(po);
 
         List<ConsumptionItemPO> items = pair.getSecond();
@@ -81,8 +81,8 @@ public class ConsumptionServiceImpl implements ConsumptionService {
 
     @Override
     public JsonResult<PageResult<ConsumptionVO>> page(IPageRequest<ConsumptionQuery> iPageRequest) {
-        Session session = SecurityUtils.currentSession();
-        Long userId = session.getUserId();
+        UserDetailsImpl userDetails = SecurityUtils.currentUserDetails();
+        Long userId = userDetails.getUserId();
 
         Pageable pageable = iPageRequest.of();
         ConsumptionQuery customParams = iPageRequest.getCustomParams();
@@ -170,8 +170,8 @@ public class ConsumptionServiceImpl implements ConsumptionService {
 
     @Override
     public JsonResult<ConsumptionStatisticsVO> statistics(CurrencyType currency, ConsumptionQuery query) {
-        Session session = SecurityUtils.currentSession();
-        Long userId = session.getUserId();
+        UserDetailsImpl userDetails = SecurityUtils.currentUserDetails();
+        Long userId = userDetails.getUserId();
         List<ConsumptionPO> all = consumptionRepository.findAll(spec(userId, query));
 
         BigDecimal total = BigDecimal.ZERO;

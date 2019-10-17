@@ -1,14 +1,12 @@
 package com.cdsen.power.server.user.service.impl;
 
+import com.cdsen.apollo.ConfigUtils;
 import com.cdsen.power.core.*;
 import com.cdsen.power.core.jpa.FindUtils;
 import com.cdsen.power.core.security.model.LoginVO;
-import com.cdsen.power.core.security.model.Session;
 import com.cdsen.power.core.security.model.Token;
 import com.cdsen.power.core.security.model.UserInfo;
-import com.cdsen.power.core.security.session.SessionManage;
 import com.cdsen.power.core.security.util.JwtUtils;
-import com.cdsen.power.core.security.util.SecurityUtils;
 import com.cdsen.power.core.util.VerifyCodeUtils;
 import com.cdsen.power.server.email.model.vo.SimpleMailAO;
 import com.cdsen.power.server.email.service.MailService;
@@ -28,10 +26,11 @@ import com.cdsen.power.server.user.model.query.UserQuery;
 import com.cdsen.power.server.user.model.vo.UserVO;
 import com.cdsen.power.server.user.service.UserService;
 import com.cdsen.power.server.user.transfer.UserTransfer;
+import com.cdsen.user.UserLoginInfo;
+import com.cdsen.user.UserManager;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -40,6 +39,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -55,26 +55,27 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl implements UserService {
 
+    private static final String CUSTOMER = "customer";
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
-    private final SessionManage sessionManage;
     private final MailService mailService;
     private final UserRepository userRepository;
     private final StringRedisTemplate redisTemplate;
     private final RoleRepository roleRepository;
     private final RolePermissionRepository rolePermissionRepository;
     private final PermissionRepository permissionRepository;
+    private final UserManager userManager;
 
-    public UserServiceImpl(PasswordEncoder passwordEncoder, JwtUtils jwtUtils, @Qualifier("redisSessionManage") SessionManage sessionManage, MailService mailService, UserRepository userRepository, StringRedisTemplate redisTemplate, RoleRepository roleRepository, RolePermissionRepository rolePermissionRepository, PermissionRepository permissionRepository) {
+    public UserServiceImpl(PasswordEncoder passwordEncoder, JwtUtils jwtUtils, MailService mailService, UserRepository userRepository, StringRedisTemplate redisTemplate, RoleRepository roleRepository, RolePermissionRepository rolePermissionRepository, PermissionRepository permissionRepository, UserManager userManager) {
         this.passwordEncoder = passwordEncoder;
         this.jwtUtils = jwtUtils;
-        this.sessionManage = sessionManage;
         this.mailService = mailService;
         this.userRepository = userRepository;
         this.redisTemplate = redisTemplate;
         this.roleRepository = roleRepository;
         this.rolePermissionRepository = rolePermissionRepository;
         this.permissionRepository = permissionRepository;
+        this.userManager = userManager;
     }
 
     @Override
@@ -92,22 +93,21 @@ public class UserServiceImpl implements UserService {
                 permissionRepository.findAllById(
                         rolePermissionRepository.findAllByRoleId(roleId).stream().map(RolePermissionPO::getPermissionId
                         ).collect(Collectors.toList())).stream().map(PermissionPO::getMark).collect(Collectors.toList())
-                : Lists.newArrayList();
+                : Lists.newArrayList(CUSTOMER);
 
         UserInfo userInfo = new UserInfo(po.getUsername(), po.getIntroduction(), po.getAvatar(), viewRoles);
-        Session session = new Session(userInfo, po.getPassword());
-        session.setUserId(po.getId());
-        session.setAccountNonLocked(true);
-        String token = jwtUtils.generateToken(session);
-        sessionManage.save(login.getUsername(), session);
+        UserLoginInfo loginInfo = new UserLoginInfo(po.getId(), po.getUsername(), po.getPassword(), po.getIsAccountNonLocked(), po.getIsEnabled(), viewRoles);
+        String token = jwtUtils.generateToken(po.getUsername());
+        userManager.saveUser(token, loginInfo);
         return JsonResult.of(new Token(token, userInfo));
     }
 
     @Override
-    public JsonResult logout() {
-        String currentUser = SecurityUtils.currentUser();
-        if (StringUtils.isNotBlank(currentUser)) {
-            sessionManage.invalidate(currentUser);
+    public JsonResult logout(HttpServletRequest request) {
+        String header = ConfigUtils.getProperty(com.cdsen.apollo.AppProperties.Security.HEADER, "authorization");
+        String token = request.getHeader(header);
+        if (StringUtils.isNotBlank(token)) {
+            userManager.invalidate(token);
         }
         return JsonResult.success();
     }
@@ -268,21 +268,21 @@ public class UserServiceImpl implements UserService {
     @Override
     public JsonResult<PageResult<UserVO>> page(IPageRequest<UserQuery> iPageRequest) {
         Pageable pageable = iPageRequest.of();
-        Page<UserPO> page = userRepository.findAll(SpecificationFactory.produce((predicates, userPORoot, criteriaBuilder) -> {
-            predicates.add(criteriaBuilder.equal(userPORoot.get("isDelete").as(Boolean.class), false));
+        Page<UserPO> page = userRepository.findAll(SpecificationFactory.produce((predicates, root, criteriaBuilder) -> {
+            predicates.add(criteriaBuilder.equal(root.get("isDelete").as(Boolean.class), false));
             UserQuery customParams = iPageRequest.getCustomParams();
             if (null != customParams) {
                 Long userId = customParams.getUserId();
                 if (null != userId) {
-                    predicates.add(criteriaBuilder.equal(userPORoot.get("id").as(Long.class), userId));
+                    predicates.add(criteriaBuilder.equal(root.get("id").as(Long.class), userId));
                 }
                 String username = customParams.getUsername();
                 if (StringUtils.isNotBlank(username)) {
-                    predicates.add(criteriaBuilder.like(userPORoot.get("username").as(String.class), FindUtils.allMatch(username)));
+                    predicates.add(criteriaBuilder.like(root.get("username").as(String.class), FindUtils.allMatch(username)));
                 }
                 String email = customParams.getEmail();
                 if (StringUtils.isNotBlank(email)) {
-                    predicates.add(criteriaBuilder.like(userPORoot.get("email").as(String.class), FindUtils.allMatch(email)));
+                    predicates.add(criteriaBuilder.like(root.get("email").as(String.class), FindUtils.allMatch(email)));
                 }
             }
         }), pageable);
@@ -291,14 +291,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public JsonResult<Boolean> changeUserStatus(Long id, UserStatusType type, Boolean status) {
+    public JsonResult<Boolean> changeUserStatus(Long id, String token, UserStatusType type, Boolean status) {
         return userRepository.findById(id)
                 .map(po -> {
                     switch (type){
                         case ENABLED: po.setIsEnabled(status);break;
                         case ACCOUNT_NON_LOCKED: {
                             po.setIsAccountNonLocked(status);
-                            sessionManage.changeLockState(po.getUsername(), status);
+                            userManager.changeLockState(token, status);
+                            break;
                         }
                         default:
                     }

@@ -4,7 +4,7 @@ import com.cdsen.power.core.IPageRequest;
 import com.cdsen.power.core.JsonResult;
 import com.cdsen.power.core.PageResult;
 import com.cdsen.power.core.SpecificationFactory;
-import com.cdsen.power.core.security.model.Session;
+import com.cdsen.power.core.security.model.UserDetailsImpl;
 import com.cdsen.power.core.security.util.SecurityUtils;
 import com.cdsen.power.server.health.dao.po.SleepPO;
 import com.cdsen.power.server.health.dao.repository.SleepRepository;
@@ -39,9 +39,9 @@ public class SleepServiceImpl implements SleepService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public JsonResult<SleepVO> create(SleepCreateAO ao) {
-        Session session = SecurityUtils.currentSession();
+        UserDetailsImpl userDetails = SecurityUtils.currentUserDetails();
         SleepPO po = SleepTransfer.CREATE_TO_PO.apply(ao);
-        po.setUserId(session.getUserId());
+        po.setUserId(userDetails.getUserId());
         sleepRepository.save(po);
         return JsonResult.of(SleepTransfer.PO_TO_VO.apply(po));
     }
@@ -85,19 +85,19 @@ public class SleepServiceImpl implements SleepService {
 
     @Override
     public JsonResult<PageResult<SleepVO>> page(IPageRequest<SleepQuery> iPageRequest) {
-        Session session = SecurityUtils.currentSession();
+        UserDetailsImpl userDetails = SecurityUtils.currentUserDetails();
         Pageable pageable = iPageRequest.of();
-        Page<SleepPO> pageInfo = sleepRepository.findAll(SpecificationFactory.produce((predicates, sleepPORoot, criteriaBuilder) -> {
-            predicates.add(criteriaBuilder.equal(sleepPORoot.get("userId").as(Long.class), session.getUserId()));
+        Page<SleepPO> pageInfo = sleepRepository.findAll(SpecificationFactory.produce((predicates, root, criteriaBuilder) -> {
+            predicates.add(criteriaBuilder.equal(root.get("userId").as(Long.class), userDetails.getUserId()));
             SleepQuery customParams = iPageRequest.getCustomParams();
             if (null != customParams) {
                 LocalDate start = customParams.getStart();
                 if (null != start) {
-                    predicates.add(criteriaBuilder.greaterThanOrEqualTo(sleepPORoot.get("sleepTime").as(LocalDate.class), start));
+                    predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("sleepTime").as(LocalDate.class), start));
                 }
                 LocalDate end = customParams.getEnd();
                 if (null != end) {
-                    predicates.add(criteriaBuilder.lessThanOrEqualTo(sleepPORoot.get("sleepTime").as(LocalDate.class), end));
+                    predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("sleepTime").as(LocalDate.class), end));
                 }
             }
         }), pageable);

@@ -1,13 +1,15 @@
 package com.cdsen.power.core.security.filter;
 
-import com.cdsen.power.core.AppProperties;
-import com.cdsen.power.core.security.session.SessionManage;
+import com.cdsen.apollo.AppProperties;
+import com.cdsen.apollo.ConfigUtils;
+import com.cdsen.power.core.security.model.UserDetailsImpl;
 import com.cdsen.power.core.security.util.JwtUtils;
-import com.cdsen.power.core.security.model.Session;
+import com.cdsen.user.UserLoginInfo;
+import com.cdsen.user.UserManager;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -19,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author HuSen
@@ -27,30 +30,35 @@ import java.util.Objects;
 @Component
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
-    private final AppProperties appProperties;
     private final JwtUtils jwtUtils;
-    private final SessionManage sessionManage;
-
-    public JwtAuthenticationTokenFilter(AppProperties appProperties, JwtUtils jwtUtils, @Qualifier("redisSessionManage") SessionManage sessionManage) {
-        this.appProperties = appProperties;
+    private final UserManager userManager;
+    public JwtAuthenticationTokenFilter(JwtUtils jwtUtils, UserManager userManager) {
         this.jwtUtils = jwtUtils;
-        this.sessionManage = sessionManage;
+        this.userManager = userManager;
     }
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest httpServletRequest, @NonNull HttpServletResponse httpServletResponse, @NonNull FilterChain filterChain) throws IOException, ServletException {
-        AppProperties.Security security = appProperties.getSecurity();
-        String token = httpServletRequest.getHeader(security.getHeader());
+        String header = ConfigUtils.getProperty(AppProperties.Security.HEADER, "authorization");
+        String token = httpServletRequest.getHeader(header);
         String username;
-        Session session = null;
+        UserLoginInfo loginInfo = null;
         boolean set = StringUtils.isNotBlank(token)
                 && StringUtils.isNotBlank((username = jwtUtils.getUsernameFromToken(token.trim())))
                 && SecurityContextHolder.getContext().getAuthentication() == null
-                && Objects.nonNull((session = sessionManage.getSession(username)))
-                && jwtUtils.validateToken(token, session);
+                && Objects.nonNull(loginInfo = userManager.getLoginInfo(token))
+                && jwtUtils.validateToken(token, username);
 
         if (set) {
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(session, null, session.getAuthorities());
+            UserDetailsImpl userDetails = new UserDetailsImpl(
+                    loginInfo.getUserId(),
+                    loginInfo.getUsername(),
+                    loginInfo.getPassword(),
+                    loginInfo.isAccountNonLocked(),
+                    loginInfo.isEnabled(),
+                    loginInfo.getRoles().stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet())
+            );
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }

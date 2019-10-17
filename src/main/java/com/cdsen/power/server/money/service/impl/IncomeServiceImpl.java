@@ -1,7 +1,7 @@
 package com.cdsen.power.server.money.service.impl;
 
 import com.cdsen.power.core.*;
-import com.cdsen.power.core.security.model.Session;
+import com.cdsen.power.core.security.model.UserDetailsImpl;
 import com.cdsen.power.core.security.util.SecurityUtils;
 import com.cdsen.power.server.money.dao.po.IncomePO;
 import com.cdsen.power.server.money.dao.repository.IncomeRepository;
@@ -38,10 +38,10 @@ public class IncomeServiceImpl implements IncomeService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public JsonResult<IncomeVO> create(InComeCreateAO ao) {
-        Session session = SecurityUtils.currentSession();
+        UserDetailsImpl userDetails = SecurityUtils.currentUserDetails();
 
         IncomePO po = IncomeTransfer.CREATE_TO_PO.apply(ao);
-        po.setUserId(session.getUserId());
+        po.setUserId(userDetails.getUserId());
         incomeRepository.save(po);
 
         return JsonResult.of(IncomeTransfer.PO_TO_VO.apply(po));
@@ -50,10 +50,10 @@ public class IncomeServiceImpl implements IncomeService {
     @Override
     public JsonResult<PageResult<IncomeVO>> page(IPageRequest<InComeQuery> iPageRequest) {
         // TODO 后期session 自动组装在参数里面 可以直接获取
-        Session session = SecurityUtils.currentSession();
+        UserDetailsImpl userDetails = SecurityUtils.currentUserDetails();
         Pageable pageable = iPageRequest.of();
         Page<IncomePO> page = incomeRepository.findAll(SpecificationFactory.produce((predicates, root, criteriaBuilder) -> {
-            predicates.add(criteriaBuilder.equal(root.get("userId").as(Long.class), session.getUserId()));
+            predicates.add(criteriaBuilder.equal(root.get("userId").as(Long.class), userDetails.getUserId()));
 
             InComeQuery customParams = iPageRequest.getCustomParams();
             if (customParams == null) {
@@ -95,7 +95,7 @@ public class IncomeServiceImpl implements IncomeService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public JsonResult<IncomeVO> update(IncomeUpdateAO ao) {
-        Session session = SecurityUtils.currentSession();
+        UserDetailsImpl userDetails = SecurityUtils.currentUserDetails();
         Optional<IncomePO> byId = incomeRepository.findById(ao.getId());
         if (byId.isPresent()) {
             IncomePO po = byId.get();
@@ -103,7 +103,7 @@ public class IncomeServiceImpl implements IncomeService {
             po.setDescription(ao.getDescription());
             po.setCurrency(ao.getCurrency());
             po.setIncome(ao.getIncome());
-            po.setUserId(session.getUserId());
+            po.setUserId(userDetails.getUserId());
             incomeRepository.save(po);
             return JsonResult.of(IncomeTransfer.PO_TO_VO.apply(po));
         } else {

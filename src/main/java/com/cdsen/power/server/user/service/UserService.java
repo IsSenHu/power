@@ -12,6 +12,8 @@ import com.cdsen.power.server.user.model.cons.UserStatusType;
 import com.cdsen.power.server.user.model.query.UserQuery;
 import com.cdsen.power.server.user.model.vo.UserVO;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * @author HuSen
  * create on 2019/8/29 10:29
@@ -29,9 +31,10 @@ public interface UserService {
     /**
      * 登出，注销当前用户
      *
+     * @param request HttpServletRequest
      * @return 登出结果
      */
-    JsonResult logout();
+    JsonResult logout(HttpServletRequest request);
 
     /**
      * 注册用户
@@ -87,11 +90,12 @@ public interface UserService {
      * 修改用户状态
      *
      * @param id     ID
+     * @param token  Token
      * @param type   状态类型
      * @param status 状态
      * @return 修改结果
      */
-    JsonResult<Boolean> changeUserStatus(Long id, UserStatusType type, Boolean status);
+    JsonResult<Boolean> changeUserStatus(Long id, String token, UserStatusType type, Boolean status);
 
     /**
      * 创建新用户

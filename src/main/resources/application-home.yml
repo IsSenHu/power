@@ -38,11 +38,6 @@ spring:
         enabled: false
 com:
   cdsen:
-    security:
-      expiration: 180
-      header: authorization
-      secret: 521428Slyt
-      max-session-in-cache: 10000
     admin:
       default-username: admin
       default-password: 19970621Sly
@@ -67,4 +62,4 @@ dubbo:
 app:
   id: Power
 apollo:
-  meta: http://apollo.free.idcfengye.com
+  meta: http://192.168.247.135:8080

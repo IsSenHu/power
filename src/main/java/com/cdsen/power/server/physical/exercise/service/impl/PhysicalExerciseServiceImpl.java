@@ -4,7 +4,7 @@ import com.cdsen.power.core.IPageRequest;
 import com.cdsen.power.core.JsonResult;
 import com.cdsen.power.core.PageResult;
 import com.cdsen.power.core.SpecificationFactory;
-import com.cdsen.power.core.security.model.Session;
+import com.cdsen.power.core.security.model.UserDetailsImpl;
 import com.cdsen.power.core.security.util.SecurityUtils;
 import com.cdsen.power.server.physical.exercise.dao.po.ExerciseItemPO;
 import com.cdsen.power.server.physical.exercise.dao.po.PhysicalExercisePO;
@@ -48,7 +48,7 @@ public class PhysicalExerciseServiceImpl implements PhysicalExerciseService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public JsonResult<PhysicalExerciseVO> create(PhysicalExerciseCreateAO ao) {
-        Long userId = SecurityUtils.currentSession().getUserId();
+        Long userId = SecurityUtils.currentUserDetails().getUserId();
         PhysicalExercisePO physicalExercise = physicalExerciseRepository.findByUserIdAndTime(userId, ao.getTime());
         if (physicalExercise == null) {
             physicalExercise = CREATE_TO_PO.apply(ao);
@@ -113,18 +113,18 @@ public class PhysicalExerciseServiceImpl implements PhysicalExerciseService {
     @Override
     public JsonResult<PageResult<PhysicalExerciseVO>> page(IPageRequest<PhysicalExerciseQuery> iPageRequest) {
         Pageable pageable = iPageRequest.of();
-        Session session = SecurityUtils.currentSession();
-        Page<PhysicalExercisePO> pageInfo = physicalExerciseRepository.findAll(SpecificationFactory.produce((predicates, physicalExercisePORoot, criteriaBuilder) -> {
-            predicates.add(criteriaBuilder.equal(physicalExercisePORoot.get("userId").as(Long.class), session.getUserId()));
+        UserDetailsImpl userDetails = SecurityUtils.currentUserDetails();
+        Page<PhysicalExercisePO> pageInfo = physicalExerciseRepository.findAll(SpecificationFactory.produce((predicates, root, criteriaBuilder) -> {
+            predicates.add(criteriaBuilder.equal(root.get("userId").as(Long.class), userDetails.getUserId()));
             PhysicalExerciseQuery customParams = iPageRequest.getCustomParams();
             if (null != customParams) {
                 LocalDate start = customParams.getStart();
                 if (null != start) {
-                    predicates.add(criteriaBuilder.greaterThanOrEqualTo(physicalExercisePORoot.get("time").as(LocalDate.class), start));
+                    predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("time").as(LocalDate.class), start));
                 }
                 LocalDate end = customParams.getEnd();
                 if (null != end) {
-                    predicates.add(criteriaBuilder.lessThanOrEqualTo(physicalExercisePORoot.get("time").as(LocalDate.class), end));
+                    predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("time").as(LocalDate.class), end));
                 }
             }
         }), pageable);

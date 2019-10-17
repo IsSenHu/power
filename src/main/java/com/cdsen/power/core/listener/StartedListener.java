@@ -10,7 +10,6 @@ import com.cdsen.power.server.user.service.RoleService;
 import com.cdsen.power.server.user.service.UserService;
 import com.ctrip.framework.apollo.model.ConfigChange;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.EventListener;
@@ -51,11 +50,11 @@ public class StartedListener {
         // 加载Oss配置
         loadOssProperties();
         // 监听Apollo配置变化
-//        configChangeListening();
+        configChangeListening();
     }
 
     private void loadOssProperties() {
-        String ossEndpoints = "[{\"endpoint\":\"oss-cn-chengdu.aliyuncs.com\",\"bucketName\":\"our-stories\",\"accessKeyId\":\"LTAI4FooCvxWUJj6s7MCNLui\",\"accessKeySecret\":\"o6Fg9AqRR7DzXNXUj186BvmhkNTWkT\"}]";
+        String ossEndpoints = ConfigUtils.getProperty("ossEndpoints", "[{\"endpoint\":\"oss-cn-chengdu.aliyuncs.com\",\"bucketName\":\"our-stories\",\"accessKeyId\":\"LTAI4FooCvxWUJj6s7MCNLui\",\"accessKeySecret\":\"o6Fg9AqRR7DzXNXUj186BvmhkNTWkT\"}]");
         log.info("加载到OSS配置:{}", ossEndpoints);
         List<OssProperties> ossProperties = JsonUtils.parseArr(ossEndpoints, OssProperties.class);
         Assert.notNull(ossProperties, "load oss properties fail!");
