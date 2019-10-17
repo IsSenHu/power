@@ -1,12 +1,10 @@
 package com.cdsen.power.core.security.endpoint;
 
-import com.cdsen.apollo.AppProperties;
 import com.cdsen.apollo.ConfigUtils;
 import com.cdsen.power.core.JsonResult;
 import com.cdsen.power.core.security.model.LoginVO;
 import com.cdsen.power.core.security.model.Token;
 import com.cdsen.power.core.security.model.UserDetailsImpl;
-import com.cdsen.power.core.security.util.JwtUtils;
 import com.cdsen.power.core.security.util.SecurityUtils;
 import com.cdsen.power.server.user.model.cons.UserStatusType;
 import com.cdsen.power.server.user.service.UserService;
@@ -26,12 +24,10 @@ import javax.servlet.http.HttpServletRequest;
 public class AuthenticateEndpoint {
 
     private final UserService userService;
-    private final JwtUtils jwtUtils;
     private final PasswordEncoder passwordEncoder;
 
-    public AuthenticateEndpoint(UserService userService, JwtUtils jwtUtils, PasswordEncoder passwordEncoder) {
+    public AuthenticateEndpoint(UserService userService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
-        this.jwtUtils = jwtUtils;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -65,10 +61,8 @@ public class AuthenticateEndpoint {
      */
     @PostMapping("/check")
     public JsonResult<Boolean> check(HttpServletRequest request) {
-        String header = ConfigUtils.getProperty(AppProperties.Security.HEADER, "authorization");
-        String token = request.getHeader(header);
-        boolean expired = jwtUtils.isExpired(token);
-        return JsonResult.of(!expired);
+        UserDetailsImpl userDetails = SecurityUtils.currentUserDetails();
+        return JsonResult.of(userDetails.isAccountNonLocked() && userDetails.isEnabled());
     }
 
     /**
