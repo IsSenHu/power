@@ -33,6 +33,7 @@ public class AuthenticateEndpoint {
 
     /**
      * 登录，获取token
+     * TODO 配置在登录的时候一起返回，减少请求次数
      *
      * @param login 登录数据模型
      * @return 登录结果
