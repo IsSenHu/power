@@ -95,6 +95,13 @@ public class ArticleServiceImpl implements ArticleService {
         Page<ArticlePO> pageInfo = articleRepository.findAll(SpecificationFactory.produce((predicates, root, criteriaBuilder) -> {
             Long userId = SecurityUtils.currentUserDetails().getUserId();
             predicates.add(criteriaBuilder.equal(root.get("userId").as(Long.class), userId));
+            ArticleQuery customParams = iPageRequest.getCustomParams();
+            if (null != customParams) {
+                Long type = customParams.getType();
+                if (null != type) {
+                    predicates.add(criteriaBuilder.equal(root.get("type").as(Long.class), type));
+                }
+            }
         }), pageable);
         return JsonResult.of(PageResult.of(pageInfo.getTotalElements(), PO_TO_SIMPLE_VO, pageInfo.getContent()));
     }

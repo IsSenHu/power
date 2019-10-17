@@ -25,7 +25,7 @@ public class JwtUtils {
 
     private String generateToken(Map<String, Object> claims) {
         Date created = (Date) claims.get(CREATED);
-        String secret = ConfigUtils.getProperty(AppProperties.Security.SECRET, "521428Slyt");
+        String secret = ConfigUtils.getProperty(AppProperties.Security.SECRET, "");
         String expiration = ConfigUtils.getProperty(AppProperties.Security.EXPIRATION, "60");
         Date expirationDate = new Date(created.getTime() + TimeUnit.MINUTES.toMillis(Long.parseLong(expiration)));
         return Jwts.builder().setClaims(claims).setExpiration(expirationDate).signWith(SignatureAlgorithm.HS512, secret).compact();
@@ -34,7 +34,7 @@ public class JwtUtils {
     private Claims getClaimsFromToken(String token) {
         Claims claims = null;
         try {
-            String secret = ConfigUtils.getProperty(AppProperties.Security.SECRET, "521428Slyt");
+            String secret = ConfigUtils.getProperty(AppProperties.Security.SECRET, "");
             claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
         } catch (Exception ignored) {}
         return claims;
