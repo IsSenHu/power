@@ -8,6 +8,7 @@ import com.cdsen.power.core.security.model.Token;
 import com.cdsen.power.core.security.model.UserInfo;
 import com.cdsen.power.core.security.util.JwtUtils;
 import com.cdsen.power.core.util.VerifyCodeUtils;
+import com.cdsen.power.server.config.service.ConfigService;
 import com.cdsen.power.server.email.model.vo.SimpleMailAO;
 import com.cdsen.power.server.email.service.MailService;
 import com.cdsen.power.server.user.dao.po.PermissionPO;
@@ -65,8 +66,9 @@ public class UserServiceImpl implements UserService {
     private final RolePermissionRepository rolePermissionRepository;
     private final PermissionRepository permissionRepository;
     private final UserManager userManager;
+    private final ConfigService configService;
 
-    public UserServiceImpl(PasswordEncoder passwordEncoder, JwtUtils jwtUtils, MailService mailService, UserRepository userRepository, StringRedisTemplate redisTemplate, RoleRepository roleRepository, RolePermissionRepository rolePermissionRepository, PermissionRepository permissionRepository, UserManager userManager) {
+    public UserServiceImpl(PasswordEncoder passwordEncoder, JwtUtils jwtUtils, MailService mailService, UserRepository userRepository, StringRedisTemplate redisTemplate, RoleRepository roleRepository, RolePermissionRepository rolePermissionRepository, PermissionRepository permissionRepository, UserManager userManager, ConfigService configService) {
         this.passwordEncoder = passwordEncoder;
         this.jwtUtils = jwtUtils;
         this.mailService = mailService;
@@ -76,6 +78,7 @@ public class UserServiceImpl implements UserService {
         this.rolePermissionRepository = rolePermissionRepository;
         this.permissionRepository = permissionRepository;
         this.userManager = userManager;
+        this.configService = configService;
     }
 
     @Override
@@ -95,7 +98,7 @@ public class UserServiceImpl implements UserService {
                         ).collect(Collectors.toList())).stream().map(PermissionPO::getMark).collect(Collectors.toList())
                 : Lists.newArrayList(CUSTOMER);
 
-        UserInfo userInfo = new UserInfo(po.getUsername(), po.getIntroduction(), po.getAvatar(), viewRoles);
+        UserInfo userInfo = new UserInfo(po.getUsername(), po.getIntroduction(), po.getAvatar(), viewRoles, configService.findAllByUserId(po.getId()));
         UserLoginInfo loginInfo = new UserLoginInfo(po.getId(), po.getUsername(), po.getPassword(), po.getIsAccountNonLocked(), po.getIsEnabled(), viewRoles);
         String token = jwtUtils.generateToken(po.getUsername());
         userManager.saveUser(token, loginInfo);

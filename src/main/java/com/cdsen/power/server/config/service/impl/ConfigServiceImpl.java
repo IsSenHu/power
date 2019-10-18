@@ -111,6 +111,12 @@ public class ConfigServiceImpl implements ConfigService {
 
     @Override
     public JsonResult<Map<String, List<ConfigVO>>> findAll() {
-        return JsonResult.of(configRepository.findAll().stream().map(PO_TO_VO).collect(Collectors.groupingBy(vo -> vo.getConfigType().name())));
+        Long userId = SecurityUtils.currentUserDetails().getUserId();
+        return JsonResult.of(findAllByUserId(userId));
+    }
+
+    @Override
+    public Map<String, List<ConfigVO>> findAllByUserId(Long userId) {
+        return configRepository.findAllByUserId(userId).stream().map(PO_TO_VO).collect(Collectors.groupingBy(vo -> vo.getConfigType().name()));
     }
 }

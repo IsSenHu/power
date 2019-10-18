@@ -1,8 +1,10 @@
 package com.cdsen.power.core.security.model;
 
+import com.cdsen.power.server.config.model.vo.ConfigVO;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author HuSen
@@ -11,11 +13,12 @@ import java.util.List;
 @Data
 public class UserInfo {
 
-    public UserInfo(String name, String introduction, String avatar, List<String> roles) {
+    public UserInfo(String name, String introduction, String avatar, List<String> roles, Map<String, List<ConfigVO>> selfConfig) {
         this.name = name;
         this.introduction = introduction;
         this.avatar = avatar;
         this.roles = roles;
+        this.selfConfig = selfConfig;
     }
 
     /**
@@ -38,4 +41,9 @@ public class UserInfo {
      * 在 本系统中对应权限
      */
     private List<String> roles;
+
+    /**
+     * 个人配置
+     */
+    private Map<String, List<ConfigVO>> selfConfig;
 }

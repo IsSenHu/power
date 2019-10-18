@@ -33,7 +33,7 @@ spring:
             enable: true
             required: true
   redis:
-    host: 118.24.38.46
+    host: 192.168.247.135
     port: 6379
     password: 521428Slyt
     database: 15
@@ -56,7 +56,7 @@ com:
       exclusive-permission-name: 超级管理员专属权限
     redisson:
       single:
-        address: redis://118.24.38.46:6379
+        address: redis://192.168.247.135:6379
         password: 521428Slyt
         database: 14
 dubbo:

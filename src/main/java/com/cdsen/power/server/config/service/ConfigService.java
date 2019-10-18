@@ -62,4 +62,12 @@ public interface ConfigService {
      * @return 所有的配置
      */
     JsonResult<Map<String, List<ConfigVO>>> findAll();
+
+    /**
+     * 查询所有的配置
+     *
+     * @param userId 用户ID
+     * @return 所有的配置
+     */
+    Map<String, List<ConfigVO>> findAllByUserId(Long userId);
 }
