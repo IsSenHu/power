@@ -60,6 +60,11 @@
         </dependency>
 
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.redisson</groupId>
             <artifactId>redisson</artifactId>
             <version>3.11.3</version>
@@ -133,6 +138,12 @@
         <dependency>
             <groupId>com.cdsen</groupId>
             <artifactId>power-user</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.cdsen</groupId>
+            <artifactId>power-rabbit</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 

@@ -9,6 +9,7 @@ import com.cdsen.power.server.money.model.query.ConsumptionQuery;
 import com.cdsen.power.server.money.model.vo.ConsumptionItemVO;
 import com.cdsen.power.server.money.model.vo.ConsumptionStatisticsVO;
 import com.cdsen.power.server.money.model.vo.ConsumptionVO;
+import com.cdsen.rabbit.model.ConsumptionCreateDTO;
 
 /**
  * @author HuSen
@@ -96,4 +97,12 @@ public interface ConsumptionService {
      * @return 简单统计
      */
     JsonResult<ConsumptionStatisticsVO> statistics(CurrencyType currency, ConsumptionQuery query);
+
+    /**
+     * 创建消费记录
+     *
+     * @param userId 用户ID
+     * @param dto    数据模型
+     */
+    void create(Long userId, ConsumptionCreateDTO dto);
 }

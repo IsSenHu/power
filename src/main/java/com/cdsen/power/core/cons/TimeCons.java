@@ -10,5 +10,7 @@ public class TimeCons {
 
     public static final String F2 = "yyyy-MM-dd";
 
+    public static final String F3 = "yyyyMMddHHmmss";
+
     public static final String GMT8 = "GMT+8";
 }

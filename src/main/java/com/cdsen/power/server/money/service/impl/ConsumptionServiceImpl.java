@@ -4,8 +4,10 @@ import com.cdsen.power.core.IPageRequest;
 import com.cdsen.power.core.JsonResult;
 import com.cdsen.power.core.PageResult;
 import com.cdsen.power.core.SpecificationFactory;
+import com.cdsen.power.core.cons.TimeCons;
 import com.cdsen.power.core.security.model.UserDetailsImpl;
 import com.cdsen.power.core.security.util.SecurityUtils;
+import com.cdsen.power.core.util.DateTimeUtils;
 import com.cdsen.power.server.money.dao.po.ConsumptionItemPO;
 import com.cdsen.power.server.money.dao.po.ConsumptionPO;
 import com.cdsen.power.server.money.dao.repository.ConsumptionItemRepository;
@@ -20,6 +22,9 @@ import com.cdsen.power.server.money.model.vo.ConsumptionVO;
 import com.cdsen.power.server.money.service.ConsumptionService;
 import com.cdsen.power.server.money.transfer.ConsumptionItemTransfer;
 import com.cdsen.power.server.money.transfer.ConsumptionTransfer;
+import com.cdsen.rabbit.model.ConsumptionCreateDTO;
+import com.cdsen.rabbit.model.ConsumptionItemCreateDTO;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -193,4 +198,53 @@ public class ConsumptionServiceImpl implements ConsumptionService {
         }
         return JsonResult.of(statistics);
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void create(Long userId, ConsumptionCreateDTO dto) {
+        String time = dto.getTime();
+        String currency = dto.getCurrency();
+        List<ConsumptionItemCreateDTO> items = dto.getItems();
+        if (StringUtils.isBlank(time) || StringUtils.isBlank(currency) || CollectionUtils.isEmpty(items)) {
+            return;
+        }
+
+        CurrencyType currencyType;
+        try {
+            currencyType = CurrencyType.valueOf(currency);
+        } catch (Exception e) {
+            return;
+        }
+
+        LocalDateTime localDateTime;
+        try {
+            localDateTime = DateTimeUtils.parseLocalDateTime(time, TimeCons.F3);
+        } catch (Exception e) {
+            return;
+        }
+
+        for (ConsumptionItemCreateDTO item : items) {
+            BigDecimal money = item.getMoney();
+            String description = item.getDescription();
+            if (null == money || StringUtils.isBlank(description)) {
+                return;
+            }
+        }
+
+        ConsumptionPO po = new ConsumptionPO();
+        po.setUserId(userId);
+        po.setCurrency(currencyType);
+        po.setTime(localDateTime);
+        consumptionRepository.save(po);
+
+        List<ConsumptionItemPO> collect = items.stream().map(item -> {
+            ConsumptionItemPO itemPo = new ConsumptionItemPO();
+            itemPo.setConsumption(po);
+            itemPo.setDescription(item.getDescription());
+            itemPo.setMoney(item.getMoney());
+            return itemPo;
+        }).collect(Collectors.toList());
+        consumptionItemRepository.saveAll(collect);
+    }
+
 }
