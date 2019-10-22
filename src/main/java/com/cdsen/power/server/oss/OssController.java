@@ -36,8 +36,17 @@ public class OssController {
         this.redisTemplate = redisTemplate;
     }
 
+    /**
+     * 获取有超时的文件url
+     *
+     * @param endpoint   endpoint
+     * @param bucketName bucketName
+     * @param timeout    超时时间 单位秒
+     * @param objectName 文件对象的名称
+     * @return url
+     */
     @GetMapping("/{endpoint}/{bucketName}/{timeout}/{objectName}")
-    public String test(@PathVariable String endpoint, @PathVariable String bucketName, @PathVariable Long timeout, @PathVariable String objectName) {
+    public String getTimeoutUrl(@PathVariable String endpoint, @PathVariable String bucketName, @PathVariable Long timeout, @PathVariable String objectName) {
         OssClient client = OssClientManager.getClient(endpoint, bucketName);
         String url = client.generatePreSignedUrl(timeout, TimeUnit.SECONDS, objectName);
         client.shutdown();
@@ -54,7 +63,7 @@ public class OssController {
      * @return 上传结果
      */
     @PostMapping("/image/{type}/{endpoint}/{bucketName}")
-    public JsonResult<String> image(@PathVariable ImageType type,  @PathVariable String endpoint, @PathVariable String bucketName, MultipartFile image) {
+    public JsonResult<String> image(@PathVariable ImageType type, @PathVariable String endpoint, @PathVariable String bucketName, MultipartFile image) {
         try {
             if (image == null) {
                 return JsonResult.of(OssError.IS_NULL);
