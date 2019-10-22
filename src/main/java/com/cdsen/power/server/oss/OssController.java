@@ -4,6 +4,7 @@ import com.cdsen.power.core.CommonError;
 import com.cdsen.power.core.JsonResult;
 import com.cdsen.power.core.oss.OssClient;
 import com.cdsen.power.core.oss.OssClientManager;
+import com.cdsen.power.server.oss.model.cons.ImageType;
 import com.cdsen.power.server.oss.model.cons.OssError;
 import com.cdsen.power.server.oss.model.cons.RedisKey;
 import com.google.common.collect.Sets;
@@ -43,8 +44,17 @@ public class OssController {
         return url;
     }
 
-    @PostMapping("/image")
-    public JsonResult image(MultipartFile image) {
+    /**
+     * 上传图片到指定的endpoint bucketName
+     *
+     * @param type       图片类型 或者说 使用的地方
+     * @param endpoint   endpoint
+     * @param bucketName bucketName
+     * @param image      图片
+     * @return 上传结果
+     */
+    @PostMapping("/image/{type}/{endpoint}/{bucketName}")
+    public JsonResult<String> image(@PathVariable ImageType type,  @PathVariable String endpoint, @PathVariable String bucketName, MultipartFile image) {
         try {
             if (image == null) {
                 return JsonResult.of(OssError.IS_NULL);
