@@ -101,8 +101,8 @@ public class UserServiceImpl implements UserService {
         UserInfo userInfo = new UserInfo(po.getUsername(), po.getIntroduction(), po.getAvatar(), viewRoles, configService.findAllByUserId(po.getId()));
         UserLoginInfo loginInfo = new UserLoginInfo(po.getId(), po.getUsername(), po.getPassword(), po.getIsAccountNonLocked(), po.getIsEnabled(), viewRoles);
         String token = jwtUtils.generateToken(po.getUsername());
-        userManager.saveUser(token, loginInfo);
-        return JsonResult.of(new Token(token, userInfo));
+        boolean success = userManager.saveUser(token, loginInfo);
+        return success ? JsonResult.of(new Token(token, userInfo)) : JsonResult.of(10002, "同步用户登录信息失败");
     }
 
     @Override
