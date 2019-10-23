@@ -8,6 +8,7 @@ import lombok.Data;
  */
 @Data
 public class OssProperties {
+    private String useFor;
     private String endpoint;
     private String bucketName;
     private String accessKeyId;

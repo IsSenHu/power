@@ -6,4 +6,5 @@ package com.cdsen.power.server.oss.model.cons;
  */
 public class RedisKey {
     public static final String FILE_NAME_KEY = "FileName:";
+    public static final String ARTICLE_FILE_NAME_KEY = "ArticleFileName:";
 }

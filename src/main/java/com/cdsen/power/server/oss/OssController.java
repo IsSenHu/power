@@ -1,10 +1,11 @@
 package com.cdsen.power.server.oss;
 
 import com.cdsen.power.core.CommonError;
+import com.cdsen.power.core.Error;
 import com.cdsen.power.core.JsonResult;
 import com.cdsen.power.core.oss.OssClient;
 import com.cdsen.power.core.oss.OssClientManager;
-import com.cdsen.power.server.oss.model.cons.ImageType;
+import com.cdsen.power.core.oss.OssProperties;
 import com.cdsen.power.server.oss.model.cons.OssError;
 import com.cdsen.power.server.oss.model.cons.RedisKey;
 import com.google.common.collect.Sets;
@@ -12,10 +13,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.util.Pair;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -56,41 +57,58 @@ public class OssController {
     /**
      * 上传图片到指定的endpoint bucketName
      *
-     * @param type       图片类型 或者说 使用的地方
      * @param endpoint   endpoint
      * @param bucketName bucketName
      * @param image      图片
      * @return 上传结果
      */
-    @PostMapping("/image/{type}/{endpoint}/{bucketName}")
-    public JsonResult<String> image(@PathVariable ImageType type, @PathVariable String endpoint, @PathVariable String bucketName, MultipartFile image) {
+    @PostMapping("/image/{endpoint}/{bucketName}")
+    public JsonResult image(@PathVariable String endpoint, @PathVariable String bucketName, MultipartFile image) {
+        Pair<Error, String> result = upload(OssClientManager.getProperties(endpoint, bucketName), image, RedisKey.FILE_NAME_KEY);
+        return result.getFirst().equals(OssError.SUCCESS) ? JsonResult.of(result.getSecond()) : JsonResult.of(result.getFirst());
+    }
+
+    /**
+     * 为文章模块上传文件
+     *
+     * @param file   文件
+     * @return 文件链接
+     */
+    @PostMapping("/uploadForArticle}")
+    public JsonResult<String> uploadForArticle(MultipartFile file) {
+        Pair<Error, String> result = upload(OssClientManager.getProperties("ARTICLE"), file, RedisKey.ARTICLE_FILE_NAME_KEY);
+        return result.getFirst().equals(OssError.SUCCESS) ? JsonResult.of(result.getSecond()) : JsonResult.of(result.getFirst());
+    }
+
+    private Pair<Error, String> upload(OssProperties properties, MultipartFile file, String key) {
         try {
-            if (image == null) {
-                return JsonResult.of(OssError.IS_NULL);
+            if (file == null) {
+                return Pair.of(OssError.IS_NULL, "");
             }
-            String originalFilename = image.getOriginalFilename();
+            String originalFilename = file.getOriginalFilename();
             if (StringUtils.isBlank(originalFilename)) {
-                return JsonResult.of(OssError.BLANK_FILE_NAME);
+                return Pair.of(OssError.BLANK_FILE_NAME, "");
             }
             String suffix = StringUtils.substringAfter(originalFilename, ".");
             if (!ALLOW_IMAGE_TYPE.contains(suffix)) {
-                return JsonResult.of(OssError.ERROR_TYPE);
+                return Pair.of(OssError.ERROR_TYPE, "");
             }
             ValueOperations<String, String> value = redisTemplate.opsForValue();
-            Long increment = value.increment(RedisKey.FILE_NAME_KEY.concat(originalFilename));
+            Long increment = value.increment(key.concat(originalFilename));
             if (increment == null) {
-                return JsonResult.of(CommonError.REDIS_ERROR);
+                return Pair.of(CommonError.REDIS_ERROR, "");
             }
             if (increment > 1) {
                 originalFilename = originalFilename.concat("(").concat(String.valueOf(increment - 1)).concat(")");
             }
-            OssClient client = OssClientManager.getClient("", "");
-            client.upload(originalFilename, image.getInputStream());
+            OssClient client = OssClientManager.getClient(properties.getUseFor());
+            client.upload(originalFilename, file.getInputStream());
             client.shutdown();
-            return JsonResult.success();
-        } catch (IOException e) {
-            log.error("图片上传失败:", e);
-            return JsonResult.of(CommonError.INNER_ERROR);
+            // https://bucketName.endPoint/originalFilename
+            return Pair.of(OssError.SUCCESS, "https://".concat(properties.getBucketName()).concat(".").concat(properties.getEndpoint()).concat("/").concat(originalFilename));
+        } catch (Exception e) {
+            log.error("上传文件到:{}, 失败:", properties, e);
+            return Pair.of(CommonError.INNER_ERROR, "");
         }
     }
 }
