@@ -23,6 +23,7 @@ public class JsonUtils {
         try {
             return JSONArray.parseArray(rawStr, tClass);
         } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -74,7 +75,7 @@ public class OssController {
      * @param file   文件
      * @return 文件链接
      */
-    @PostMapping("/uploadForArticle}")
+    @PostMapping("/uploadForArticle")
     public JsonResult<String> uploadForArticle(MultipartFile file) {
         Pair<Error, String> result = upload(OssClientManager.getProperties("ARTICLE"), file, RedisKey.ARTICLE_FILE_NAME_KEY);
         return result.getFirst().equals(OssError.SUCCESS) ? JsonResult.of(result.getSecond()) : JsonResult.of(result.getFirst());
@@ -93,14 +94,7 @@ public class OssController {
             if (!ALLOW_IMAGE_TYPE.contains(suffix)) {
                 return Pair.of(OssError.ERROR_TYPE, "");
             }
-            ValueOperations<String, String> value = redisTemplate.opsForValue();
-            Long increment = value.increment(key.concat(originalFilename));
-            if (increment == null) {
-                return Pair.of(CommonError.REDIS_ERROR, "");
-            }
-            if (increment > 1) {
-                originalFilename = originalFilename.concat("(").concat(String.valueOf(increment - 1)).concat(")");
-            }
+            originalFilename = UUID.randomUUID().toString().replace("-", "").concat(".").concat(suffix);
             OssClient client = OssClientManager.getClient(properties.getUseFor());
             client.upload(originalFilename, file.getInputStream());
             client.shutdown();
