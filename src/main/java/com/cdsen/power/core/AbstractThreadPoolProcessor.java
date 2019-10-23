@@ -33,7 +33,7 @@ public abstract class AbstractThreadPoolProcessor<T> implements Processor<T> {
      * 返回一个runnable 处理逻辑
      *
      * @param t 处理的数据
-     * @return Runnalbe
+     * @return Runnable
      */
     protected abstract Runnable runnable(T t);
 }
