@@ -11,8 +11,6 @@ import com.cdsen.power.server.oss.model.cons.RedisKey;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.util.Pair;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,10 +30,7 @@ public class OssController {
 
     private static final Set<String> ALLOW_IMAGE_TYPE = Sets.newHashSet("jpg", "png", "bmp", "gif", "webp", "tiff");
 
-    private final StringRedisTemplate redisTemplate;
-
-    public OssController(StringRedisTemplate redisTemplate) {
-        this.redisTemplate = redisTemplate;
+    public OssController() {
     }
 
     /**
