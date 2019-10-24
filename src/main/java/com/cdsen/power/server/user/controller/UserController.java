@@ -1,7 +1,5 @@
 package com.cdsen.power.server.user.controller;
 
-import com.cdsen.apollo.AppProperties;
-import com.cdsen.apollo.ConfigUtils;
 import com.cdsen.power.core.IPageRequest;
 import com.cdsen.power.core.JsonResult;
 import com.cdsen.power.core.PageResult;
@@ -15,6 +13,7 @@ import com.cdsen.power.server.user.model.cons.UserStatusType;
 import com.cdsen.power.server.user.model.query.UserQuery;
 import com.cdsen.power.server.user.model.vo.UserVO;
 import com.cdsen.power.server.user.service.UserService;
+import com.cdsen.user.SecurityConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,10 +34,12 @@ public class UserController {
 
     private final UserService userService;
     private final DistributedLock distributedLock;
+    private final SecurityConfig securityConfig;
 
-    public UserController(UserService userService, DistributedLock distributedLock) {
+    public UserController(UserService userService, DistributedLock distributedLock, SecurityConfig securityConfig) {
         this.userService = userService;
         this.distributedLock = distributedLock;
+        this.securityConfig = securityConfig;
     }
 
     /**
@@ -134,8 +135,7 @@ public class UserController {
     @Permission("修改用户状态")
     @PostMapping("/changeUserStatus/{id}/{type}/{status}")
     public JsonResult<Boolean> changeUserStatus(@PathVariable Long id, @PathVariable UserStatusType type, @PathVariable Boolean status, HttpServletRequest request) {
-        String header = ConfigUtils.getProperty(AppProperties.Security.HEADER, "authorization");
-        String token = request.getHeader(header);
+        String token = request.getHeader(securityConfig.getHeader());
         return userService.changeUserStatus(id, token, type, status);
     }
 

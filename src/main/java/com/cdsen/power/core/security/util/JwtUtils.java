@@ -1,7 +1,6 @@
 package com.cdsen.power.core.security.util;
 
-import com.cdsen.apollo.AppProperties;
-import com.cdsen.apollo.ConfigUtils;
+import com.cdsen.user.SecurityConfig;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -23,19 +22,22 @@ public class JwtUtils {
     private static final String SUB = "sub";
     private static final String CREATED = "created";
 
+    private final SecurityConfig securityConfig;
+
+    public JwtUtils(SecurityConfig securityConfig) {
+        this.securityConfig = securityConfig;
+    }
+
     private String generateToken(Map<String, Object> claims) {
         Date created = (Date) claims.get(CREATED);
-        String secret = ConfigUtils.getProperty(AppProperties.Security.SECRET, "");
-        String expiration = ConfigUtils.getProperty(AppProperties.Security.EXPIRATION, "60");
-        Date expirationDate = new Date(created.getTime() + TimeUnit.MINUTES.toMillis(Long.parseLong(expiration)));
-        return Jwts.builder().setClaims(claims).setExpiration(expirationDate).signWith(SignatureAlgorithm.HS512, secret).compact();
+        Date expirationDate = new Date(created.getTime() + TimeUnit.MINUTES.toMillis(securityConfig.getExpiration()));
+        return Jwts.builder().setClaims(claims).setExpiration(expirationDate).signWith(SignatureAlgorithm.HS512, securityConfig.getSecret()).compact();
     }
 
     private Claims getClaimsFromToken(String token) {
         Claims claims = null;
         try {
-            String secret = ConfigUtils.getProperty(AppProperties.Security.SECRET, "");
-            claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+            claims = Jwts.parser().setSigningKey(securityConfig.getSecret()).parseClaimsJws(token).getBody();
         } catch (Exception ignored) {}
         return claims;
     }

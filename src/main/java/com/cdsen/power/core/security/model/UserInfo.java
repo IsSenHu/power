@@ -1,5 +1,6 @@
 package com.cdsen.power.core.security.model;
 
+import com.cdsen.interfaces.config.vo.BusinessSetting;
 import com.cdsen.power.server.config.model.vo.ConfigVO;
 import lombok.Data;
 
@@ -13,12 +14,13 @@ import java.util.Map;
 @Data
 public class UserInfo {
 
-    public UserInfo(String name, String introduction, String avatar, List<String> roles, Map<String, List<ConfigVO>> selfConfig) {
+    public UserInfo(String name, String introduction, String avatar, List<String> roles, Map<String, List<ConfigVO>> selfConfig, Map<String, List<BusinessSetting>> businessSetting) {
         this.name = name;
         this.introduction = introduction;
         this.avatar = avatar;
         this.roles = roles;
         this.selfConfig = selfConfig;
+        this.businessSetting = businessSetting;
     }
 
     /**
@@ -46,4 +48,9 @@ public class UserInfo {
      * 个人配置
      */
     private Map<String, List<ConfigVO>> selfConfig;
+
+    /**
+     * 应用业务配置
+     */
+    private Map<String, List<BusinessSetting>> businessSetting;
 }

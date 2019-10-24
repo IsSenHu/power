@@ -1,6 +1,5 @@
 package com.cdsen.power.core.listener;
 
-import com.cdsen.apollo.ConfigUtils;
 import com.cdsen.power.core.AppProperties;
 import com.cdsen.power.core.oss.OssClientManager;
 import com.cdsen.power.core.oss.OssProperties;
@@ -14,7 +13,6 @@ import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
 
 import java.util.List;
 
@@ -47,35 +45,6 @@ public class StartedListener {
         roleService.createOrRefreshSuperRole(appProperties.getAdminRole());
         // 创建或刷新超级管理员
         userService.createOrRefreshSuperAdmin(appProperties.getAdminRole().getName(), appProperties.getAdmin());
-        // 加载Oss配置
-        loadOssProperties();
-        // 监听Apollo配置变化
-        configChangeListening();
-    }
-
-    private void loadOssProperties() {
-        String ossEndpoints = ConfigUtils.getProperty("ossEndpoints", "[{\"endpoint\":\"oss-cn-chengdu.aliyuncs.com\",\"bucketName\":\"our-stories\",\"accessKeyId\":\"LTAI4FooCvxWUJj6s7MCNLui\",\"accessKeySecret\":\"o6Fg9AqRR7DzXNXUj186BvmhkNTWkT\"}]");
-        log.info("加载到OSS配置:{}", ossEndpoints);
-        List<OssProperties> ossProperties = JsonUtils.parseArr(ossEndpoints, OssProperties.class);
-        Assert.notNull(ossProperties, "load oss properties fail!");
-        OssClientManager.init(ossProperties);
-    }
-
-    private void configChangeListening() {
-        ConfigUtils.addChangeListener(changeEvent -> {
-            for (String changedKey : changeEvent.changedKeys()) {
-                ConfigChange change = changeEvent.getChange(changedKey);
-                log.info("Found change - key: {}, oldValue: {}, newValue: {}, changeType: {}", change.getPropertyName(), change.getOldValue(), change.getNewValue(), change.getChangeType());
-                switch (change.getPropertyName()) {
-                    case "ossEndpoints": {
-                        changeOssProperties(change);
-                        break;
-                    }
-                    case "test": break;
-                    default:
-                }
-            }
-        });
     }
 
     private void changeOssProperties(ConfigChange change) {

@@ -1,5 +1,8 @@
 package com.cdsen.power.server.config.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Reference;
+import com.cdsen.interfaces.config.service.SelfConfigApiService;
+import com.cdsen.interfaces.config.vo.SelfConfig;
 import com.cdsen.power.core.IPageRequest;
 import com.cdsen.power.core.JsonResult;
 import com.cdsen.power.core.PageResult;
@@ -13,6 +16,7 @@ import com.cdsen.power.server.config.model.cons.ConfigError;
 import com.cdsen.power.server.config.model.cons.ConfigType;
 import com.cdsen.power.server.config.model.vo.ConfigVO;
 import com.cdsen.power.server.config.service.ConfigService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,10 +34,14 @@ import static com.cdsen.power.server.config.transfer.ConfigTransfer.PO_TO_VO;
  * @author HuSen
  * create on 2019/9/17 17:12
  */
+@Slf4j
 @Service
 public class ConfigServiceImpl implements ConfigService {
 
     private final ConfigRepository configRepository;
+
+    @Reference(check = false)
+    private SelfConfigApiService selfConfigApiService;
 
     public ConfigServiceImpl(ConfigRepository configRepository) {
         this.configRepository = configRepository;
@@ -58,6 +66,7 @@ public class ConfigServiceImpl implements ConfigService {
             po.setCustomInfo(JsonUtils.toJsonString(customInfo));
         }
         configRepository.save(po);
+        pushChange(userId);
         return JsonResult.success();
     }
 
@@ -67,6 +76,7 @@ public class ConfigServiceImpl implements ConfigService {
         return configRepository.findById(id)
                 .map(po -> {
                     configRepository.delete(po);
+                    pushChange(po.getUserId());
                     return JsonResult.of(PO_TO_VO.apply(po));
                 })
                 .orElseGet(() -> JsonResult.of(ConfigError.NOT_FOUND));
@@ -89,6 +99,7 @@ public class ConfigServiceImpl implements ConfigService {
                         po.setCustomInfo(JsonUtils.toJsonString(customInfo));
                     }
                     configRepository.save(po);
+                    pushChange(po.getUserId());
                     return JsonResult.success();
                 })
                 .orElseGet(() -> JsonResult.of(ConfigError.NOT_FOUND));
@@ -118,5 +129,25 @@ public class ConfigServiceImpl implements ConfigService {
     @Override
     public Map<String, List<ConfigVO>> findAllByUserId(Long userId) {
         return configRepository.findAllByUserId(userId).stream().map(PO_TO_VO).collect(Collectors.groupingBy(vo -> vo.getConfigType().name()));
+    }
+
+    private void pushChange(Long userId) {
+        try {
+            Map<String, List<SelfConfig>> all = configRepository.findAllByUserId(userId)
+                    .stream()
+                    .map(po -> {
+                        SelfConfig selfConfig = new SelfConfig();
+                        selfConfig.setId(po.getId());
+                        selfConfig.setConfigType(po.getType().name());
+                        selfConfig.setCustomInfo(JsonUtils.parseObj(po.getCustomInfo(), Map.class));
+                        selfConfig.setName(po.getName());
+                        selfConfig.setType(po.getType().getName());
+                        return selfConfig;
+                    })
+                    .collect(Collectors.groupingBy(SelfConfig::getConfigType));
+            selfConfigApiService.push(userId, all);
+        } catch (Exception e) {
+            log.error("推送用户:{} 配置变化失败:", userId, e);
+        }
     }
 }

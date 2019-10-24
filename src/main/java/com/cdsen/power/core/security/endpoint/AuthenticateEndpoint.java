@@ -1,6 +1,5 @@
 package com.cdsen.power.core.security.endpoint;
 
-import com.cdsen.apollo.ConfigUtils;
 import com.cdsen.power.core.JsonResult;
 import com.cdsen.power.core.security.model.LoginVO;
 import com.cdsen.power.core.security.model.Token;
@@ -8,6 +7,7 @@ import com.cdsen.power.core.security.model.UserDetailsImpl;
 import com.cdsen.power.core.security.util.SecurityUtils;
 import com.cdsen.power.server.user.model.cons.UserStatusType;
 import com.cdsen.power.server.user.service.UserService;
+import com.cdsen.user.SecurityConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -25,10 +25,12 @@ public class AuthenticateEndpoint {
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    private final SecurityConfig securityConfig;
 
-    public AuthenticateEndpoint(UserService userService, PasswordEncoder passwordEncoder) {
+    public AuthenticateEndpoint(UserService userService, PasswordEncoder passwordEncoder, SecurityConfig securityConfig) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
+        this.securityConfig = securityConfig;
     }
 
     /**
@@ -73,8 +75,7 @@ public class AuthenticateEndpoint {
      */
     @PostMapping("/lock")
     public JsonResult lock(HttpServletRequest request) {
-        String header = ConfigUtils.getProperty(com.cdsen.apollo.AppProperties.Security.HEADER, "authorization");
-        String token = request.getHeader(header);
+        String token = request.getHeader(securityConfig.getHeader());
         Long userId = SecurityUtils.currentUserDetails().getUserId();
         return userService.changeUserStatus(userId, token, UserStatusType.ACCOUNT_NON_LOCKED, false);
     }
@@ -90,8 +91,7 @@ public class AuthenticateEndpoint {
     public JsonResult unlock(@PathVariable String password, HttpServletRequest request) {
         UserDetailsImpl userDetails = SecurityUtils.currentUserDetails();
         if (passwordEncoder.matches(password, userDetails.getPassword())) {
-            String header = ConfigUtils.getProperty(com.cdsen.apollo.AppProperties.Security.HEADER, "authorization");
-            String token = request.getHeader(header);
+            String token = request.getHeader(securityConfig.getHeader());
             Long userId = userDetails.getUserId();
             return userService.changeUserStatus(userId, token, UserStatusType.ACCOUNT_NON_LOCKED, true);
         } else {

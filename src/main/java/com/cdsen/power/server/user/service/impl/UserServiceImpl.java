@@ -1,6 +1,5 @@
 package com.cdsen.power.server.user.service.impl;
 
-import com.cdsen.apollo.ConfigUtils;
 import com.cdsen.power.core.*;
 import com.cdsen.power.core.jpa.FindUtils;
 import com.cdsen.power.core.security.model.LoginVO;
@@ -27,6 +26,7 @@ import com.cdsen.power.server.user.model.query.UserQuery;
 import com.cdsen.power.server.user.model.vo.UserVO;
 import com.cdsen.power.server.user.service.UserService;
 import com.cdsen.power.server.user.transfer.UserTransfer;
+import com.cdsen.user.SecurityConfig;
 import com.cdsen.user.UserLoginInfo;
 import com.cdsen.user.UserManager;
 import com.google.common.collect.Lists;
@@ -67,8 +67,10 @@ public class UserServiceImpl implements UserService {
     private final PermissionRepository permissionRepository;
     private final UserManager userManager;
     private final ConfigService configService;
+    private final SecurityConfig securityConfig;
+    private final BusinessConfig businessConfig;
 
-    public UserServiceImpl(PasswordEncoder passwordEncoder, JwtUtils jwtUtils, MailService mailService, UserRepository userRepository, StringRedisTemplate redisTemplate, RoleRepository roleRepository, RolePermissionRepository rolePermissionRepository, PermissionRepository permissionRepository, UserManager userManager, ConfigService configService) {
+    public UserServiceImpl(PasswordEncoder passwordEncoder, JwtUtils jwtUtils, MailService mailService, UserRepository userRepository, StringRedisTemplate redisTemplate, RoleRepository roleRepository, RolePermissionRepository rolePermissionRepository, PermissionRepository permissionRepository, UserManager userManager, ConfigService configService, SecurityConfig securityConfig, BusinessConfig businessConfig) {
         this.passwordEncoder = passwordEncoder;
         this.jwtUtils = jwtUtils;
         this.mailService = mailService;
@@ -79,6 +81,8 @@ public class UserServiceImpl implements UserService {
         this.permissionRepository = permissionRepository;
         this.userManager = userManager;
         this.configService = configService;
+        this.securityConfig = securityConfig;
+        this.businessConfig = businessConfig;
     }
 
     @Override
@@ -98,7 +102,7 @@ public class UserServiceImpl implements UserService {
                         ).collect(Collectors.toList())).stream().map(PermissionPO::getMark).collect(Collectors.toList())
                 : Lists.newArrayList(CUSTOMER);
 
-        UserInfo userInfo = new UserInfo(po.getUsername(), po.getIntroduction(), po.getAvatar(), viewRoles, configService.findAllByUserId(po.getId()));
+        UserInfo userInfo = new UserInfo(po.getUsername(), po.getIntroduction(), po.getAvatar(), viewRoles, configService.findAllByUserId(po.getId()), businessConfig.getAll());
         UserLoginInfo loginInfo = new UserLoginInfo(po.getId(), po.getUsername(), po.getPassword(), po.getIsAccountNonLocked(), po.getIsEnabled(), viewRoles);
         String token = jwtUtils.generateToken(po.getUsername());
         boolean success = userManager.saveUser(token, loginInfo);
@@ -107,8 +111,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public JsonResult logout(HttpServletRequest request) {
-        String header = ConfigUtils.getProperty(com.cdsen.apollo.AppProperties.Security.HEADER, "authorization");
-        String token = request.getHeader(header);
+        String token = request.getHeader(securityConfig.getHeader());
         if (StringUtils.isNotBlank(token)) {
             userManager.invalidate(token);
         }

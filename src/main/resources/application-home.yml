@@ -13,6 +13,7 @@ spring:
       maximum-pool-size: 10
       max-lifetime: 30000
       connection-test-query: SELECT 1
+      idle-timeout: 20000
   jpa:
     hibernate:
       ddl-auto: update
@@ -106,9 +107,15 @@ com:
 dubbo:
   application:
     name: power-admin
+    qos-port: 22223
   registry:
     address: zookeeper://118.24.38.46:2181
 app:
   id: Power
 apollo:
   meta: http://192.168.247.135:8080
+  bootstrap:
+    enabled: true
+    namespaces: application
+    eagerLoad:
+      enabled: true

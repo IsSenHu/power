@@ -1,9 +1,8 @@
 package com.cdsen.power.core.security.filter;
 
-import com.cdsen.apollo.AppProperties;
-import com.cdsen.apollo.ConfigUtils;
 import com.cdsen.power.core.security.model.UserDetailsImpl;
 import com.cdsen.power.core.security.util.JwtUtils;
+import com.cdsen.user.SecurityConfig;
 import com.cdsen.user.UserLoginInfo;
 import com.cdsen.user.UserManager;
 import org.apache.commons.lang3.StringUtils;
@@ -32,15 +31,16 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
     private final UserManager userManager;
-    public JwtAuthenticationTokenFilter(JwtUtils jwtUtils, UserManager userManager) {
+    private final SecurityConfig securityConfig;
+    public JwtAuthenticationTokenFilter(JwtUtils jwtUtils, UserManager userManager, SecurityConfig securityConfig) {
         this.jwtUtils = jwtUtils;
         this.userManager = userManager;
+        this.securityConfig = securityConfig;
     }
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest httpServletRequest, @NonNull HttpServletResponse httpServletResponse, @NonNull FilterChain filterChain) throws IOException, ServletException {
-        String header = ConfigUtils.getProperty(AppProperties.Security.HEADER, "authorization");
-        String token = httpServletRequest.getHeader(header);
+        String token = httpServletRequest.getHeader(securityConfig.getHeader());
         String username;
         UserLoginInfo loginInfo = null;
         boolean set = StringUtils.isNotBlank(token)
