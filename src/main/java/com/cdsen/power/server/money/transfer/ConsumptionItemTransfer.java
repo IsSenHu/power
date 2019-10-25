@@ -22,6 +22,7 @@ public class ConsumptionItemTransfer {
         vo.setConsumptionId(x.getId());
         vo.setDescription(po.getDescription());
         vo.setMoney(x.getCurrency().getFormat().format(po.getMoney()));
+        vo.setType(po.getType());
         return vo;
     };
 
@@ -29,6 +30,7 @@ public class ConsumptionItemTransfer {
         ConsumptionItemPO po = new ConsumptionItemPO();
         po.setMoney(ao.getMoney());
         po.setDescription(ao.getDescription());
+        po.setType(ao.getType());
         return po;
     };
 
@@ -37,6 +39,7 @@ public class ConsumptionItemTransfer {
         ao.setId(po.getId());
         ao.setMoney(po.getMoney());
         ao.setDescription(po.getDescription());
+        ao.setType(po.getType());
         return ao;
     };
 }

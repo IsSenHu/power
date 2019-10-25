@@ -38,4 +38,10 @@ public class ConsumptionItemPO {
      */
     @Column(name = "description", nullable = false)
     private String description;
+
+    /**
+     * 消费类型
+     */
+    @Column(name = "type", nullable = false)
+    private Integer type;
 }

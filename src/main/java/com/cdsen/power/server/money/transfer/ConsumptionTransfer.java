@@ -69,6 +69,7 @@ public class ConsumptionTransfer {
                 itemVo.setMoney(formatCurrency.format(item.getMoney()));
                 itemVo.setCurrency(displayNameCurrency);
                 itemVo.setDescription(item.getDescription());
+                itemVo.setType(item.getType());
                 total = total.add(item.getMoney());
                 itemVos.add(itemVo);
             }

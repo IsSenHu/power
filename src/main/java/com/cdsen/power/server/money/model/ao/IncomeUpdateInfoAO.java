@@ -41,4 +41,9 @@ public class IncomeUpdateInfoAO {
      * 收入说明
      */
     private String description;
+
+    /**
+     * 收入渠道
+     */
+    private Integer channel;
 }

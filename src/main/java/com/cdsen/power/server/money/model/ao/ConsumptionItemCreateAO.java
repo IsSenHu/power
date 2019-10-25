@@ -31,4 +31,10 @@ public class ConsumptionItemCreateAO {
      */
     @NotBlank
     private String description;
+
+    /**
+     * 消费类型
+     */
+    @NotNull
+    private Integer type;
 }

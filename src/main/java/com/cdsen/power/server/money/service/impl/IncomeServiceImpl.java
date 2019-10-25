@@ -104,6 +104,7 @@ public class IncomeServiceImpl implements IncomeService {
             po.setCurrency(ao.getCurrency());
             po.setIncome(ao.getIncome());
             po.setUserId(userDetails.getUserId());
+            po.setChannel(ao.getChannel());
             incomeRepository.save(po);
             return JsonResult.of(IncomeTransfer.PO_TO_VO.apply(po));
         } else {

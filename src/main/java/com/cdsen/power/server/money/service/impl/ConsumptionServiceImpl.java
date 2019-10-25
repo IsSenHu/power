@@ -37,7 +37,10 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -167,6 +170,7 @@ public class ConsumptionServiceImpl implements ConsumptionService {
                 .map(po -> {
                     po.setMoney(ao.getMoney());
                     po.setDescription(ao.getDescription());
+                    po.setType(ao.getType());
                     consumptionItemRepository.save(po);
                     return JsonResult.of(ConsumptionItemTransfer.PO_TO_VO.apply(po));
                 })
@@ -179,13 +183,16 @@ public class ConsumptionServiceImpl implements ConsumptionService {
         Long userId = userDetails.getUserId();
         List<ConsumptionPO> all = consumptionRepository.findAll(spec(userId, query));
 
+        List<ConsumptionItemPO> allItems = new ArrayList<>();
         BigDecimal total = BigDecimal.ZERO;
         for (ConsumptionPO po : all) {
             List<ConsumptionItemPO> items = po.getItems();
-            for (ConsumptionItemPO item : items) {
-                total = total.add(item.getMoney());
-            }
+            allItems.addAll(items);
         }
+        for (ConsumptionItemPO item : allItems) {
+            total = total.add(item.getMoney());
+        }
+
         ConsumptionStatisticsVO statistics = new ConsumptionStatisticsVO();
         List<LocalDate> collect = all.stream().map(c -> c.getTime().toLocalDate()).sorted().collect(Collectors.toList());
         if (!CollectionUtils.isEmpty(collect)) {
@@ -196,6 +203,14 @@ public class ConsumptionServiceImpl implements ConsumptionService {
             statistics.setAvgPerDay(currency.getFormat().format(total.divide(BigDecimal.valueOf(days), 2, RoundingMode.HALF_UP)));
             statistics.setTotalDay(days);
         }
+
+        Map<Integer, List<ConsumptionItemPO>> typeMap = allItems.stream().collect(Collectors.groupingBy(ConsumptionItemPO::getType));
+        Map<Integer, String> byType = new HashMap<>(typeMap.size());
+        for (Map.Entry<Integer, List<ConsumptionItemPO>> entry : typeMap.entrySet()) {
+            double sum = entry.getValue().stream().mapToDouble(x -> x.getMoney().doubleValue()).sum();
+            byType.put(entry.getKey(), currency.getFormat().format(sum));
+        }
+        statistics.setByType(byType);
         return JsonResult.of(statistics);
     }
 

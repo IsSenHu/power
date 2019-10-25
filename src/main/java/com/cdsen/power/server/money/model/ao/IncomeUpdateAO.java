@@ -48,4 +48,10 @@ public class IncomeUpdateAO {
      */
     @NotNull
     private CurrencyType currency;
+
+    /**
+     * 收入渠道
+     */
+    @NotNull
+    private Integer channel;
 }

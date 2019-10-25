@@ -2,7 +2,6 @@ package com.cdsen.power.server.money.transfer;
 
 import com.cdsen.power.server.money.dao.po.IncomePO;
 import com.cdsen.power.server.money.model.ao.InComeCreateAO;
-import com.cdsen.power.server.money.model.ao.IncomeUpdateAO;
 import com.cdsen.power.server.money.model.ao.IncomeUpdateInfoAO;
 import com.cdsen.power.server.money.model.vo.IncomeVO;
 
@@ -20,6 +19,7 @@ public class IncomeTransfer {
         po.setTime(ao.getTime());
         po.setDescription(ao.getDescription());
         po.setCurrency(ao.getCurrency());
+        po.setChannel(ao.getChannel());
         return po;
     };
 
@@ -30,6 +30,7 @@ public class IncomeTransfer {
         vo.setTime(po.getTime());
         vo.setIncome(po.getCurrency().getFormat().format(po.getIncome()));
         vo.setCurrency(po.getCurrency().getCurrency().getDisplayName());
+        vo.setChannel(po.getChannel());
         return vo;
     };
 
@@ -41,16 +42,7 @@ public class IncomeTransfer {
         info.setUserId(po.getUserId());
         info.setTime(po.getTime());
         info.setDescription(po.getDescription());
+        info.setChannel(po.getChannel());
         return info;
-    };
-
-    public static final Function<IncomeUpdateAO, IncomePO> UPDATE_TO_PO = ao -> {
-        IncomePO po = new IncomePO();
-        po.setId(ao.getId());
-        po.setIncome(ao.getIncome());
-        po.setCurrency(ao.getCurrency());
-        po.setTime(ao.getTime());
-        po.setDescription(ao.getDescription());
-        return po;
     };
 }

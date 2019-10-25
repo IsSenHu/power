@@ -29,4 +29,9 @@ public class ConsumptionItemVO {
      * 消费说明
      */
     private String description;
+
+    /**
+     * 消费类型
+     */
+    private Integer type;
 }

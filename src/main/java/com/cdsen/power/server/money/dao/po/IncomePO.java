@@ -52,6 +52,12 @@ public class IncomePO extends BasePO<Long, Long> {
     @Column(name = "description", nullable = false)
     private String description;
 
+    /**
+     * 收入渠道
+     */
+    @Column(name = "channel", nullable = false)
+    private Integer channel;
+
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);

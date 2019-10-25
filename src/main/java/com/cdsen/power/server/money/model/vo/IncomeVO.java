@@ -35,4 +35,9 @@ public class IncomeVO {
      * 货币单位
      */
     private String currency;
+
+    /**
+     * 收入渠道
+     */
+    private Integer channel;
 }

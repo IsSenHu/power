@@ -76,7 +76,7 @@ spring:
       #     超时时间
       reply-timeout: 10000
       #     设置为true的时候RabbitTemplate(生产端)能够实现重试
-      retry:醣l
+      retry:
         enabled: true
         #       第一次与第二次发布消息的间隔
         initial-interval: 1000
