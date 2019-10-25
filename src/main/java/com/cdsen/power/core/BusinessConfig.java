@@ -1,6 +1,5 @@
 package com.cdsen.power.core;
 
-import com.alibaba.dubbo.config.annotation.Reference;
 import com.cdsen.interfaces.config.service.BusinessSettingApiService;
 import com.cdsen.interfaces.config.vo.BusinessSetting;
 import com.cdsen.power.core.util.JsonUtils;

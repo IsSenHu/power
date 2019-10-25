@@ -6,7 +6,9 @@ import com.cdsen.power.core.PageResult;
 import com.cdsen.power.server.money.model.ao.InComeCreateAO;
 import com.cdsen.power.server.money.model.ao.IncomeUpdateAO;
 import com.cdsen.power.server.money.model.ao.IncomeUpdateInfoAO;
+import com.cdsen.power.server.money.model.cons.CurrencyType;
 import com.cdsen.power.server.money.model.query.InComeQuery;
+import com.cdsen.power.server.money.model.vo.IncomeStatisticsVO;
 import com.cdsen.power.server.money.model.vo.IncomeVO;
 
 /**
@@ -54,4 +56,13 @@ public interface IncomeService {
      * @return 修改结果
      */
     JsonResult<IncomeVO> update(IncomeUpdateAO ao);
+
+    /**
+     * 简单统计
+     *
+     * @param currency 货币类型
+     * @param query    简单统计查询参数
+     * @return 简单统计
+     */
+    JsonResult<IncomeStatisticsVO> statistics(CurrencyType currency, InComeQuery query);
 }
