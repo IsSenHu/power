@@ -241,7 +241,8 @@ public class ConsumptionServiceImpl implements ConsumptionService {
         for (ConsumptionItemCreateDTO item : items) {
             BigDecimal money = item.getMoney();
             String description = item.getDescription();
-            if (null == money || StringUtils.isBlank(description)) {
+            Integer type = item.getType();
+            if (null == money || StringUtils.isBlank(description) || null == type) {
                 return;
             }
         }
@@ -257,6 +258,7 @@ public class ConsumptionServiceImpl implements ConsumptionService {
             itemPo.setConsumption(po);
             itemPo.setDescription(item.getDescription());
             itemPo.setMoney(item.getMoney());
+            itemPo.setType(item.getType());
             return itemPo;
         }).collect(Collectors.toList());
         consumptionItemRepository.saveAll(collect);
