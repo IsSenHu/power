@@ -10,6 +10,7 @@ import com.cdsen.power.server.money.model.cons.CurrencyType;
 import com.cdsen.power.server.money.model.query.InComeQuery;
 import com.cdsen.power.server.money.model.vo.IncomeStatisticsVO;
 import com.cdsen.power.server.money.model.vo.IncomeVO;
+import com.cdsen.rabbit.model.InComeCreateDTO;
 
 /**
  * @author HuSen
@@ -65,4 +66,12 @@ public interface IncomeService {
      * @return 简单统计
      */
     JsonResult<IncomeStatisticsVO> statistics(CurrencyType currency, InComeQuery query);
+
+    /**
+     * 新增收入
+     *
+     * @param userId 用户ID
+     * @param data   新增收入数据模型
+     */
+    void create(Long userId, InComeCreateDTO data);
 }

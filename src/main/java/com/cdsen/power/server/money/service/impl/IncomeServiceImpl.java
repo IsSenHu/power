@@ -1,8 +1,10 @@
 package com.cdsen.power.server.money.service.impl;
 
 import com.cdsen.power.core.*;
+import com.cdsen.power.core.cons.TimeCons;
 import com.cdsen.power.core.security.model.UserDetailsImpl;
 import com.cdsen.power.core.security.util.SecurityUtils;
+import com.cdsen.power.core.util.DateTimeUtils;
 import com.cdsen.power.server.money.dao.po.IncomePO;
 import com.cdsen.power.server.money.dao.repository.IncomeRepository;
 import com.cdsen.power.server.money.model.ao.InComeCreateAO;
@@ -15,12 +17,15 @@ import com.cdsen.power.server.money.model.vo.IncomeStatisticsVO;
 import com.cdsen.power.server.money.model.vo.IncomeVO;
 import com.cdsen.power.server.money.service.IncomeService;
 import com.cdsen.power.server.money.transfer.IncomeTransfer;
+import com.cdsen.rabbit.model.InComeCreateDTO;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -135,5 +140,50 @@ public class IncomeServiceImpl implements IncomeService {
         }
         vo.setByChannel(byChannel);
         return JsonResult.of(vo);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void create(Long userId, InComeCreateDTO data) {
+        BigDecimal income = data.getIncome();
+        if (null == income) {
+            return;
+        }
+        String currency = data.getCurrency();
+        if (StringUtils.isBlank(currency)) {
+            return;
+        }
+        CurrencyType currencyType;
+        try {
+            currencyType = CurrencyType.valueOf(currency);
+        } catch (Exception ignored) {
+            return;
+        }
+        String description = data.getDescription();
+        if (StringUtils.isBlank(description)) {
+            return;
+        }
+        String time = data.getTime();
+        if (StringUtils.isBlank(time)) {
+            return;
+        }
+        LocalDate localDate;
+        try {
+            localDate = DateTimeUtils.parseLocalDate(time, TimeCons.F4);
+        } catch (Exception e) {
+            return;
+        }
+        Integer channel = data.getChannel();
+        if (null == channel) {
+            return;
+        }
+        IncomePO po = new IncomePO();
+        po.setUserId(userId);
+        po.setIncome(income);
+        po.setCurrency(currencyType);
+        po.setChannel(channel);
+        po.setDescription(description);
+        po.setTime(localDate);
+        incomeRepository.save(po);
     }
 }

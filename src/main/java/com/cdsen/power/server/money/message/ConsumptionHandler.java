@@ -17,36 +17,24 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
-public class ConsumptionHandler {
+public class ConsumptionHandler extends AbstractHandler<ConsumptionCreateDTO> {
 
     private final ConsumptionService consumptionService;
-    private final StringRedisTemplate redisTemplate;
 
     public ConsumptionHandler(ConsumptionService consumptionService, StringRedisTemplate redisTemplate) {
+        super(redisTemplate);
         this.consumptionService = consumptionService;
-        this.redisTemplate = redisTemplate;
     }
 
     @RabbitListener(queues = "directQueueCreateConsumption")
     @RabbitHandler
     public void createConsumption(RabbitMessage<ConsumptionCreateDTO> sendMessage, Channel channel, Message message) {
-        // 注意消息的幂等性
-        String id = sendMessage.getId();
-        Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent(id, "");
-        if (null != aBoolean && aBoolean) {
-            try {
-                channel.basicQos(1);
-                consumptionService.create(sendMessage.getUserId(), sendMessage.getData());
-                channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
-            } catch (Exception e) {
-                log.error("消息处理失败:", e);
-                try {
-                    redisTemplate.delete(id);
-                    channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, true);
-                } catch (Exception ex) {
-                    log.error("消息回退失败:", ex);
-                }
-            }
-        }
+        handle(sendMessage, channel, message);
+    }
+
+    @Override
+    protected void realHandle(Long userId, ConsumptionCreateDTO data) {
+        log.info("用户:{} 请求创建消费记录:{}", userId, data);
+        consumptionService.create(userId, data);
     }
 }
