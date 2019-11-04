@@ -58,7 +58,7 @@ public class EmailPO {
     @Column(name = "attachments")
     private String attachments;
 
-    @Column(name = "host", nullable = false)
+    @Column(name = "host_", nullable = false)
     private String host;
 
     @Column(name = "protocol", nullable = false)
