@@ -7,7 +7,6 @@ import com.cdsen.power.core.oss.OssClient;
 import com.cdsen.power.core.oss.OssClientManager;
 import com.cdsen.power.core.oss.OssProperties;
 import com.cdsen.power.server.oss.model.cons.OssError;
-import com.cdsen.power.server.oss.model.cons.RedisKey;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -60,7 +59,7 @@ public class OssController {
      */
     @PostMapping("/image/{endpoint}/{bucketName}")
     public JsonResult image(@PathVariable String endpoint, @PathVariable String bucketName, MultipartFile image) {
-        Pair<Error, String> result = upload(OssClientManager.getProperties(endpoint, bucketName), image, RedisKey.FILE_NAME_KEY);
+        Pair<Error, String> result = upload(OssClientManager.getProperties(endpoint, bucketName), image);
         return result.getFirst().equals(OssError.SUCCESS) ? JsonResult.of(result.getSecond()) : JsonResult.of(result.getFirst());
     }
 
@@ -72,11 +71,11 @@ public class OssController {
      */
     @PostMapping("/uploadForArticle")
     public JsonResult<String> uploadForArticle(MultipartFile file) {
-        Pair<Error, String> result = upload(OssClientManager.getProperties("ARTICLE"), file, RedisKey.ARTICLE_FILE_NAME_KEY);
+        Pair<Error, String> result = upload(OssClientManager.getProperties("ARTICLE"), file);
         return result.getFirst().equals(OssError.SUCCESS) ? JsonResult.of(result.getSecond()) : JsonResult.of(result.getFirst());
     }
 
-    private Pair<Error, String> upload(OssProperties properties, MultipartFile file, String key) {
+    private Pair<Error, String> upload(OssProperties properties, MultipartFile file) {
         try {
             if (file == null) {
                 return Pair.of(OssError.IS_NULL, "");

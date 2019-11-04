@@ -6,6 +6,7 @@ import com.cdsen.power.core.security.model.LoginVO;
 import com.cdsen.power.core.security.model.Token;
 import com.cdsen.power.core.security.model.UserInfo;
 import com.cdsen.power.core.security.util.JwtUtils;
+import com.cdsen.power.core.util.JsonUtils;
 import com.cdsen.power.core.util.VerifyCodeUtils;
 import com.cdsen.power.server.config.service.ConfigService;
 import com.cdsen.power.server.email.model.vo.SimpleMailAO;
@@ -143,7 +144,8 @@ public class UserServiceImpl implements UserService {
         mail.setSubject("帐号激活");
         // 邮箱发激活连接 用户点击连接跳转激活
         mail.setText("激活连接:" + code);
-        mailService.send(mail);
+        JsonResult<SimpleMailAO> sendResult = mailService.send(mail);
+        log.info("邮件发送结果:{}", JsonUtils.toJsonString(sendResult));
         return JsonResult.of(UserTransfer.PO_TO_VO.apply(po));
     }
 

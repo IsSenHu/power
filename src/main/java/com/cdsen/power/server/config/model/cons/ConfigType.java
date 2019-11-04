@@ -9,7 +9,8 @@ import lombok.Getter;
 @Getter
 public enum ConfigType {
     //
-    ARTICLE("文章类型");
+    ARTICLE("文章类型"),
+    EMAIL("邮箱安全配置");
 
     private String name;
 
