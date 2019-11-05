@@ -23,13 +23,13 @@ public class EmailPO {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(name = "subject", nullable = false)
+    @Column(name = "subject_", nullable = false)
     private String subject;
 
-    @Column(name = "from", nullable = false)
+    @Column(name = "from_", nullable = false)
     private String from;
 
-    @Column(name = "to", nullable = false)
+    @Column(name = "to_", nullable = false)
     private String to;
 
     @Column(name = "cc")
