@@ -1,4 +1,4 @@
-package com.cdsen.power.server.email.model.vo;
+package com.cdsen.power.server.email.model.ao;
 
 import lombok.Data;
 

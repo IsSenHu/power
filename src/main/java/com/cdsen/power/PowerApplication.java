@@ -1,8 +1,6 @@
 package com.cdsen.power;
 
 import com.alibaba.dubbo.config.spring.context.annotation.EnableDubbo;
-import org.springframework.amqp.rabbit.annotation.RabbitHandler;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
@@ -21,9 +19,4 @@ public class PowerApplication {
         SpringApplication.run(PowerApplication.class, args);
     }
 
-    @RabbitListener(queues = "directQueuePower", group = "233")
-    @RabbitHandler
-    public void directMessage2(String message) {
-        System.out.println(message);
-    }
 }

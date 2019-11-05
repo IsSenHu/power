@@ -2,8 +2,7 @@ package com.cdsen.power.server.email.service.impl;
 
 import com.cdsen.email.EmailAuthToken;
 import com.cdsen.email.EmailUtils;
-import com.cdsen.power.core.JsonResult;
-import com.cdsen.power.core.Processor;
+import com.cdsen.power.core.*;
 import com.cdsen.power.core.oss.OssClient;
 import com.cdsen.power.core.oss.OssClientManager;
 import com.cdsen.power.core.security.util.SecurityUtils;
@@ -14,11 +13,16 @@ import com.cdsen.power.server.email.dao.repository.EmailRepository;
 import com.cdsen.power.server.email.model.ao.EmailUpdateAO;
 import com.cdsen.power.server.email.model.cons.Components;
 import com.cdsen.power.server.email.model.cons.EmailError;
-import com.cdsen.power.server.email.model.vo.SimpleMailAO;
+import com.cdsen.power.server.email.model.ao.SimpleMailAO;
+import com.cdsen.power.server.email.model.query.EmailQuery;
+import com.cdsen.power.server.email.model.vo.SimpleEmailVO;
 import com.cdsen.power.server.email.service.MailService;
+import com.cdsen.power.server.email.transfer.EmailTransfer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.mail.MailProperties;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -89,39 +93,39 @@ public class MailServiceImpl implements MailService {
                                     String messageId = EmailUtils.getMessageId(mimeMessage);
                                     boolean isNew = EmailUtils.isNew(mimeMessage);
                                     if (map.containsKey(messageId)) {
-                                        EmailPO emailPO = map.get(messageId);
-                                        emailPO.setIsNew(isNew);
-                                        willUpdate.add(emailPO);
+                                        EmailPO email = map.get(messageId);
+                                        email.setIsNew(isNew);
+                                        willUpdate.add(email);
                                     } else {
-                                        EmailPO emailPO = new EmailPO();
-                                        emailPO.setUserId(userId);
-                                        emailPO.setHost(token.getHost());
-                                        emailPO.setProtocol(token.getProtocol());
-                                        emailPO.setMessageId(messageId);
-                                        emailPO.setIsNew(isNew);
+                                        EmailPO email = new EmailPO();
+                                        email.setUserId(userId);
+                                        email.setHost(token.getHost());
+                                        email.setProtocol(token.getProtocol());
+                                        email.setMessageId(messageId);
+                                        email.setIsNew(isNew);
 
                                         String subject = EmailUtils.getSubject(mimeMessage);
-                                        emailPO.setSubject(subject);
+                                        email.setSubject(subject);
 
                                         String from = EmailUtils.getFrom(mimeMessage);
-                                        emailPO.setFrom(from);
+                                        email.setFrom(from);
 
                                         boolean replySign = EmailUtils.getReplySign(mimeMessage);
-                                        emailPO.setReplySign(replySign);
+                                        email.setReplySign(replySign);
 
                                         Date sentDate = EmailUtils.getSentDate(mimeMessage);
-                                        emailPO.setSentDate(sentDate);
+                                        email.setSentDate(sentDate);
 
                                         String to = EmailUtils.getMailAddress(mimeMessage, Message.RecipientType.TO);
                                         String cc = EmailUtils.getMailAddress(mimeMessage, Message.RecipientType.CC);
                                         String bcc = EmailUtils.getMailAddress(mimeMessage, Message.RecipientType.BCC);
-                                        emailPO.setTo(to);
-                                        emailPO.setCc(cc);
-                                        emailPO.setBcc(bcc);
+                                        email.setTo(to);
+                                        email.setCc(cc);
+                                        email.setBcc(bcc);
 
                                         StringBuilder contentBuilder = new StringBuilder();
                                         EmailUtils.readMailContent(mimeMessage, contentBuilder);
-                                        emailPO.setContent(contentBuilder.toString());
+                                        email.setContent(contentBuilder.toString());
 
                                         StringBuilder attachmentsBuilder = new StringBuilder();
                                         if (EmailUtils.isContainAttach(mimeMessage)) {
@@ -130,8 +134,8 @@ public class MailServiceImpl implements MailService {
                                                 attachmentsBuilder.append(",").append(fileName);
                                             });
                                         }
-                                        emailPO.setAttachments(attachmentsBuilder.substring(1));
-                                        willAdd.add(emailPO);
+                                        email.setAttachments(attachmentsBuilder.substring(1));
+                                        willAdd.add(email);
                                     }
                                 } catch (Exception e) {
                                     log.error("邮件获取失败:", e);
@@ -150,5 +154,13 @@ public class MailServiceImpl implements MailService {
     public void save(List<EmailPO> add, List<EmailPO> update) {
         emailRepository.saveAll(add);
         emailRepository.saveAll(update);
+    }
+
+    @Override
+    public JsonResult<PageResult<SimpleEmailVO>> page(IPageRequest<EmailQuery> request) {
+        Pageable pageable = request.of();
+        Page<EmailPO> pageInfo = emailRepository.findAll(SpecificationFactory.produce((predicates, root, criteriaBuilder) ->
+                predicates.add(criteriaBuilder.equal(root.get("userId").as(Long.class), SecurityUtils.currentUserDetails().getUserId()))), pageable);
+        return JsonResult.of(PageResult.of(pageInfo.getTotalElements(), EmailTransfer.PO_TO_SIMPLE_VO, pageInfo.getContent()));
     }
 }

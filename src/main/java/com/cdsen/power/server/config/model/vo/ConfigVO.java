@@ -3,6 +3,7 @@ package com.cdsen.power.server.config.model.vo;
 import com.cdsen.power.server.config.model.cons.ConfigType;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
+@ToString
 public class ConfigVO {
 
     private Long id;

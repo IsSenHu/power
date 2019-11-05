@@ -9,7 +9,7 @@ import com.cdsen.power.core.security.util.JwtUtils;
 import com.cdsen.power.core.util.JsonUtils;
 import com.cdsen.power.core.util.VerifyCodeUtils;
 import com.cdsen.power.server.config.service.ConfigService;
-import com.cdsen.power.server.email.model.vo.SimpleMailAO;
+import com.cdsen.power.server.email.model.ao.SimpleMailAO;
 import com.cdsen.power.server.email.service.MailService;
 import com.cdsen.power.server.user.dao.po.PermissionPO;
 import com.cdsen.power.server.user.dao.po.RolePO;

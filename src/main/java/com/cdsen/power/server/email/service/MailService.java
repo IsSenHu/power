@@ -1,9 +1,13 @@
 package com.cdsen.power.server.email.service;
 
+import com.cdsen.power.core.IPageRequest;
 import com.cdsen.power.core.JsonResult;
+import com.cdsen.power.core.PageResult;
 import com.cdsen.power.server.email.dao.po.EmailPO;
 import com.cdsen.power.server.email.model.ao.EmailUpdateAO;
-import com.cdsen.power.server.email.model.vo.SimpleMailAO;
+import com.cdsen.power.server.email.model.ao.SimpleMailAO;
+import com.cdsen.power.server.email.model.query.EmailQuery;
+import com.cdsen.power.server.email.model.vo.SimpleEmailVO;
 
 import java.util.List;
 
@@ -36,4 +40,12 @@ public interface MailService {
      * @param update 更新的邮件
      */
     void save(List<EmailPO> add, List<EmailPO> update);
+
+    /**
+     * 分页
+     *
+     * @param request 分页请求参数
+     * @return 分页结果
+     */
+    JsonResult<PageResult<SimpleEmailVO>> page(IPageRequest<EmailQuery> request);
 }

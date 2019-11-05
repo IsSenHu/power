@@ -1,7 +1,11 @@
 package com.cdsen.power.server.email.controller;
 
+import com.cdsen.power.core.IPageRequest;
 import com.cdsen.power.core.JsonResult;
+import com.cdsen.power.core.PageResult;
 import com.cdsen.power.server.email.model.ao.EmailUpdateAO;
+import com.cdsen.power.server.email.model.query.EmailQuery;
+import com.cdsen.power.server.email.model.vo.SimpleEmailVO;
 import com.cdsen.power.server.email.service.MailService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,5 +35,15 @@ public class EmailController {
     @PostMapping("/update")
     public JsonResult update(@RequestBody EmailUpdateAO ao) {
         return mailService.update(ao);
+    }
+
+    /**
+     * 分页
+     *
+     * @param request 分页请求参数
+     * @return 分页结果
+     */
+    public JsonResult<PageResult<SimpleEmailVO>> page(@RequestBody IPageRequest<EmailQuery> request) {
+        return mailService.page(request);
     }
 }
