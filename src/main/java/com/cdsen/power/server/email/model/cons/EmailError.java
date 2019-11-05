@@ -9,7 +9,8 @@ import com.cdsen.power.core.Error;
 public enum EmailError implements Error {
     //
     CONFIG_ERROR(90001, "配置错误"),
-    CONFIG_NOT_FOUNT(90002, "无法找到配置");
+    CONFIG_NOT_FOUNT(90002, "无法找到配置"),
+    NOT_FOUND(90003, "没有找到这个邮件");
 
     private Integer code;
     private String error;

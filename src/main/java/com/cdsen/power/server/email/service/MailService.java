@@ -7,6 +7,7 @@ import com.cdsen.power.server.email.dao.po.EmailPO;
 import com.cdsen.power.server.email.model.ao.EmailUpdateAO;
 import com.cdsen.power.server.email.model.ao.SimpleMailAO;
 import com.cdsen.power.server.email.model.query.EmailQuery;
+import com.cdsen.power.server.email.model.vo.EmailVO;
 import com.cdsen.power.server.email.model.vo.SimpleEmailVO;
 
 import java.util.List;
@@ -48,4 +49,12 @@ public interface MailService {
      * @return 分页结果
      */
     JsonResult<PageResult<SimpleEmailVO>> page(IPageRequest<EmailQuery> request);
+
+    /**
+     * 查询邮件详细信息
+     *
+     * @param id ID
+     * @return 邮件详细信息
+     */
+    JsonResult<EmailVO> findById(Long id);
 }

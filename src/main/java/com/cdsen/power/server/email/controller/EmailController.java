@@ -5,12 +5,10 @@ import com.cdsen.power.core.JsonResult;
 import com.cdsen.power.core.PageResult;
 import com.cdsen.power.server.email.model.ao.EmailUpdateAO;
 import com.cdsen.power.server.email.model.query.EmailQuery;
+import com.cdsen.power.server.email.model.vo.EmailVO;
 import com.cdsen.power.server.email.model.vo.SimpleEmailVO;
 import com.cdsen.power.server.email.service.MailService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author HuSen
@@ -46,5 +44,16 @@ public class EmailController {
     @PostMapping("/page")
     public JsonResult<PageResult<SimpleEmailVO>> page(@RequestBody IPageRequest<EmailQuery> request) {
         return mailService.page(request);
+    }
+
+    /**
+     * 查询邮件详细信息
+     *
+     * @param id ID
+     * @return 邮件详细信息
+     */
+    @GetMapping("/{id}")
+    public JsonResult<EmailVO> findById(@PathVariable Long id) {
+        return mailService.findById(id);
     }
 }

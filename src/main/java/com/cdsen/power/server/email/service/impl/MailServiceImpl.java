@@ -15,6 +15,7 @@ import com.cdsen.power.server.email.model.cons.Components;
 import com.cdsen.power.server.email.model.cons.EmailError;
 import com.cdsen.power.server.email.model.ao.SimpleMailAO;
 import com.cdsen.power.server.email.model.query.EmailQuery;
+import com.cdsen.power.server.email.model.vo.EmailVO;
 import com.cdsen.power.server.email.model.vo.SimpleEmailVO;
 import com.cdsen.power.server.email.service.MailService;
 import com.cdsen.power.server.email.transfer.EmailTransfer;
@@ -162,5 +163,12 @@ public class MailServiceImpl implements MailService {
         Page<EmailPO> pageInfo = emailRepository.findAll(SpecificationFactory.produce((predicates, root, criteriaBuilder) ->
                 predicates.add(criteriaBuilder.equal(root.get("userId").as(Long.class), SecurityUtils.currentUserDetails().getUserId()))), pageable);
         return JsonResult.of(PageResult.of(pageInfo.getTotalElements(), EmailTransfer.PO_TO_SIMPLE_VO, pageInfo.getContent()));
+    }
+
+    @Override
+    public JsonResult<EmailVO> findById(Long id) {
+        return emailRepository.findById(id)
+                .map(po -> JsonResult.of(EmailTransfer.PO_TO_VO.apply(po)))
+                .orElseGet(() -> JsonResult.of(EmailError.NOT_FOUND));
     }
 }
