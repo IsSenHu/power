@@ -23,7 +23,7 @@ public class OssClientManager {
 
     private static final ConcurrentMap<String, OssProperties> USE_FOR_MAP = new ConcurrentHashMap<>();
 
-    public static void init(List<OssProperties> propertiesList) {
+    static void init(List<OssProperties> propertiesList) {
         Lock writeLock = LOCK.writeLock();
         try {
             writeLock.lock();

@@ -43,6 +43,7 @@ public class EmailController {
      * @param request 分页请求参数
      * @return 分页结果
      */
+    @PostMapping("/page")
     public JsonResult<PageResult<SimpleEmailVO>> page(@RequestBody IPageRequest<EmailQuery> request) {
         return mailService.page(request);
     }
