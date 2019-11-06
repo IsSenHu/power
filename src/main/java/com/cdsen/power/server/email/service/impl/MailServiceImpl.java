@@ -20,6 +20,7 @@ import com.cdsen.power.server.email.model.vo.SimpleEmailVO;
 import com.cdsen.power.server.email.service.MailService;
 import com.cdsen.power.server.email.transfer.EmailTransfer;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.mail.MailProperties;
 import org.springframework.data.domain.Page;
@@ -30,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.Message;
 import javax.mail.internet.MimeMessage;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -126,22 +128,25 @@ public class MailServiceImpl implements MailService {
 
                                         StringBuilder contentBuilder = new StringBuilder();
                                         EmailUtils.readMailContent(mimeMessage, contentBuilder);
-                                        email.setContent(contentBuilder.toString());
-
+                                        email.setContent(contentBuilder.toString().getBytes(StandardCharsets.UTF_8));
                                         StringBuilder attachmentsBuilder = new StringBuilder();
                                         if (EmailUtils.isContainAttach(mimeMessage)) {
                                             EmailUtils.saveAttachment(mimeMessage, (fileName, in) -> {
-                                                ossClient.upload(messageId.concat("-").concat(fileName), in);
+                                                String[] split = messageId.split("\\+");
+                                                ossClient.upload(userId.toString().concat("/").concat(split[split.length - 1]).concat("/").concat(fileName), in);
                                                 attachmentsBuilder.append(",").append(fileName);
                                             });
                                         }
-                                        email.setAttachments(attachmentsBuilder.substring(1));
+                                        if (attachmentsBuilder.length() > 0) {
+                                            email.setAttachments(attachmentsBuilder.substring(1));
+                                        }
                                         willAdd.add(email);
                                     }
                                 } catch (Exception e) {
                                     log.error("邮件获取失败:", e);
                                 }
                             }
+                            ossClient.shutdown();
                             save(willAdd, willUpdate);
                         });
                     }
