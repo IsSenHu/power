@@ -37,10 +37,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -102,16 +99,24 @@ public class ConsumptionServiceImpl implements ConsumptionService {
     private Specification<ConsumptionPO> spec(Long userId, ConsumptionQuery customParams) {
         return SpecificationFactory.produce((predicates, root, criteriaBuilder) -> {
             predicates.add(criteriaBuilder.equal(root.get("userId").as(Long.class), userId));
+            LocalDateTime start = null;
+            LocalDateTime end = null;
+            LocalDate now = LocalDate.now();
             if (null != customParams) {
-                LocalDateTime start = customParams.getStart();
-                if (null != start) {
-                    predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("time").as(LocalDateTime.class), start));
-                }
-                LocalDateTime end = customParams.getEnd();
-                if (null != end) {
-                    predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("time").as(LocalDateTime.class), end));
-                }
+                start = customParams.getStart();
+                end = customParams.getEnd();
             }
+
+            if (Objects.isNull(customParams) || Objects.isNull(start)) {
+                start = DateTimeUtils.getFirstDayOfMonth(now).atTime(0, 0, 0, 0);
+            }
+
+            if (Objects.isNull(customParams) || Objects.isNull(end)) {
+                end = DateTimeUtils.getLastDayOfMonth(now).atTime(23, 59, 59, 999999999);
+            }
+
+            predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("time").as(LocalDateTime.class), start));
+            predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("time").as(LocalDateTime.class), end));
         });
     }
 

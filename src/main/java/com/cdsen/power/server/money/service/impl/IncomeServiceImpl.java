@@ -69,19 +69,24 @@ public class IncomeServiceImpl implements IncomeService {
         return SpecificationFactory.produce((predicates, root, criteriaBuilder) -> {
             predicates.add(criteriaBuilder.equal(root.get("userId").as(Long.class), userId));
 
-            if (inComeQuery == null) {
-                return;
+            LocalDate start = null;
+            LocalDate end = null;
+            LocalDate now = LocalDate.now();
+            if (inComeQuery != null) {
+                start = inComeQuery.getStart();
+                end = inComeQuery.getEnd();
             }
 
-            LocalDate start = inComeQuery.getStart();
-            if (Objects.nonNull(start)) {
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("time").as(LocalDate.class), start));
+            if (Objects.isNull(inComeQuery) || Objects.isNull(start)) {
+                start = DateTimeUtils.getFirstDayOfMonth(now);
             }
 
-            LocalDate end = inComeQuery.getEnd();
-            if (Objects.nonNull(end)) {
-                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("time").as(LocalDate.class), end));
+            if (Objects.isNull(inComeQuery) || Objects.isNull(end)) {
+                end = DateTimeUtils.getLastDayOfMonth(now);
             }
+
+            predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("time").as(LocalDate.class), start));
+            predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("time").as(LocalDate.class), end));
         });
     }
 

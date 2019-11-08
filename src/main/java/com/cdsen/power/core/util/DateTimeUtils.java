@@ -32,4 +32,12 @@ public class DateTimeUtils {
         DateTimeFormatter dateTimeFormatter = FORMATTER_CACHE.get(format);
         return LocalDate.parse(rawStr, dateTimeFormatter);
     }
+
+    public static LocalDate getFirstDayOfMonth(LocalDate localDate) {
+        return localDate.plusDays(-(localDate.getDayOfMonth() - 1));
+    }
+
+    public static LocalDate getLastDayOfMonth(LocalDate localDate) {
+        return localDate.plusMonths(1).plusDays(-localDate.getDayOfMonth());
+    }
 }
