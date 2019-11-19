@@ -91,7 +91,7 @@ public class ConsumptionServiceImpl implements ConsumptionService {
 
         Pageable pageable = iPageRequest.of();
         ConsumptionQuery customParams = iPageRequest.getCustomParams();
-        Page<ConsumptionPO> page = consumptionRepository.findAll(spec(userId, customParams), pageable);
+        Page<ConsumptionPO> page = consumptionRepository.findAll(spec(true, userId, customParams), pageable);
 
         return JsonResult.of(PageResult.of(page.getTotalElements(), ConsumptionTransfer.PO_TO_VO, page.getContent()));
     }
@@ -191,7 +191,7 @@ public class ConsumptionServiceImpl implements ConsumptionService {
     public JsonResult<ConsumptionStatisticsVO> statistics(CurrencyType currency, ConsumptionQuery query) {
         UserDetailsImpl userDetails = SecurityUtils.currentUserDetails();
         Long userId = userDetails.getUserId();
-        List<ConsumptionPO> all = consumptionRepository.findAll(spec(userId, query));
+        List<ConsumptionPO> all = consumptionRepository.findAll(spec(false, userId, query));
 
         List<ConsumptionItemPO> allItems = new ArrayList<>();
         BigDecimal total = BigDecimal.ZERO;
