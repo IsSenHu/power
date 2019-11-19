@@ -96,7 +96,7 @@ public class ConsumptionServiceImpl implements ConsumptionService {
         return JsonResult.of(PageResult.of(page.getTotalElements(), ConsumptionTransfer.PO_TO_VO, page.getContent()));
     }
 
-    private Specification<ConsumptionPO> spec(Long userId, ConsumptionQuery customParams) {
+    private Specification<ConsumptionPO> spec(boolean isPaging, Long userId, ConsumptionQuery customParams) {
         return SpecificationFactory.produce((predicates, root, criteriaBuilder) -> {
             predicates.add(criteriaBuilder.equal(root.get("userId").as(Long.class), userId));
             LocalDateTime start = null;
@@ -107,16 +107,21 @@ public class ConsumptionServiceImpl implements ConsumptionService {
                 end = customParams.getEnd();
             }
 
-            if (Objects.isNull(customParams) || Objects.isNull(start)) {
+            if (!isPaging && (Objects.isNull(customParams) || Objects.isNull(start))) {
                 start = DateTimeUtils.getFirstDayOfMonth(now).atTime(0, 0, 0, 0);
             }
 
-            if (Objects.isNull(customParams) || Objects.isNull(end)) {
+            if (!isPaging && (Objects.isNull(customParams) || Objects.isNull(end))) {
                 end = DateTimeUtils.getLastDayOfMonth(now).atTime(23, 59, 59, 999999999);
             }
 
-            predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("time").as(LocalDateTime.class), start));
-            predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("time").as(LocalDateTime.class), end));
+            if (Objects.nonNull(start)) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("time").as(LocalDateTime.class), start));
+            }
+
+            if (Objects.nonNull(end)) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("time").as(LocalDateTime.class), end));
+            }
         });
     }
 

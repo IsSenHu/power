@@ -60,12 +60,12 @@ public class IncomeServiceImpl implements IncomeService {
         // TODO 后期session 自动组装在参数里面 可以直接获取
         UserDetailsImpl userDetails = SecurityUtils.currentUserDetails();
         Pageable pageable = iPageRequest.of();
-        Page<IncomePO> page = incomeRepository.findAll(spec(userDetails.getUserId(), iPageRequest.getCustomParams()), pageable);
+        Page<IncomePO> page = incomeRepository.findAll(spec(true, userDetails.getUserId(), iPageRequest.getCustomParams()), pageable);
 
         return JsonResult.of(PageResult.of(page.getTotalElements(), IncomeTransfer.PO_TO_VO, page.getContent()));
     }
 
-    private Specification<IncomePO> spec(Long userId, InComeQuery inComeQuery) {
+    private Specification<IncomePO> spec(boolean isPaging, Long userId, InComeQuery inComeQuery) {
         return SpecificationFactory.produce((predicates, root, criteriaBuilder) -> {
             predicates.add(criteriaBuilder.equal(root.get("userId").as(Long.class), userId));
 
@@ -77,16 +77,21 @@ public class IncomeServiceImpl implements IncomeService {
                 end = inComeQuery.getEnd();
             }
 
-            if (Objects.isNull(inComeQuery) || Objects.isNull(start)) {
+            if (!isPaging && (Objects.isNull(inComeQuery) || Objects.isNull(start))) {
                 start = DateTimeUtils.getFirstDayOfMonth(now);
             }
 
-            if (Objects.isNull(inComeQuery) || Objects.isNull(end)) {
+            if (!isPaging && (Objects.isNull(inComeQuery) || Objects.isNull(end))) {
                 end = DateTimeUtils.getLastDayOfMonth(now);
             }
 
-            predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("time").as(LocalDate.class), start));
-            predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("time").as(LocalDate.class), end));
+            if (Objects.nonNull(start)) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("time").as(LocalDate.class), start));
+            }
+
+            if (Objects.nonNull(end)) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("time").as(LocalDate.class), end));
+            }
         });
     }
 
@@ -131,7 +136,7 @@ public class IncomeServiceImpl implements IncomeService {
     @Override
     public JsonResult<IncomeStatisticsVO> statistics(CurrencyType currency, InComeQuery query) {
         Long userId = SecurityUtils.currentUserDetails().getUserId();
-        List<IncomePO> incomes = incomeRepository.findAll(spec(userId, query));
+        List<IncomePO> incomes = incomeRepository.findAll(spec(false, userId, query));
         double totalSum = incomes.stream().mapToDouble(x -> x.getIncome().doubleValue()).sum();
 
         IncomeStatisticsVO vo = new IncomeStatisticsVO();
