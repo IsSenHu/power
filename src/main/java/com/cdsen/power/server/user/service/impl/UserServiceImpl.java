@@ -302,8 +302,10 @@ public class UserServiceImpl implements UserService {
     public JsonResult<Boolean> changeUserStatus(Long id, String token, UserStatusType type, Boolean status) {
         return userRepository.findById(id)
                 .map(po -> {
-                    switch (type){
-                        case ENABLED: po.setIsEnabled(status);break;
+                    switch (type) {
+                        case ENABLED:
+                            po.setIsEnabled(status);
+                            break;
                         case ACCOUNT_NON_LOCKED: {
                             po.setIsAccountNonLocked(status);
                             userManager.changeLockState(token, status);
