@@ -1,6 +1,7 @@
 package com.cdsen.power.server.email.service.impl;
 
 import com.cdsen.email.EmailAuthToken;
+import com.cdsen.email.EmailParser;
 import com.cdsen.email.EmailUtils;
 import com.cdsen.power.core.*;
 import com.cdsen.power.core.oss.OssClient;
@@ -20,7 +21,6 @@ import com.cdsen.power.server.email.model.vo.SimpleEmailVO;
 import com.cdsen.power.server.email.service.MailService;
 import com.cdsen.power.server.email.transfer.EmailTransfer;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.mail.MailProperties;
 import org.springframework.data.domain.Page;
@@ -30,7 +30,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.Message;
-import javax.mail.internet.MimeMessage;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -87,14 +86,14 @@ public class MailServiceImpl implements MailService {
                         Map<String, EmailPO> map = emailRepository.findAllByUserIdAndHost(userId, token.getHost())
                                 .stream().collect(Collectors.toMap(EmailPO::getMessageId, e -> e));
                         OssClient ossClient = OssClientManager.getClient("EMAIL");
-                        EmailUtils.readMessages(token, mimeMessages -> {
+                        EmailUtils.readMessages(token, emailParsers -> {
                             List<EmailPO> willUpdate = new ArrayList<>(map.size());
-                            List<EmailPO> willAdd = new ArrayList<>(mimeMessages.size());
+                            List<EmailPO> willAdd = new ArrayList<>(emailParsers.size());
 
-                            for (MimeMessage mimeMessage : mimeMessages) {
+                            for (EmailParser parser : emailParsers) {
                                 try {
-                                    String messageId = EmailUtils.getMessageId(mimeMessage);
-                                    boolean isNew = EmailUtils.isNew(mimeMessage);
+                                    String messageId = parser.getMessageId();
+                                    boolean isNew = parser.isNew();
                                     if (map.containsKey(messageId)) {
                                         EmailPO email = map.get(messageId);
                                         email.setIsNew(isNew);
@@ -107,33 +106,31 @@ public class MailServiceImpl implements MailService {
                                         email.setMessageId(messageId);
                                         email.setIsNew(isNew);
 
-                                        String subject = EmailUtils.getSubject(mimeMessage);
+                                        String subject = parser.getSubject();
                                         email.setSubject(subject);
 
-                                        String from = EmailUtils.getFrom(mimeMessage);
+                                        String from = EmailUtils.getFrom(parser.getFrom());
                                         email.setFrom(from);
 
-                                        boolean replySign = EmailUtils.getReplySign(mimeMessage);
+                                        boolean replySign = parser.getReplySign();
                                         email.setReplySign(replySign);
 
-                                        Date sentDate = EmailUtils.getSentDate(mimeMessage);
+                                        Date sentDate = parser.getSentDate();
                                         email.setSentDate(sentDate);
 
-                                        String to = EmailUtils.getMailAddress(mimeMessage, Message.RecipientType.TO);
-                                        String cc = EmailUtils.getMailAddress(mimeMessage, Message.RecipientType.CC);
-                                        String bcc = EmailUtils.getMailAddress(mimeMessage, Message.RecipientType.BCC);
+                                        String to = EmailUtils.getMailAddress(parser.getMailAddress(Message.RecipientType.TO));
+                                        String cc = EmailUtils.getMailAddress(parser.getMailAddress(Message.RecipientType.CC));
+                                        String bcc = EmailUtils.getMailAddress(parser.getMailAddress(Message.RecipientType.BCC));
                                         email.setTo(to);
                                         email.setCc(cc);
                                         email.setBcc(bcc);
 
-                                        StringBuilder contentBuilder = new StringBuilder();
-                                        EmailUtils.readMailContent(mimeMessage, contentBuilder);
-                                        email.setContent(contentBuilder.toString().getBytes(StandardCharsets.UTF_8));
+                                        email.setContent(parser.getMailContent().getBytes(StandardCharsets.UTF_8));
                                         StringBuilder attachmentsBuilder = new StringBuilder();
-                                        if (EmailUtils.isContainAttach(mimeMessage)) {
-                                            EmailUtils.saveAttachment(mimeMessage, (fileName, in) -> {
-                                                String[] split = messageId.split("\\+");
-                                                ossClient.upload(userId.toString().concat("/").concat(split[split.length - 1]).concat("/").concat(fileName), in);
+                                        if (parser.hasAttach()) {
+                                            parser.readAndSaveAttachment((fileName, in) -> {
+                                                String uid = parser.getUid();
+                                                ossClient.upload(userId.toString() + "/" + uid + "/" + fileName, in);
                                                 attachmentsBuilder.append(",").append(fileName);
                                             });
                                         }
