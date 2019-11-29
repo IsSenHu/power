@@ -126,6 +126,7 @@ public class MailServiceImpl implements MailService {
                                         email.setCc(cc);
                                         email.setBcc(bcc);
 
+                                        email.setIsHtml(parser.isHtml());
                                         email.setContent(parser.getMailContent().getBytes(StandardCharsets.UTF_8));
                                         StringBuilder attachmentsBuilder = new StringBuilder();
                                         if (parser.hasAttach()) {

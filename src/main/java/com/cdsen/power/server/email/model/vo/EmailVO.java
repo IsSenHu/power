@@ -24,5 +24,7 @@ public class EmailVO extends SimpleEmailVO {
 
     private String bcc;
 
+    private Boolean isHtml;
+
     List<Map<String, String>> attachments;
 }

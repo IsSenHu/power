@@ -2,7 +2,6 @@ package com.cdsen.power.server.email.dao.po;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -33,7 +32,7 @@ public class EmailPO {
     @Column(name = "from_", nullable = false)
     private String from;
 
-    @Column(name = "to_", nullable = false)
+    @Column(name = "to_", nullable = false, length = 5000)
     private String to;
 
     @Column(name = "cc", length = 5000)
@@ -46,9 +45,8 @@ public class EmailPO {
     private Date sentDate;
 
     @Lob
-    @Column(name = "content", columnDefinition="Mediumblob")
+    @Column(name = "content", columnDefinition="longblob")
     @Basic(fetch = FetchType.LAZY)
-    @Type(type = "org.hibernate.type.BinaryType")
     private byte[] content;
 
     @Column(name = "reply_sign", nullable = false, length = 1)
@@ -68,4 +66,7 @@ public class EmailPO {
 
     @Column(name = "protocol", nullable = false)
     private String protocol;
+
+    @Column(name = "is_html", nullable = false)
+    private Boolean isHtml;
 }
