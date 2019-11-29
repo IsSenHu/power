@@ -100,6 +100,7 @@ public class MailServiceImpl implements MailService {
                                         willUpdate.add(email);
                                     } else {
                                         EmailPO email = new EmailPO();
+                                        email.setUid(parser.getUid());
                                         email.setUserId(userId);
                                         email.setHost(token.getHost());
                                         email.setProtocol(token.getProtocol());

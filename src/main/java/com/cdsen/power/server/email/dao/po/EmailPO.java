@@ -21,6 +21,9 @@ public class EmailPO {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "uid", unique = true, nullable = false)
+    private String uid;
+
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
