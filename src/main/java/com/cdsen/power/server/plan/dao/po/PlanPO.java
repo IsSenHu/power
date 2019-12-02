@@ -31,5 +31,6 @@ public class PlanPO {
     @Enumerated(EnumType.STRING)
     private PlanType planType;
 
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "plan")
     private List<PlanItemPO> items;
 }
