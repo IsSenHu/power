@@ -19,7 +19,7 @@ public class RedisLuaExecutor {
         this.template = template;
     }
 
-    public Integer execute(LuaScript luaScript, List<String> keys, Object... args) {
+    public Long execute(LuaScript luaScript, List<String> keys, Object... args) {
         if (log.isDebugEnabled()) {
             log.debug("redis 执行 lua 脚本:{}, keys:{}, args:{}", luaScript.getLuaScriptName(), keys, Arrays.toString(args));
         }

@@ -18,14 +18,14 @@ public enum LuaScript {
     READY_REGISTER_USER("readyRegisterUser");
 
     private String luaScriptName;
-    private RedisScript<Integer> redisScript;
+    private RedisScript<Long> redisScript;
 
     LuaScript(String luaScriptName) {
         this.luaScriptName = luaScriptName;
         ClassPathResource resource = new ClassPathResource("lua/".concat(luaScriptName).concat(".lua"));
         try {
             byte[] bytes = FileCopyUtils.copyToByteArray(resource.getInputStream());
-            this.redisScript = new DefaultRedisScript<>(new String(bytes, StandardCharsets.UTF_8), Integer.TYPE);
+            this.redisScript = new DefaultRedisScript<>(new String(bytes, StandardCharsets.UTF_8), Long.TYPE);
         } catch (Exception e) {
             LuaScriptLogger.error("[{}] 脚本加载失败:", luaScriptName, e);
         }

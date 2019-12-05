@@ -8,8 +8,8 @@ local code = ARGV[2]
 -- 过期时间 30分钟
 local expireSeconds = 1800
 -- 逻辑
-local existed = redis.call("keys", keyPrefix1 .. username)
-if (existed)
+local existed = redis.call("get", keyPrefix1 .. username)
+if (existed == username)
 then
     -- 用户名已存在
     return 10006
