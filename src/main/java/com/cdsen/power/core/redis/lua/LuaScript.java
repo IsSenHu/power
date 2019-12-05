@@ -15,6 +15,7 @@ import java.nio.charset.StandardCharsets;
  */
 @Getter
 public enum LuaScript {
+    // 准备注册用户
     READY_REGISTER_USER("readyRegisterUser");
 
     private String luaScriptName;
