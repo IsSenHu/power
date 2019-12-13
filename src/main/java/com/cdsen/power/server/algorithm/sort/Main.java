@@ -1,9 +1,12 @@
 package com.cdsen.power.server.algorithm.sort;
 
-import com.cdsen.power.server.algorithm.sort.impl.Bubble;
-import com.cdsen.power.server.algorithm.sort.impl.Select;
+import com.cdsen.power.server.algorithm.sort.impl.Insertion;
+import com.cdsen.power.server.algorithm.sort.impl.Merge;
+import com.cdsen.power.server.algorithm.sort.impl.Selection;
+import com.cdsen.power.server.algorithm.sort.impl.Shell;
 
-import java.util.Arrays;
+import java.security.SecureRandom;
+import java.util.Random;
 
 /**
  * @author HuSen
@@ -11,12 +14,35 @@ import java.util.Arrays;
  */
 public class Main {
 
+    private static final Random R = new SecureRandom();
+
+    private static int[] rand(int size) {
+        int[] arr = new int[size];
+        for (int i = 0; i < size; i++) {
+            arr[i] = R.nextInt(size * 10);
+        }
+        return arr;
+    }
+
     public static void main(String[] args) {
-        int[] arr = {2, 5, 12, 333, 12123, 112, 341, 122, 3, 4, 9};
-        Bubble.sort(arr);
-        System.out.println(Arrays.toString(arr));
-        int[] arr2 = {2, 5, 12, 333, 12123, 112, 341, 122, 3, 4, 9};
-        Select.sort(arr2);
-        System.out.println(Arrays.toString(arr2));
+        int[] rand = rand(10);
+        new Selection().sort(rand);
+        Selection.show(rand);
+        assert Selection.isSorted(rand);
+
+        int[] rand1 = rand(10);
+        new Insertion().sort(rand1);
+        Insertion.show(rand1);
+        assert Insertion.isSorted(rand1);
+
+        int[] rand2 = rand(100);
+        new Shell().sort(rand2);
+        Shell.show(rand2);
+        assert Shell.isSorted(rand2);
+
+        int[] rand3 = rand(1000);
+        new Merge().sort(rand3);
+        Merge.show(rand3);
+        assert Merge.isSorted(rand3);
     }
 }
