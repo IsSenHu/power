@@ -1,9 +1,6 @@
 package com.cdsen.power.server.algorithm.sort;
 
-import com.cdsen.power.server.algorithm.sort.impl.Insertion;
-import com.cdsen.power.server.algorithm.sort.impl.Merge;
-import com.cdsen.power.server.algorithm.sort.impl.Selection;
-import com.cdsen.power.server.algorithm.sort.impl.Shell;
+import com.cdsen.power.server.algorithm.sort.impl.*;
 
 import java.security.SecureRandom;
 import java.util.Random;
@@ -44,5 +41,10 @@ public class Main {
         new Merge().sort(rand3);
         Merge.show(rand3);
         assert Merge.isSorted(rand3);
+
+        int[] rand4 = rand(1000);
+        new MergeBu().sort(rand4);
+        MergeBu.show(rand4);
+        assert MergeBu.isSorted(rand4);
     }
 }
