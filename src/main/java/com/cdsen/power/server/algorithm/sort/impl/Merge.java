@@ -4,6 +4,8 @@ import com.cdsen.power.server.algorithm.sort.AbstractSortExample;
 
 /**
  * 归并排序
+ * 运行时间与NlgN成正比
+ * 缺点是辅助数组使用的额外空间和N成正比
  *
  * @author HuSen
  * create on 2019/12/13 17:14
