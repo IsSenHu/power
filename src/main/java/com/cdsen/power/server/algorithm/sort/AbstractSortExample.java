@@ -18,17 +18,11 @@ public abstract class AbstractSortExample {
         a[j] = t;
     }
 
-    private static int[] aux;
-
-    protected static void setAux(int[] aux) {
-        AbstractSortExample.aux = aux;
-    }
-
-    protected static void merge(int[] a, int lo, int mid, int hi) {
+    protected static void merge(int[] aux, int[] a, int lo, int mid, int hi) {
         int i = lo;
         int j = mid + 1;
         if (hi + 1 - lo >= 0) System.arraycopy(a, lo, aux, lo, hi + 1 - lo);
-        for (int k = lo; k < hi; k++) {
+        for (int k = lo; k <= hi; k++) {
             if (i > mid) {
                 a[k] = aux[j++];
             } else if (j > hi) {

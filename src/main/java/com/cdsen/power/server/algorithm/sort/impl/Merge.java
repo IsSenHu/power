@@ -14,17 +14,17 @@ public class Merge extends AbstractSortExample {
 
     @Override
     public void sort(int[] a) {
-        setAux(new int[a.length]);
-        sort(a, 0, a.length - 1);
+        int[] aux = new int[a.length];
+        sort(aux, a, 0, a.length - 1);
     }
 
-    private void sort(int[] a, int lo, int hi) {
+    private void sort(int[] aux, int[] a, int lo, int hi) {
         if (lo >= hi) {
             return;
         }
         int mid = lo + (hi - lo) / 2;
-        sort(a, lo, mid);
-        sort(a, mid + 1, hi);
-        merge(a, lo, mid, hi);
+        sort(aux, a, lo, mid);
+        sort(aux, a, mid + 1, hi);
+        merge(aux, a, lo, mid, hi);
     }
 }

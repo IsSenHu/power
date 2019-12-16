@@ -1,6 +1,7 @@
 package com.cdsen.power.server.algorithm.sort;
 
 import com.cdsen.power.server.algorithm.sort.impl.*;
+import org.springframework.util.Assert;
 
 import java.security.SecureRandom;
 import java.util.Random;
@@ -25,26 +26,26 @@ public class Main {
         int[] rand = rand(10);
         new Selection().sort(rand);
         Selection.show(rand);
-        assert Selection.isSorted(rand);
+        Assert.isTrue(Selection.isSorted(rand), "");
 
         int[] rand1 = rand(10);
         new Insertion().sort(rand1);
         Insertion.show(rand1);
-        assert Insertion.isSorted(rand1);
+        Assert.isTrue(Insertion.isSorted(rand1), "");
 
         int[] rand2 = rand(100);
         new Shell().sort(rand2);
         Shell.show(rand2);
-        assert Shell.isSorted(rand2);
+        Assert.isTrue(Shell.isSorted(rand2), "");
 
         int[] rand3 = rand(1000);
         new Merge().sort(rand3);
         Merge.show(rand3);
-        assert Merge.isSorted(rand3);
+        Assert.isTrue(Merge.isSorted(rand3), "");
 
         int[] rand4 = rand(1000);
         new MergeBu().sort(rand4);
         MergeBu.show(rand4);
-        assert MergeBu.isSorted(rand4);
+        Assert.isTrue(MergeBu.isSorted(rand4), "");
     }
 }
