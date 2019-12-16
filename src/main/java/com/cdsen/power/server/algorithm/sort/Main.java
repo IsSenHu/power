@@ -47,5 +47,10 @@ public class Main {
         new MergeBu().sort(rand4);
         MergeBu.show(rand4);
         Assert.isTrue(MergeBu.isSorted(rand4), "");
+
+        int[] rand5 = rand(1000);
+        new Quick().sort(rand5);
+        Quick.show(rand5);
+        Assert.isTrue(Quick.isSorted(rand5), "");
     }
 }
