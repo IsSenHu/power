@@ -28,12 +28,17 @@ public class Main {
         Selection.show(rand);
         Assert.isTrue(Selection.isSorted(rand), "");
 
-        int[] rand1 = rand(10);
+        int[] rand6 = rand(10);
+        new Bubble().sort(rand6);
+        Bubble.show(rand6);
+        Assert.isTrue(Bubble.isSorted(rand6), "");
+
+        int[] rand1 = rand(1000);
         new Insertion().sort(rand1);
         Insertion.show(rand1);
         Assert.isTrue(Insertion.isSorted(rand1), "");
 
-        int[] rand2 = rand(100);
+        int[] rand2 = rand(1000);
         new Shell().sort(rand2);
         Shell.show(rand2);
         Assert.isTrue(Shell.isSorted(rand2), "");
