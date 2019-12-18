@@ -22,7 +22,7 @@ public class SingleLinkedList<T> implements List<T> {
 
     @Setter
     @Getter
-    public class Node {
+    private class Node {
         private T data;
         private Node next;
     }
