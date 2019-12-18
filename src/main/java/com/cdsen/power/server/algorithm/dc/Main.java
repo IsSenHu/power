@@ -1,6 +1,6 @@
 package com.cdsen.power.server.algorithm.dc;
 
-import com.cdsen.power.server.algorithm.dc.impl.ArrayList;
+import com.cdsen.power.server.algorithm.dc.impl.SingleLinkedList;
 import com.cdsen.power.server.algorithm.dc.interfaces.List;
 
 /**
@@ -10,7 +10,7 @@ import com.cdsen.power.server.algorithm.dc.interfaces.List;
 public class Main {
 
     public static void main(String[] args) {
-        List<Integer> list = new ArrayList<>(10);
+        List<Integer> list = new SingleLinkedList<>();
 
         list.listInsert(0, 1);
         list.listInsert(0, 2);
@@ -29,5 +29,7 @@ public class Main {
         System.out.println(list.listLength());
 
         System.out.println(list.getElem(5));
+
+        System.out.println(list.locateElem(9));
     }
 }
