@@ -1,6 +1,7 @@
 package com.cdsen.power.server.algorithm.dc;
 
-import com.cdsen.power.server.algorithm.dc.impl.SingleLinkedList;
+import com.cdsen.power.server.algorithm.dc.impl.Node;
+import com.cdsen.power.server.algorithm.dc.impl.StaticLinkedList;
 import com.cdsen.power.server.algorithm.dc.interfaces.List;
 
 /**
@@ -10,13 +11,14 @@ import com.cdsen.power.server.algorithm.dc.interfaces.List;
 public class Main {
 
     public static void main(String[] args) {
-        List<Integer> list = new SingleLinkedList<>();
+        Node<Integer>[] nodes = new Node[10];
+        List<Integer> list = new StaticLinkedList<>(nodes);
 
         list.listInsert(0, 1);
         list.listInsert(0, 2);
         list.listInsert(0, 3);
-        list.listInsert(0, 4);
-        list.listInsert(0, 5);
+        list.listInsert(1, 4);
+        list.listInsert(2, 5);
         list.listInsert(0, 6);
         list.listInsert(0, 7);
         list.listInsert(0, 8);
