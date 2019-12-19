@@ -1,7 +1,8 @@
 package com.cdsen.power.server.algorithm.dc;
 
-import com.cdsen.power.server.algorithm.dc.impl.CycleLinkedList;
-import com.cdsen.power.server.algorithm.dc.interfaces.List;
+
+import com.cdsen.power.server.algorithm.dc.impl.ArrayStack;
+import com.cdsen.power.server.algorithm.dc.interfaces.Stack;
 
 /**
  * @author HuSen
@@ -10,26 +11,23 @@ import com.cdsen.power.server.algorithm.dc.interfaces.List;
 public class Main {
 
     public static void main(String[] args) {
-        List<Integer> list = new CycleLinkedList<>();
-
-        list.listInsert(0, 1);
-        list.listInsert(0, 2);
-        list.listInsert(0, 3);
-        list.listInsert(1, 4);
-        list.listInsert(2, 5);
-        list.listInsert(0, 6);
-        list.listInsert(0, 7);
-        list.listInsert(0, 8);
-        list.listInsert(0, 9);
-
-        System.out.println(list.listLength());
-
-        System.out.println(list.listDelete(2));
-
-        System.out.println(list.listLength());
-
-        System.out.println(list.getElem(5));
-
-        System.out.println(list.locateElem(9));
+        Stack<Integer> stack = new ArrayStack<>(10);
+        stack.push(10);
+        stack.push(9);
+        System.out.println(stack.getTop());
+        System.out.println(stack.pop());
+        System.out.println(stack.pop());
+        stack.push(8);
+        stack.push(7);
+        stack.push(6);
+        stack.push(5);
+        stack.push(4);
+        stack.push(3);
+        stack.push(2);
+        stack.push(1);
+        stack.push(0);
+        while (!stack.isEmpty()) {
+            System.out.println(stack.pop());
+        }
     }
 }
