@@ -1,8 +1,8 @@
 package com.cdsen.power.server.algorithm.dc;
 
 
-import com.cdsen.power.server.algorithm.dc.impl.ArrayStack;
-import com.cdsen.power.server.algorithm.dc.interfaces.Stack;
+import com.cdsen.power.server.algorithm.dc.impl.CycleQueue;
+import com.cdsen.power.server.algorithm.dc.interfaces.Queue;
 
 /**
  * @author HuSen
@@ -11,23 +11,39 @@ import com.cdsen.power.server.algorithm.dc.interfaces.Stack;
 public class Main {
 
     public static void main(String[] args) {
-        Stack<Integer> stack = new ArrayStack<>(10);
-        stack.push(10);
-        stack.push(9);
-        System.out.println(stack.getTop());
-        System.out.println(stack.pop());
-        System.out.println(stack.pop());
-        stack.push(8);
-        stack.push(7);
-        stack.push(6);
-        stack.push(5);
-        stack.push(4);
-        stack.push(3);
-        stack.push(2);
-        stack.push(1);
-        stack.push(0);
-        while (!stack.isEmpty()) {
-            System.out.println(stack.pop());
+        Queue<Integer> queue = new CycleQueue(10);
+        queue.enQueue(1);
+        queue.enQueue(2);
+        queue.enQueue(3);
+        queue.enQueue(4);
+        queue.enQueue(5);
+        queue.enQueue(6);
+        queue.enQueue(7);
+        queue.enQueue(8);
+        queue.enQueue(9);
+        queue.enQueue(10);
+
+        while (!queue.isEmpty()) {
+            System.out.println(queue.deQueue());
+        }
+
+        queue.enQueue(11);
+        System.out.println(queue.getHead());
+        System.out.println(queue.deQueue());
+
+        queue.enQueue(1);
+        queue.enQueue(2);
+        queue.enQueue(3);
+        queue.enQueue(4);
+
+        System.out.println(queue.deQueue());
+        System.out.println(queue.deQueue());
+
+        queue.enQueue(3);
+        queue.enQueue(4);
+
+        while (!queue.isEmpty()) {
+            System.out.println(queue.deQueue());
         }
     }
 }
