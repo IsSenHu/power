@@ -14,6 +14,7 @@ public class Main {
         next(tree, new String[]{"A", "B", "#", "D", "#", "#", "C", "#", "#"}, 1);
         System.out.println(Arrays.toString(tree));
         preEach(tree, 1);
+        System.out.println(Main.class.getSimpleName());
     }
 
     private static void next(String[] tree, String[] seq, int index) {

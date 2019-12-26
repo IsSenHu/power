@@ -28,6 +28,40 @@ public class UndirectedGraphNet {
         private int weight;
     }
 
+    @Getter
+    @Setter
+    public static class EdgeNode {
+        /**
+         * 邻接点域，存储该顶点对应的下标
+         */
+        private int adjvex;
+        /**
+         * 用于存储权值，对于非网图可以不需要
+         */
+        private int weight;
+        /**
+         * 链域，指向下一个邻接点
+         */
+        private EdgeNode next;
+    }
+
+    @Getter
+    @Setter
+    public static class VertexNode {
+        /**
+         * 顶点入度
+         */
+        private int in;
+        /**
+         * 顶点域，存储顶点信息
+         */
+        private int data;
+        /**
+         * 边标头指针
+         */
+        private EdgeNode firstEdge;
+    }
+
     private Vertex[] vertices;
 
     private Edge[] edges;
@@ -35,6 +69,22 @@ public class UndirectedGraphNet {
     private int[] pathMatirx;
 
     private int[] shortPathTable;
+
+    private int[][] pathMatirx_;
+
+    private int[][] shortPathTable_;
+
+    private VertexNode[] adjList;
+
+    /**
+     * 顶点数
+     */
+    private int numVertexes;
+
+    /**
+     * 边数
+     */
+    private int numEdges;
 
     /**
      * 领接矩阵
@@ -169,6 +219,33 @@ public class UndirectedGraphNet {
                 if (final_[w] != 0 && nowMin < this.shortPathTable[w]) {
                     this.shortPathTable[w] = nowMin;
                     this.pathMatirx[w] = k;
+                }
+            }
+        }
+    }
+
+    /**
+     * Floyd 算法，求网图G中各顶点v到其余顶点w最短路劲p[v][w]及带权长度D[v][w]
+     */
+    private void shortestPathFloyd() {
+        int v, w, k;
+        int length = this.vertices.length;
+        // 初始化
+        for (v = 0; v < length; v++) {
+            for (w = 0; w < length; w++) {
+                this.shortPathTable_[v][w] = this.arc[v][w];
+                this.pathMatirx_[v][w] = w;
+            }
+        }
+        // k代表中转顶点的下标，v代表起始顶点，w代表结束顶点
+        for (k = 0; k < length; k++) {
+            for (v = 0; v < length; v++) {
+                for (w = 0; w < length; w++) {
+                    int sum = this.shortPathTable_[v][k] + this.shortPathTable_[k][w];
+                    if (this.shortPathTable_[v][w] > sum) {
+                        this.shortPathTable_[v][w] = sum;
+                        this.pathMatirx_[v][w] = this.pathMatirx_[v][k];
+                    }
                 }
             }
         }
