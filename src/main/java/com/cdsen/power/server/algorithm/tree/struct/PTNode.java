@@ -1,4 +1,4 @@
-package com.cdsen.power.server.algorithm.tree;
+package com.cdsen.power.server.algorithm.tree.struct;
 
 /**
  * 双亲表示法的结点结构定义代码

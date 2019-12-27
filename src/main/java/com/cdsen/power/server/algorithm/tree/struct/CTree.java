@@ -1,4 +1,4 @@
-package com.cdsen.power.server.algorithm.tree;
+package com.cdsen.power.server.algorithm.tree.struct;
 
 import java.util.ArrayList;
 
