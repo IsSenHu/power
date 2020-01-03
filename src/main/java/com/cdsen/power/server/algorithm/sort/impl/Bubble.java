@@ -14,9 +14,10 @@ public class Bubble extends AbstractSortExample {
     public void sort(int[] arr) {
         int length = arr.length;
         for (int i = 0; i < length - 1; i++) {
-            for (int j = i + 1; j < length; j++) {
-                if (less(arr[j], arr[i])) {
-                    each(arr, i, j);
+            for (int j = length - 1; j > i; j--) {
+                // 如果后面小于前面，则交换
+                if (less(arr[j], arr[j - 1])) {
+                    each(arr, j - 1, j);
                 }
             }
         }
