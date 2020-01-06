@@ -4,6 +4,7 @@ import com.cdsen.power.server.algorithm.sort.AbstractSortExample;
 
 /**
  * 堆排序
+ * 不适合待排序序列个数较少的情况
  *
  * @author HuSen
  * create on 2020/1/4 16:53
