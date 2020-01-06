@@ -62,5 +62,10 @@ public class Main {
         new Quick3Way().sort(rand7);
         Quick3Way.show(rand7);
         Assert.isTrue(Quick3Way.isSorted(rand7), "");
+
+        int[] rand8 = rand(1000);
+        new Heap().sort(rand8);
+        Heap.show(rand8);
+        Assert.isTrue(Heap.isSorted(rand8), "");
     }
 }
